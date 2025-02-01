@@ -10,16 +10,34 @@ const Home = () => {
   const plugin = Autoplay({ delay: 2000 });
 
   const agencies = [
-    { name: "Adecco", logo: "/agencies/adecco.png" },
-    { name: "Manpower", logo: "/agencies/manpower.png" },
-    { name: "Randstad", logo: "/agencies/randstad.png" },
-    { name: "Start People", logo: "/agencies/start-people.png" },
-    { name: "Tempo-Team", logo: "/agencies/tempo-team.png" },
-    { name: "Unique", logo: "/agencies/unique.png" },
-    { name: "AGO", logo: "/agencies/ago.png" },
-    { name: "Forum Jobs", logo: "/agencies/forum-jobs.png" },
-    { name: "Accent Jobs", logo: "/agencies/accent.png" },
-    { name: "Synergie", logo: "/agencies/synergie.png" }
+    { 
+      name: "Proselect", 
+      logo: "https://scontent.fbru2-1.fna.fbcdn.net/v/t39.30808-6/424861504_903474951786484_6860552531033903105_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=9f87pSSpry0Q7kNvgFyrnoT&_nc_zt=23&_nc_ht=scontent.fbru2-1.fna&_nc_gid=Ak1S7cV8uODElYBPLoC2BP7&oh=00_AYD11qaICw8KiEXJHPd2k0JeIOgaHaTW9IRlvZoyE62k0g&oe=67A1CC7A" 
+    },
+    { 
+      name: "Tempo-Team", 
+      logo: "https://scontent.fbru2-1.fna.fbcdn.net/v/t39.30808-6/352321179_802641697768990_7499832421124251242_n.png?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=GoOS2AtHBusQ7kNvgHYxTXc&_nc_zt=23&_nc_ht=scontent.fbru2-1.fna&_nc_gid=Ae_9EPVESkA8wMfDsEVP_6L&oh=00_AYCWUQSFWcAyItU6tzoRhWSwgmXvNMnk_iuILxmJsxa71Q&oe=67A19741" 
+    },
+    { 
+      name: "Adecco", 
+      logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpHiI1ANEpe5BlJpLQDI_4M8jl1AnJciaqaw&s" 
+    },
+    { 
+      name: "ASAP", 
+      logo: "https://a.storyblok.com/f/118264/240x240/c475b21edc/asap-logo-2.png" 
+    },
+    { 
+      name: "Synergie", 
+      logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMXkqv_r78fpVwVE9xDY6rd0GfS3bMlK1sWA&s" 
+    },
+    { 
+      name: "Randstad", 
+      logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5L2880dU-fMT-PjiSxVWWbwI6Vb8l3Vw6Q&s" 
+    },
+    { 
+      name: "Accent Jobs", 
+      logo: "https://scontent-bru2-1.xx.fbcdn.net/v/t39.30808-1/282401818_7471306532942250_8129507684428268966_n.jpg?stp=dst-jpg_s720x720_tt6&_nc_cat=103&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=V7V32kIB9kQQ7kNvgGrchjq&_nc_zt=24&_nc_ht=scontent-bru2-1.xx&_nc_gid=AxGzm78UeCGDdyODeeOkUVP&oh=00_AYCkOMbUGq7QW9APk_A0wqGGCWF4f3gkf8SaipnTsGtuZA&oe=67A1EB3A" 
+    }
   ];
 
   return (
