@@ -248,23 +248,23 @@ const Index = () => {
 
       <main className="container mx-auto py-8 px-4">
         <div className="flex flex-col space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <h2 className="text-2xl font-bold">Offres Logistiques Liège</h2>
               <span className="px-3 py-1 bg-blue-600 rounded-full text-sm">
                 {totalRecords} postes
               </span>
             </div>
-            <div className="flex gap-4">
+            <div className="flex gap-2 md:gap-4">
               <Button
                 onClick={handleScrape}
                 disabled={isScrapingLoading}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-blue-600 hover:bg-blue-700 whitespace-nowrap"
               >
                 {isScrapingLoading ? (
                   <>
                     <Loader2 className="animate-spin" />
-                    Recherche en cours...
+                    Recherche...
                   </>
                 ) : (
                   '+ Générer'
@@ -275,12 +275,12 @@ const Index = () => {
                 onClick={handleDelete}
                 disabled={isDeletingLoading}
                 variant="destructive"
-                className="bg-red-600 hover:bg-red-700"
+                className="bg-red-600 hover:bg-red-700 whitespace-nowrap"
               >
                 {isDeletingLoading ? (
                   <>
                     <Loader2 className="animate-spin" />
-                    Suppression en cours...
+                    Suppression...
                   </>
                 ) : (
                   'Supprimer'
