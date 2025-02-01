@@ -30,7 +30,9 @@ const AirtableTable = ({ onTotalRecords }: AirtableTableProps) => {
   });
 
   useEffect(() => {
+    console.log("Data received:", data); // Debug log
     if (data?.records) {
+      console.log("Records found:", data.records.length); // Debug log
       // Append new records to our accumulated list
       if (currentOffset) {
         setAllRecords(prev => [...prev, ...data.records]);
@@ -49,17 +51,11 @@ const AirtableTable = ({ onTotalRecords }: AirtableTableProps) => {
 
   // Notify parent component about total records when allRecords changes
   useEffect(() => {
+    console.log("All records:", allRecords.length); // Debug log
     if (onTotalRecords) {
       onTotalRecords(allRecords.length);
     }
   }, [allRecords.length, onTotalRecords]);
-
-  const handlePreviousPage = () => {
-    const newPreviousOffsets = [...previousOffsets];
-    const previousOffset = newPreviousOffsets.pop();
-    setPreviousOffsets(newPreviousOffsets);
-    setCurrentOffset(previousOffset);
-  };
 
   if (isLoading && !allRecords.length) {
     return (
@@ -110,13 +106,19 @@ const AirtableTable = ({ onTotalRecords }: AirtableTableProps) => {
               </td>
               <td className="p-4 font-medium text-white">{record.fields.title}</td>
               <td className="p-4">
-                <Button
-                  variant="default"
-                  className="bg-blue-600 hover:bg-blue-700"
-                  size="sm"
+                <a 
+                  href={record.fields.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
                 >
-                  Voir l'offre
-                </Button>
+                  <Button
+                    variant="default"
+                    className="bg-blue-600 hover:bg-blue-700"
+                    size="sm"
+                  >
+                    Voir l'offre
+                  </Button>
+                </a>
               </td>
               <td className="p-4 text-gray-300">{record.fields.location}</td>
               <td className="p-4">

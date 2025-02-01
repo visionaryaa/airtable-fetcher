@@ -12,18 +12,26 @@ export interface AirtableResponse {
 }
 
 export const fetchAirtableRecords = async (offset?: string): Promise<AirtableResponse> => {
+  console.log("Fetching records with offset:", offset); // Debug log
   const url = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}${offset ? `?offset=${offset}` : ''}`;
   
-  const response = await fetch(url, {
-    headers: {
-      'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-  });
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+    });
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch data from Airtable');
+    if (!response.ok) {
+      throw new Error('Failed to fetch data from Airtable');
+    }
+
+    const data = await response.json();
+    console.log("Airtable response:", data); // Debug log
+    return data;
+  } catch (error) {
+    console.error("Error fetching from Airtable:", error);
+    throw error;
   }
-
-  return response.json();
 };
