@@ -1,11 +1,13 @@
+import Logo from "./Logo";
+
 const Footer = () => {
   return (
     <footer className="bg-[#1a1f2e] border-t border-gray-800 py-8 mt-auto">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">
-            <h3 className="text-xl font-semibold text-white mb-2">Intérim centrale</h3>
-            <p className="text-gray-400">
+            <Logo />
+            <p className="text-gray-400 mt-2">
               Votre plateforme centralisée pour les offres d'emploi en logistique à Liège
             </p>
           </div>
