@@ -6,6 +6,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
+import { Card, CardContent } from "@/components/ui/card";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AirtableTableProps {
   onTotalRecords?: (total: number) => void;
@@ -64,8 +66,8 @@ const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords =
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
 
-  // Fetch favorites for the current user
   const { data: favorites = [] } = useQuery({
     queryKey: ['favorites', user?.id],
     queryFn: async () => {
@@ -79,7 +81,6 @@ const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords =
     enabled: !!user,
   });
 
-  // Add to favorites mutation
   const addToFavorites = useMutation({
     mutationFn: async (job: { title: string; location: string; link: string }) => {
       if (!user) throw new Error('Must be logged in to add favorites');
@@ -111,7 +112,6 @@ const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords =
     }
   });
 
-  // Remove from favorites mutation
   const removeFromFavorites = useMutation({
     mutationFn: async (jobLink: string) => {
       if (!user) throw new Error('Must be logged in to remove favorites');
@@ -221,6 +221,112 @@ const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords =
     }
   };
 
+  const renderMobileCard = (record: any) => (
+    <Card key={record.id} className="mb-4">
+      <CardContent className="pt-6">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            {record.fields.lien && (
+              <img
+                src={getLogoForUrl(record.fields.lien)}
+                alt="Agency logo"
+                className="w-8 h-8 rounded-full object-cover"
+              />
+            )}
+            <h3 className="font-medium text-foreground">{record.fields.Poste}</h3>
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {record.fields.Localisation}
+          </div>
+          <div className="flex items-center justify-between">
+            <a 
+              href={record.fields.lien} 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              <Button
+                variant="default"
+                className="bg-blue-600 hover:bg-blue-700"
+                size="sm"
+              >
+                Voir l'offre
+              </Button>
+            </a>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className={`hover:text-red-500 ${isJobFavorited(record.fields.lien) ? 'text-red-500' : ''}`}
+              onClick={() => handleFavoriteToggle(record)}
+            >
+              <Heart className="w-5 h-5" fill={isJobFavorited(record.fields.lien) ? "currentColor" : "none"} />
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderDesktopTable = () => (
+    <div className="overflow-x-auto rounded-lg px-6">
+      <table className="w-full border-collapse min-w-[800px] bg-background">
+        <thead>
+          <tr className="bg-secondary text-foreground">
+            <th className="p-6 text-left font-medium">SOURCE</th>
+            <th className="p-6 text-left font-medium">POSTE</th>
+            <th className="p-6 text-left font-medium">LIEN</th>
+            <th className="p-6 text-left font-medium">LOCALISATION</th>
+            <th className="p-6 text-left font-medium">FAVORIS</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredRecords.map((record) => (
+            <tr
+              key={record.id}
+              className="border-b border-border hover:bg-secondary/50 transition-colors"
+            >
+              <td className="p-6">
+                {record.fields.lien && (
+                  <img
+                    src={getLogoForUrl(record.fields.lien)}
+                    alt="Agency logo"
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                )}
+              </td>
+              <td className="p-6 font-medium text-foreground">{record.fields.Poste}</td>
+              <td className="p-6">
+                <a 
+                  href={record.fields.lien} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                >
+                  <Button
+                    variant="default"
+                    className="bg-blue-600 hover:bg-blue-700"
+                    size="sm"
+                  >
+                    Voir l'offre
+                  </Button>
+                </a>
+              </td>
+              <td className="p-6 text-muted-foreground">{record.fields.Localisation}</td>
+              <td className="p-6">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className={`hover:text-red-500 ${isJobFavorited(record.fields.lien) ? 'text-red-500' : ''}`}
+                  onClick={() => handleFavoriteToggle(record)}
+                >
+                  <Heart className="w-5 h-5" fill={isJobFavorited(record.fields.lien) ? "currentColor" : "none"} />
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
   if (isLoading && !allRecords.length) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
@@ -243,64 +349,13 @@ const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords =
 
   return (
     <>
-      <div className="overflow-x-auto rounded-lg px-6">
-        <table className="w-full border-collapse min-w-[800px] bg-background">
-          <thead>
-            <tr className="bg-secondary text-foreground">
-              <th className="p-6 text-left font-medium">SOURCE</th>
-              <th className="p-6 text-left font-medium">POSTE</th>
-              <th className="p-6 text-left font-medium">LIEN</th>
-              <th className="p-6 text-left font-medium">LOCALISATION</th>
-              <th className="p-6 text-left font-medium">FAVORIS</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredRecords.map((record) => (
-              <tr
-                key={record.id}
-                className="border-b border-border hover:bg-secondary/50 transition-colors"
-              >
-                <td className="p-6">
-                  {record.fields.lien && (
-                    <img
-                      src={getLogoForUrl(record.fields.lien)}
-                      alt="Agency logo"
-                      className="w-8 h-8 rounded-full object-cover"
-                    />
-                  )}
-                </td>
-                <td className="p-6 font-medium text-foreground">{record.fields.Poste}</td>
-                <td className="p-6">
-                  <a 
-                    href={record.fields.lien} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                  >
-                    <Button
-                      variant="default"
-                      className="bg-blue-600 hover:bg-blue-700"
-                      size="sm"
-                    >
-                      Voir l'offre
-                    </Button>
-                  </a>
-                </td>
-                <td className="p-6 text-muted-foreground">{record.fields.Localisation}</td>
-                <td className="p-6">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className={`hover:text-red-500 ${isJobFavorited(record.fields.lien) ? 'text-red-500' : ''}`}
-                    onClick={() => handleFavoriteToggle(record)}
-                  >
-                    <Heart className="w-5 h-5" fill={isJobFavorited(record.fields.lien) ? "currentColor" : "none"} />
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {isMobile ? (
+        <div className="px-4">
+          {filteredRecords.map(record => renderMobileCard(record))}
+        </div>
+      ) : (
+        renderDesktopTable()
+      )}
     </>
   );
 };
