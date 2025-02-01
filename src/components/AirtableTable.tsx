@@ -55,6 +55,7 @@ const getLogoForUrl = (url: string) => {
 
 const AirtableTable = ({ onTotalRecords, sortOrder }: AirtableTableProps) => {
   const [currentOffset, setCurrentOffset] = useState<string | undefined>();
+  const [previousOffsets, setPreviousOffsets] = useState<string[]>([]);
   const [allRecords, setAllRecords] = useState<any[]>([]);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const { toast } = useToast();
@@ -73,19 +74,19 @@ const AirtableTable = ({ onTotalRecords, sortOrder }: AirtableTableProps) => {
     }
   });
 
-  // Handle initial data load and pagination
   useEffect(() => {
     if (data?.records) {
-      if (!currentOffset) {
-        // Initial load - replace all records
-        setAllRecords(data.records);
-      } else {
-        // Append new records for pagination
+      // Append new records to our accumulated list
+      if (currentOffset) {
         setAllRecords(prev => [...prev, ...data.records]);
+      } else {
+        // If no offset (first page), reset the records
+        setAllRecords(data.records);
       }
 
+      // If there's more data to fetch, automatically get the next page
       if (data.offset) {
-        // Schedule next fetch with a delay
+        setPreviousOffsets(prev => [...prev, currentOffset || ""]);
         const timer = setTimeout(() => {
           setCurrentOffset(data.offset);
           setIsLoadingMore(true);
