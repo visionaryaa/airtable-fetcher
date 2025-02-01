@@ -1,9 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { fetchAirtableRecords } from "@/services/airtable";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Heart } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/components/AuthProvider";
 
 interface AirtableTableProps {
   onTotalRecords?: (total: number) => void;
@@ -60,6 +62,83 @@ const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords =
   const [previousOffsets, setPreviousOffsets] = useState<string[]>([]);
   const [allRecords, setAllRecords] = useState<any[]>([]);
   const { toast } = useToast();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  // Fetch favorites for the current user
+  const { data: favorites = [] } = useQuery({
+    queryKey: ['favorites', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data, error } = await supabase
+        .from('favorites')
+        .select('*');
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  // Add to favorites mutation
+  const addToFavorites = useMutation({
+    mutationFn: async (job: { title: string; location: string; link: string }) => {
+      if (!user) throw new Error('Must be logged in to add favorites');
+      const { error } = await supabase
+        .from('favorites')
+        .insert({
+          user_id: user.id,
+          job_title: job.title,
+          job_location: job.location,
+          job_link: job.link,
+        });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['favorites'] });
+      toast({
+        title: "Success",
+        description: "Job added to favorites",
+      });
+    },
+    meta: {
+      onError: () => {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to add job to favorites",
+        });
+      }
+    }
+  });
+
+  // Remove from favorites mutation
+  const removeFromFavorites = useMutation({
+    mutationFn: async (jobLink: string) => {
+      if (!user) throw new Error('Must be logged in to remove favorites');
+      const { error } = await supabase
+        .from('favorites')
+        .delete()
+        .eq('job_link', jobLink)
+        .eq('user_id', user.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['favorites'] });
+      toast({
+        title: "Success",
+        description: "Job removed from favorites",
+      });
+    },
+    meta: {
+      onError: () => {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to remove job from favorites",
+        });
+      }
+    }
+  });
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["airtable", currentOffset],
@@ -115,6 +194,32 @@ const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords =
       ? titleA.localeCompare(titleB)
       : titleB.localeCompare(titleA);
   });
+
+  const isJobFavorited = (jobLink: string) => {
+    return favorites.some(fav => fav.job_link === jobLink);
+  };
+
+  const handleFavoriteToggle = (record: any) => {
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Authentication Required",
+        description: "Please log in to save favorites",
+      });
+      return;
+    }
+
+    const jobLink = record.fields.lien;
+    if (isJobFavorited(jobLink)) {
+      removeFromFavorites.mutate(jobLink);
+    } else {
+      addToFavorites.mutate({
+        title: record.fields.Poste,
+        location: record.fields.Localisation,
+        link: jobLink,
+      });
+    }
+  };
 
   if (isLoading && !allRecords.length) {
     return (
@@ -182,8 +287,13 @@ const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords =
                 </td>
                 <td className="p-6 text-gray-300">{record.fields.Localisation}</td>
                 <td className="p-6">
-                  <Button variant="ghost" size="sm" className="hover:text-red-500">
-                    <Heart className="w-5 h-5" />
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className={`hover:text-red-500 ${isJobFavorited(record.fields.lien) ? 'text-red-500' : ''}`}
+                    onClick={() => handleFavoriteToggle(record)}
+                  >
+                    <Heart className="w-5 h-5" fill={isJobFavorited(record.fields.lien) ? "currentColor" : "none"} />
                   </Button>
                 </td>
               </tr>
