@@ -142,8 +142,14 @@ const Index = () => {
               <h1 className="text-xl font-semibold">JobScraper Pro</h1>
             </div>
             <nav className="flex items-center gap-6">
-              <a href="#" className="hover:text-blue-400">Offres</a>
-              <a href="#" className="hover:text-blue-400">Favoris</a>
+              <a href="/" className="hover:text-blue-400">Offres</a>
+              <a 
+                href="/favoris" 
+                className="flex items-center gap-1 hover:text-blue-400"
+              >
+                <Heart className="w-4 h-4" />
+                Favoris
+              </a>
               <button className="p-2 rounded-full hover:bg-gray-700">
                 <Sun className="w-5 h-5" />
               </button>
