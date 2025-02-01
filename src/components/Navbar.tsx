@@ -10,6 +10,7 @@ import { Heart, LogOut, User, Home } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -59,6 +60,7 @@ const Navbar = () => {
               <Heart className="w-4 h-4" />
               Favoris
             </a>
+            <ThemeToggle />
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

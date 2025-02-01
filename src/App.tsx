@@ -1,35 +1,25 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { BrowserRouter as Router } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/components/AuthProvider";
-import Home from "./pages/Home";
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import Favoris from "./pages/Favoris";
-import NotFound from "./pages/NotFound";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import AppRoutes from "@/AppRoutes";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/jobs" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/favoris" element={<Favoris />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <ThemeProvider defaultTheme="system" storageKey="app-theme">
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <AuthProvider>
+            <AppRoutes />
+            <Toaster />
+          </AuthProvider>
+        </Router>
+      </QueryClientProvider>
+    </ThemeProvider>
+  );
+}
 
 export default App;
