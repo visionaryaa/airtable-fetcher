@@ -6,16 +6,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Heart, LogOut, User, Home } from "lucide-react";
+import { Heart, LogOut, User, Home, Menu, X } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useState } from "react";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -37,8 +39,12 @@ const Navbar = () => {
     navigate('/auth');
   };
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
-    <header className="border-b border-gray-800">
+    <header className="border-b border-border relative">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -47,7 +53,21 @@ const Navbar = () => {
             </svg>
             <h1 className="text-xl font-semibold">Intérim centrale</h1>
           </div>
-          <nav className="flex items-center gap-6">
+
+          {/* Mobile menu button */}
+          <button
+            onClick={toggleMenu}
+            className="md:hidden p-2 text-foreground hover:bg-accent rounded-lg"
+          >
+            {isMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
+          </button>
+
+          {/* Desktop navigation */}
+          <nav className="hidden md:flex items-center gap-6">
             <a href="/" className="flex items-center gap-1 hover:text-blue-400">
               <Home className="w-4 h-4" />
               Accueil
@@ -66,13 +86,13 @@ const Navbar = () => {
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="ghost" 
-                    className="relative flex items-center gap-2 border border-gray-700 hover:border-gray-600 rounded-lg px-4 py-2"
+                    className="relative flex items-center gap-2 border border-border hover:bg-accent rounded-lg px-4 py-2"
                   >
                     <User className="w-4 h-4" />
                     <span className="hidden md:inline">{user.email}</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 border border-gray-700">
+                <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuItem onClick={handleSignOut} className="text-red-500">
                     <LogOut className="w-4 h-4 mr-2" />
                     Déconnexion
@@ -90,6 +110,47 @@ const Navbar = () => {
             )}
           </nav>
         </div>
+
+        {/* Mobile navigation */}
+        {isMenuOpen && (
+          <nav className="md:hidden absolute top-full left-0 right-0 bg-background border-b border-border z-50">
+            <div className="flex flex-col space-y-4 p-4">
+              <a href="/" className="flex items-center gap-1 hover:text-blue-400">
+                <Home className="w-4 h-4" />
+                Accueil
+              </a>
+              <a href="/jobs" className="hover:text-blue-400">Offres</a>
+              <a 
+                href="/favoris" 
+                className="flex items-center gap-1 hover:text-blue-400"
+              >
+                <Heart className="w-4 h-4" />
+                Favoris
+              </a>
+              <div className="flex items-center justify-between">
+                <ThemeToggle />
+                {user ? (
+                  <Button 
+                    variant="ghost" 
+                    onClick={handleSignOut}
+                    className="text-red-500"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Déconnexion
+                  </Button>
+                ) : (
+                  <Button 
+                    variant="default" 
+                    className="bg-blue-600 hover:bg-blue-700"
+                    onClick={handleAuthClick}
+                  >
+                    Connexion
+                  </Button>
+                )}
+              </div>
+            </div>
+          </nav>
+        )}
       </div>
     </header>
   );
