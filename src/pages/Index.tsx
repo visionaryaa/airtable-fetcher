@@ -18,7 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Loader2, Sun, Plus, Heart, LogOut, User } from "lucide-react";
+import { Loader2, Sun, Plus, Heart, LogOut, User, Home } from "lucide-react";
 import { X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -147,7 +147,11 @@ const Index = () => {
               <h1 className="text-xl font-semibold">JobScraper Pro</h1>
             </div>
             <nav className="flex items-center gap-6">
-              <a href="/" className="hover:text-blue-400">Offres</a>
+              <a href="/" className="flex items-center gap-1 hover:text-blue-400">
+                <Home className="w-4 h-4" />
+                Accueil
+              </a>
+              <a href="/jobs" className="hover:text-blue-400">Offres</a>
               <a 
                 href="/favoris" 
                 className="flex items-center gap-1 hover:text-blue-400"

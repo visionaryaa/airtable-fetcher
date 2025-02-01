@@ -1,79 +1,122 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import AirtableTable from "@/components/AirtableTable";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/components/AuthProvider";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Heart, LogOut, Sun, Trash2, User } from "lucide-react";
+import { Loader2, Sun, Plus, Heart, LogOut, User, Home } from "lucide-react";
+import { X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
-const AGENCY_LOGOS: { [key: string]: string } = {
-  "Accent": "https://www.acc.eu/sites/default/files/logo/logo-accent.svg",
-  "Adecco": "https://logos-world.net/wp-content/uploads/2021/02/Adecco-Logo.png",
-  "Manpower": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/ManpowerGroup_logo.svg/2560px-ManpowerGroup_logo.svg.png",
-  "Randstad": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Randstad_Logo.svg/2560px-Randstad_Logo.svg.png",
-  "Start People": "https://www.startpeople.be/sites/default/files/2019-01/logo-start-people.svg",
-};
-
 const Favoris = () => {
-  const { user } = useAuth();
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [isScrapingLoading, setIsScrapingLoading] = useState(false);
+  const [isDeletingLoading, setIsDeletingLoading] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | undefined>();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [excludedWords, setExcludedWords] = useState<string[]>([]);
+  const [newWord, setNewWord] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
-  const [favorites, setFavorites] = useState<any[]>([]);
+  const { user } = useAuth();
 
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      if (!user) return;
+  const handleAddWord = () => {
+    if (newWord && !excludedWords.includes(newWord)) {
+      setExcludedWords(prev => [...prev, newWord]);
+      setNewWord("");
+    }
+  };
 
-      try {
-        const { data, error } = await supabase
-          .from('favorites')
-          .select('*')
-          .eq('user_id', user.id);
+  const handleRemoveWord = (wordToRemove: string) => {
+    setExcludedWords(excludedWords.filter(word => word !== wordToRemove));
+  };
 
-        if (error) throw error;
-        setFavorites(data || []);
-      } catch (error: any) {
+  const periodicRefresh = () => {
+    let count = 0;
+    const interval = setInterval(() => {
+      setRefreshKey(prev => prev + 1);
+      count++;
+      if (count >= 12) { // 12 times * 5 seconds = 60 seconds
+        clearInterval(interval);
+        setIsScrapingLoading(false);
         toast({
-          variant: "destructive",
-          title: "Erreur",
-          description: "Impossible de charger vos favoris.",
+          title: "Mise à jour terminée",
+          description: "La table a été mise à jour avec les nouvelles offres d'emploi.",
         });
-      } finally {
-        setIsLoading(false);
       }
-    };
+    }, 5000);
+    return interval;
+  };
 
-    fetchFavorites();
-  }, [user, toast]);
-
-  const handleRemoveFavorite = async (id: string) => {
+  const handleScrape = async () => {
+    setIsScrapingLoading(true);
     try {
-      const { error } = await supabase
-        .from('favorites')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
-      setFavorites(favorites.filter(fav => fav.id !== id));
+      const response = await fetch('https://hook.eu2.make.com/275e2xl21itwarp2pskui1wp4fs6ohcs?action=scrape');
+      if (!response.ok) throw new Error('Failed to trigger scraping');
+      
       toast({
-        title: "Favori supprimé",
-        description: "L'offre a été retirée de vos favoris.",
+        title: "Recherche lancée",
+        description: "La recherche d'offres d'emploi est en cours...",
       });
-    } catch (error: any) {
+      
+      const interval = periodicRefresh();
+      return () => clearInterval(interval);
+    } catch (error) {
       toast({
         variant: "destructive",
         title: "Erreur",
-        description: "Impossible de supprimer le favori.",
+        description: "Une erreur est survenue lors de la recherche.",
       });
+      setIsScrapingLoading(false);
     }
+  };
+
+  const handleDelete = async () => {
+    setIsDeletingLoading(true);
+    try {
+      const response = await fetch('https://hook.eu2.make.com/275e2xl21itwarp2pskui1wp4fs6ohcs?action=delete');
+      if (!response.ok) throw new Error('Failed to trigger deletion');
+      
+      toast({
+        title: "Suppression en cours",
+        description: "Les données sont en cours de suppression...",
+      });
+
+      setTimeout(() => {
+        setRefreshKey(prev => prev + 1);
+        setIsDeletingLoading(false);
+        toast({
+          title: "Suppression terminée",
+          description: "Toutes les données ont été supprimées.",
+        });
+      }, 7000);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la suppression.",
+      });
+      setIsDeletingLoading(false);
+    }
+  };
+
+  const handleAuthClick = () => {
+    navigate('/auth');
   };
 
   const handleSignOut = async () => {
@@ -92,21 +135,6 @@ const Favoris = () => {
     }
   };
 
-  const handleAuthClick = () => {
-    navigate('/auth');
-  };
-
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-[#1a1f2e] text-white flex flex-col items-center justify-center p-4">
-        <p className="text-xl mb-4">Veuillez vous connecter pour accéder à vos favoris</p>
-        <Button onClick={handleAuthClick} className="bg-blue-600 hover:bg-blue-700">
-          Connexion
-        </Button>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-[#1a1f2e] text-white">
       <header className="border-b border-gray-800">
@@ -119,7 +147,11 @@ const Favoris = () => {
               <h1 className="text-xl font-semibold">JobScraper Pro</h1>
             </div>
             <nav className="flex items-center gap-6">
-              <a href="/" className="hover:text-blue-400">Offres</a>
+              <a href="/" className="flex items-center gap-1 hover:text-blue-400">
+                <Home className="w-4 h-4" />
+                Accueil
+              </a>
+              <a href="/jobs" className="hover:text-blue-400">Offres</a>
               <a 
                 href="/favoris" 
                 className="flex items-center gap-1 hover:text-blue-400"
@@ -133,12 +165,15 @@ const Favoris = () => {
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative flex items-center gap-2">
+                    <Button 
+                      variant="ghost" 
+                      className="relative flex items-center gap-2 border border-gray-700 hover:border-gray-600 rounded-lg px-4 py-2"
+                    >
                       <User className="w-4 h-4" />
                       <span className="hidden md:inline">{user.email}</span>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuContent align="end" className="w-56 border border-gray-700">
                     <DropdownMenuItem onClick={handleSignOut} className="text-red-500">
                       <LogOut className="w-4 h-4 mr-2" />
                       Déconnexion
@@ -163,66 +198,120 @@ const Favoris = () => {
         <div className="flex flex-col space-y-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <h2 className="text-2xl font-bold">Mes Favoris</h2>
+              <h2 className="text-2xl font-bold">Offres Logistiques Liège</h2>
               <span className="px-3 py-1 bg-blue-600 rounded-full text-sm">
-                {favorites.length} offres
+                {totalRecords} postes
               </span>
+            </div>
+            <div className="flex gap-4">
+              <Button
+                onClick={handleScrape}
+                disabled={isScrapingLoading}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                {isScrapingLoading ? (
+                  <>
+                    <Loader2 className="animate-spin" />
+                    Recherche en cours...
+                  </>
+                ) : (
+                  '+ Générer'
+                )}
+              </Button>
+
+              <Button
+                onClick={handleDelete}
+                disabled={isDeletingLoading}
+                variant="destructive"
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {isDeletingLoading ? (
+                  <>
+                    <Loader2 className="animate-spin" />
+                    Suppression en cours...
+                  </>
+                ) : (
+                  'Supprimer'
+                )}
+              </Button>
             </div>
           </div>
 
-          {isLoading ? (
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-            </div>
-          ) : favorites.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-400">Aucune offre dans vos favoris</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {favorites.map((favorite) => (
-                <div
-                  key={favorite.id}
-                  className="bg-[#2a2f3d] rounded-lg p-6 space-y-4 relative group"
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="text-lg font-semibold">{favorite.title}</h3>
-                      <p className="text-gray-400">{favorite.company}</p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-gray-400 hover:text-red-500"
-                      onClick={() => handleRemoveFavorite(favorite.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-sm text-gray-300">{favorite.location}</p>
-                    <div className="flex items-center gap-2">
-                      {favorite.agency && AGENCY_LOGOS[favorite.agency] && (
-                        <img
-                          src={AGENCY_LOGOS[favorite.agency]}
-                          alt={favorite.agency}
-                          className="h-6 object-contain"
-                        />
-                      )}
-                    </div>
-                  </div>
-                  <a
-                    href={favorite.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="absolute inset-0"
-                  >
-                    <span className="sr-only">Voir l'offre</span>
-                  </a>
+          <div className="space-y-4">
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder="Rechercher un poste..."
+                    className="w-full bg-[#2a2f3d] border-gray-700 focus:border-blue-500"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
                 </div>
-              ))}
+              </div>
+              <Select
+                value={sortOrder}
+                onValueChange={(value: 'asc' | 'desc') => setSortOrder(value)}
+              >
+                <SelectTrigger className="w-[200px] bg-[#2a2f3d] border-gray-700">
+                  <SelectValue placeholder="Trier par titre" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="asc">A-Z</SelectItem>
+                  <SelectItem value="desc">Z-A</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          )}
+
+            <div className="bg-[#2a2f3d] p-4 rounded-lg space-y-4">
+              <h3 className="text-lg font-medium">Mots à exclure des résultats</h3>
+              <div className="flex items-center gap-2">
+                <Input
+                  value={newWord}
+                  onChange={(e) => setNewWord(e.target.value)}
+                  placeholder="Ajouter un mot à exclure"
+                  className="bg-[#1a1f2e] border-gray-700 text-white"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleAddWord();
+                    }
+                  }}
+                />
+                <Button 
+                  onClick={handleAddWord} 
+                  className="bg-blue-600 hover:bg-blue-700"
+                  size="icon"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {excludedWords.map((word) => (
+                  <div
+                    key={word}
+                    className="flex items-center gap-1 bg-[#1a1f2e] px-3 py-1 rounded-full"
+                  >
+                    <span>{word}</span>
+                    <button
+                      onClick={() => handleRemoveWord(word)}
+                      className="text-gray-400 hover:text-red-500 ml-1"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <AirtableTable 
+            onTotalRecords={setTotalRecords} 
+            key={refreshKey} 
+            sortOrder={sortOrder}
+            searchQuery={searchQuery}
+            excludedWords={excludedWords}
+          />
         </div>
       </main>
     </div>
