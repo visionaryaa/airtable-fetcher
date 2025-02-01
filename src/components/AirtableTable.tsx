@@ -128,24 +128,24 @@ const AirtableTable = ({ onTotalRecords, sortOrder }: AirtableTableProps) => {
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg">
+    <div className="overflow-x-auto rounded-lg px-6">
       <table className="w-full border-collapse min-w-[800px]">
         <thead>
-          <tr className="bg-[#2a2f3d] text-gray-300">
-            <th className="p-4 text-left font-medium">SOURCE</th>
-            <th className="p-4 text-left font-medium">POSTE</th>
-            <th className="p-4 text-left font-medium">LIEN</th>
-            <th className="p-4 text-left font-medium">LOCALISATION</th>
-            <th className="p-4 text-left font-medium">FAVORIS</th>
+          <tr className="bg-[#1E2433] text-gray-300">
+            <th className="p-6 text-left font-medium">SOURCE</th>
+            <th className="p-6 text-left font-medium">POSTE</th>
+            <th className="p-6 text-left font-medium">LIEN</th>
+            <th className="p-6 text-left font-medium">LOCALISATION</th>
+            <th className="p-6 text-left font-medium">FAVORIS</th>
           </tr>
         </thead>
         <tbody>
           {sortedRecords.map((record) => (
             <tr
               key={record.id}
-              className="border-b border-gray-800 hover:bg-[#2a2f3d] transition-colors"
+              className="border-b border-[#2A3041] hover:bg-[#1E2433] transition-colors"
             >
-              <td className="p-4">
+              <td className="p-6">
                 {record.fields.lien && (
                   <img
                     src={getLogoForUrl(record.fields.lien)}
@@ -154,8 +154,8 @@ const AirtableTable = ({ onTotalRecords, sortOrder }: AirtableTableProps) => {
                   />
                 )}
               </td>
-              <td className="p-4 font-medium text-white">{record.fields.Poste}</td>
-              <td className="p-4">
+              <td className="p-6 font-medium text-white">{record.fields.Poste}</td>
+              <td className="p-6">
                 <a 
                   href={record.fields.lien} 
                   target="_blank" 
@@ -170,8 +170,8 @@ const AirtableTable = ({ onTotalRecords, sortOrder }: AirtableTableProps) => {
                   </Button>
                 </a>
               </td>
-              <td className="p-4 text-gray-300">{record.fields.Localisation}</td>
-              <td className="p-4">
+              <td className="p-6 text-gray-300">{record.fields.Localisation}</td>
+              <td className="p-6">
                 <Button variant="ghost" size="sm" className="hover:text-red-500">
                   <Heart className="w-5 h-5" />
                 </Button>
