@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { Suspense } from "react";
 import Home from "@/pages/Home";
 import Auth from "@/pages/Auth";
@@ -13,7 +13,7 @@ const AppRoutes = () => {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-1">
         <Suspense fallback={<div>Loading...</div>}>
