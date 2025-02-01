@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import AirtableTable from "@/components/AirtableTable";
 import { Button } from "@/components/ui/button";
-import { Loader2, Sun, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/components/AuthProvider";
 import {
   Select,
   SelectContent,
@@ -11,7 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Loader2, Sun, Plus, Heart, LogOut } from "lucide-react";
 import { X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const [totalRecords, setTotalRecords] = useState(0);
@@ -23,18 +26,18 @@ const Index = () => {
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
   const [newWord, setNewWord] = useState("");
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleAddWord = () => {
     if (newWord && !excludedWords.includes(newWord)) {
       setExcludedWords(prev => [...prev, newWord]);
       setNewWord("");
-      // No need to manually trigger a refresh as AirtableTable will react to excludedWords changes
     }
   };
 
   const handleRemoveWord = (wordToRemove: string) => {
     setExcludedWords(excludedWords.filter(word => word !== wordToRemove));
-    // No need to manually trigger a refresh as AirtableTable will react to excludedWords changes
   };
 
   const periodicRefresh = () => {
@@ -106,6 +109,26 @@ const Index = () => {
     }
   };
 
+  const handleAuthClick = () => {
+    navigate('/auth');
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      toast({
+        title: "Déconnexion réussie",
+        description: "Vous avez été déconnecté avec succès.",
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la déconnexion.",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#1a1f2e] text-white">
       {/* Header */}
@@ -124,9 +147,24 @@ const Index = () => {
               <button className="p-2 rounded-full hover:bg-gray-700">
                 <Sun className="w-5 h-5" />
               </button>
-              <Button variant="default" className="bg-blue-600 hover:bg-blue-700">
-                Connexion
-              </Button>
+              {user ? (
+                <Button 
+                  variant="default" 
+                  className="bg-red-600 hover:bg-red-700"
+                  onClick={handleSignOut}
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Déconnexion
+                </Button>
+              ) : (
+                <Button 
+                  variant="default" 
+                  className="bg-blue-600 hover:bg-blue-700"
+                  onClick={handleAuthClick}
+                >
+                  Connexion
+                </Button>
+              )}
             </nav>
           </div>
         </div>
