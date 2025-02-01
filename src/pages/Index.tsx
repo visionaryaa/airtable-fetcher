@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import AirtableTable from "@/components/AirtableTable";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -19,7 +19,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Loader2, Sun, Plus, Heart, LogOut, User, Home } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Loader2, Sun, Plus, Heart, LogOut, User, Home, Menu } from "lucide-react";
 import { X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -147,20 +148,22 @@ const Index = () => {
               </svg>
               <h1 className="text-xl font-semibold">Intérim centrale</h1>
             </div>
-            <nav className="flex items-center gap-6">
-              <a href="/" className="flex items-center gap-1 hover:text-blue-400">
+            
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center gap-6">
+              <Link to="/" className="flex items-center gap-1 hover:text-blue-400">
                 <Home className="w-4 h-4" />
                 Accueil
-              </a>
-              <a href="/jobs" className="hover:text-blue-400">Offres</a>
+              </Link>
+              <Link to="/jobs" className="hover:text-blue-400">Offres</Link>
               {user && (
-                <a 
-                  href="/favoris" 
+                <Link 
+                  to="/favoris" 
                   className="flex items-center gap-1 hover:text-blue-400"
                 >
                   <Heart className="w-4 h-4" />
                   Favoris
-                </a>
+                </Link>
               )}
               <ThemeToggle />
               {user ? (
@@ -191,6 +194,54 @@ const Index = () => {
                 </Button>
               )}
             </nav>
+
+            {/* Mobile Navigation */}
+            <div className="flex items-center gap-4 md:hidden">
+              <ThemeToggle />
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Menu className="h-5 w-5" />
+                    <span className="sr-only">Toggle menu</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left">
+                  <nav className="flex flex-col space-y-4">
+                    <Link to="/" className="flex items-center gap-2 text-foreground/60 hover:text-foreground">
+                      <Home className="w-4 h-4" />
+                      Accueil
+                    </Link>
+                    <Link to="/jobs" className="text-foreground/60 hover:text-foreground">
+                      Offres
+                    </Link>
+                    {user && (
+                      <Link to="/favoris" className="flex items-center gap-2 text-foreground/60 hover:text-foreground">
+                        <Heart className="w-4 h-4" />
+                        Favoris
+                      </Link>
+                    )}
+                    {user ? (
+                      <Button 
+                        variant="ghost" 
+                        onClick={handleSignOut}
+                        className="justify-start px-2 text-red-500"
+                      >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Déconnexion
+                      </Button>
+                    ) : (
+                      <Button 
+                        variant="default" 
+                        onClick={handleAuthClick}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        Connexion
+                      </Button>
+                    )}
+                  </nav>
+                </SheetContent>
+              </Sheet>
+            </div>
           </div>
         </div>
       </header>
