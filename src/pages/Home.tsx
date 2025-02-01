@@ -45,7 +45,6 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       <Navbar />
-      
       <main className="flex-grow">
         <div className="container mx-auto px-4 py-20">
           <div className="max-w-6xl mx-auto space-y-12">
