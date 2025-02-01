@@ -84,7 +84,7 @@ const Home = () => {
           </div>
 
           <div className="mt-16">
-            <h3 className="text-xl font-semibold mb-8">Nos agences partenaires</h3>
+            <h3 className="text-xl font-semibold mb-8">Agences d'intérim à Liège</h3>
             {isMobile ? (
               <div className="grid grid-cols-2 gap-2">
                 {agencies.map((agency, index) => (
