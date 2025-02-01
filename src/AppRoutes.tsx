@@ -15,15 +15,17 @@ const AppRoutes = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
-      <Suspense fallback={<div>Loading...</div>}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/jobs" element={<Index />} />
-          {user && <Route path="/favoris" element={<Favoris />} />}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Suspense>
+      <main className="flex-1">
+        <Suspense fallback={<div>Loading...</div>}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/jobs" element={<Index />} />
+            {user && <Route path="/favoris" element={<Favoris />} />}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </main>
       <Footer />
     </div>
   );
