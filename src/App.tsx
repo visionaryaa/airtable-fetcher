@@ -9,7 +9,7 @@ const queryClient = new QueryClient();
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="system" storageKey="app-theme">
+    <ThemeProvider defaultTheme="light" storageKey="app-theme">
       <QueryClientProvider client={queryClient}>
         <Router>
           <AuthProvider>
