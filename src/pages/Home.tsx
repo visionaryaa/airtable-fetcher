@@ -2,8 +2,6 @@ import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carouse
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import Autoplay from "embla-carousel-autoplay";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const Home = () => {
@@ -43,9 +41,8 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <Navbar />
-      <main className="flex-grow">
+    <div className="min-h-screen bg-background text-foreground">
+      <main>
         <div className="container mx-auto px-4 py-20">
           <div className="max-w-6xl mx-auto space-y-12">
             <p className="text-4xl font-bold text-center">
@@ -135,8 +132,6 @@ const Home = () => {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 };
