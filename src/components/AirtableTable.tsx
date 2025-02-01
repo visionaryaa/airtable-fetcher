@@ -7,9 +7,10 @@ import { Loader2, Heart } from "lucide-react";
 
 interface AirtableTableProps {
   onTotalRecords?: (total: number) => void;
+  sortOrder?: 'asc' | 'desc';
 }
 
-const AirtableTable = ({ onTotalRecords }: AirtableTableProps) => {
+const AirtableTable = ({ onTotalRecords, sortOrder }: AirtableTableProps) => {
   const [currentOffset, setCurrentOffset] = useState<string | undefined>();
   const [previousOffsets, setPreviousOffsets] = useState<string[]>([]);
   const [allRecords, setAllRecords] = useState<any[]>([]);
@@ -53,6 +54,16 @@ const AirtableTable = ({ onTotalRecords }: AirtableTableProps) => {
     }
   }, [allRecords.length, onTotalRecords]);
 
+  // Sort records based on sortOrder
+  const sortedRecords = [...allRecords].sort((a, b) => {
+    if (!sortOrder) return 0;
+    const titleA = a.fields.Poste?.toLowerCase() || '';
+    const titleB = b.fields.Poste?.toLowerCase() || '';
+    return sortOrder === 'asc' 
+      ? titleA.localeCompare(titleB)
+      : titleB.localeCompare(titleA);
+  });
+
   if (isLoading && !allRecords.length) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
@@ -86,7 +97,7 @@ const AirtableTable = ({ onTotalRecords }: AirtableTableProps) => {
           </tr>
         </thead>
         <tbody>
-          {allRecords.map((record) => (
+          {sortedRecords.map((record) => (
             <tr
               key={record.id}
               className="border-b border-gray-800 hover:bg-[#2a2f3d] transition-colors"

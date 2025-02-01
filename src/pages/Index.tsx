@@ -17,9 +17,9 @@ const Index = () => {
   const [isScrapingLoading, setIsScrapingLoading] = useState(false);
   const [isDeletingLoading, setIsDeletingLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | undefined>();
   const { toast } = useToast();
 
-  // Function to handle periodic refresh
   const periodicRefresh = () => {
     let count = 0;
     const interval = setInterval(() => {
@@ -170,7 +170,10 @@ const Index = () => {
                 />
               </div>
             </div>
-            <Select>
+            <Select
+              value={sortOrder}
+              onValueChange={(value: 'asc' | 'desc') => setSortOrder(value)}
+            >
               <SelectTrigger className="w-[200px] bg-[#2a2f3d] border-gray-700">
                 <SelectValue placeholder="Trier par titre" />
               </SelectTrigger>
@@ -185,7 +188,7 @@ const Index = () => {
             </Button>
           </div>
 
-          <AirtableTable onTotalRecords={setTotalRecords} key={refreshKey} />
+          <AirtableTable onTotalRecords={setTotalRecords} key={refreshKey} sortOrder={sortOrder} />
         </div>
       </main>
     </div>
