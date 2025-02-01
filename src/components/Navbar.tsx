@@ -1,11 +1,27 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Logo from "./Logo";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+import { LogIn, LogOut, Menu, User } from "lucide-react";
+import { useAuth } from "./AuthProvider";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Navbar = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
@@ -19,9 +35,11 @@ const Navbar = () => {
             <Button variant="ghost" asChild>
               <Link to="/jobs">Offres d'emploi</Link>
             </Button>
-            <Button variant="ghost" asChild>
-              <Link to="/favoris">Favoris</Link>
-            </Button>
+            {user && (
+              <Button variant="ghost" asChild>
+                <Link to="/favoris">Favoris</Link>
+              </Button>
+            )}
           </nav>
 
           {/* Mobile Navigation */}
@@ -37,14 +55,45 @@ const Navbar = () => {
                 <Link to="/jobs" className="text-foreground/60 hover:text-foreground">
                   Offres d'emploi
                 </Link>
-                <Link to="/favoris" className="text-foreground/60 hover:text-foreground">
-                  Favoris
-                </Link>
+                {user && (
+                  <Link to="/favoris" className="text-foreground/60 hover:text-foreground">
+                    Favoris
+                  </Link>
+                )}
               </nav>
             </SheetContent>
           </Sheet>
 
-          <ThemeToggle />
+          {/* Account Section */}
+          <div className="flex items-center space-x-2">
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <User className="h-5 w-5" />
+                    <span className="sr-only">Account menu</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem className="text-muted-foreground">
+                    {user.email}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Déconnexion</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="ghost" size="icon" asChild>
+                <Link to="/auth">
+                  <LogIn className="h-5 w-5" />
+                  <span className="sr-only">Login</span>
+                </Link>
+              </Button>
+            )}
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </header>
