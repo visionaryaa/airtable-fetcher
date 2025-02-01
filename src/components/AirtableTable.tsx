@@ -30,18 +30,15 @@ const AirtableTable = ({ onTotalRecords }: AirtableTableProps) => {
   });
 
   useEffect(() => {
-    console.log("Data received:", data); // Debug log
+    console.log("Data received:", data);
     if (data?.records) {
-      console.log("Records found:", data.records.length); // Debug log
-      // Append new records to our accumulated list
+      console.log("Records found:", data.records.length);
       if (currentOffset) {
         setAllRecords(prev => [...prev, ...data.records]);
       } else {
-        // If no offset (first page), reset the records
         setAllRecords(data.records);
       }
 
-      // If there's more data to fetch, automatically get the next page
       if (data.offset) {
         setPreviousOffsets((prev) => [...prev, currentOffset || ""]);
         setCurrentOffset(data.offset);
@@ -49,9 +46,8 @@ const AirtableTable = ({ onTotalRecords }: AirtableTableProps) => {
     }
   }, [data?.records, currentOffset, data?.offset]);
 
-  // Notify parent component about total records when allRecords changes
   useEffect(() => {
-    console.log("All records:", allRecords.length); // Debug log
+    console.log("All records:", allRecords.length);
     if (onTotalRecords) {
       onTotalRecords(allRecords.length);
     }
@@ -104,10 +100,10 @@ const AirtableTable = ({ onTotalRecords }: AirtableTableProps) => {
                   />
                 )}
               </td>
-              <td className="p-4 font-medium text-white">{record.fields.title}</td>
+              <td className="p-4 font-medium text-white">{record.fields.Poste}</td>
               <td className="p-4">
                 <a 
-                  href={record.fields.url} 
+                  href={record.fields.lien} 
                   target="_blank" 
                   rel="noopener noreferrer"
                 >
@@ -120,7 +116,7 @@ const AirtableTable = ({ onTotalRecords }: AirtableTableProps) => {
                   </Button>
                 </a>
               </td>
-              <td className="p-4 text-gray-300">{record.fields.location}</td>
+              <td className="p-4 text-gray-300">{record.fields.Localisation}</td>
               <td className="p-4">
                 <Button variant="ghost" size="sm" className="hover:text-red-500">
                   <Heart className="w-5 h-5" />
