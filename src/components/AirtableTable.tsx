@@ -87,14 +87,9 @@ const AirtableTable = ({ onTotalRecords, sortOrder }: AirtableTableProps) => {
       // If there's more data to fetch, automatically get the next page
       if (data.offset) {
         setPreviousOffsets(prev => [...prev, currentOffset || ""]);
-        const timer = setTimeout(() => {
-          setCurrentOffset(data.offset);
-          setIsLoadingMore(true);
-        }, 1000);
-        return () => clearTimeout(timer);
+        setCurrentOffset(data.offset);
       } else {
         setIsLoadingMore(false);
-        setCurrentOffset(undefined);
       }
     }
   }, [data]);
