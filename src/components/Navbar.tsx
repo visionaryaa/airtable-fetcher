@@ -44,7 +44,7 @@ const Navbar = () => {
             <svg className="w-8 h-8 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
               <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
             </svg>
-            <h1 className="text-xl font-semibold">JobScraper Pro</h1>
+            <h1 className="text-xl font-semibold">Intérim centrale</h1>
           </div>
           <nav className="flex items-center gap-6">
             <a href="/" className="flex items-center gap-1 hover:text-blue-400">

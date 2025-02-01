@@ -4,7 +4,7 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">
-            <h3 className="text-xl font-semibold text-white mb-2">JobScraper Pro</h3>
+            <h3 className="text-xl font-semibold text-white mb-2">Intérim centrale</h3>
             <p className="text-gray-400">
               Votre plateforme centralisée pour les offres d'emploi en logistique à Liège
             </p>
@@ -16,7 +16,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
-          <p>&copy; {new Date().getFullYear()} JobScraper Pro. Tous droits réservés.</p>
+          <p>&copy; {new Date().getFullYear()} Intérim centrale. Tous droits réservés.</p>
         </div>
       </div>
     </footer>
