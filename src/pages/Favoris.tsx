@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/components/AuthProvider";
-import Navbar from "@/components/Navbar";
 import {
   Select,
   SelectContent,
@@ -110,7 +109,6 @@ const Favoris = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Navbar />
       <main className="container mx-auto py-8 px-4">
         <div className="flex flex-col space-y-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
