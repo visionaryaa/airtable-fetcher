@@ -5,7 +5,11 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
 
-const AirtableTable = () => {
+interface AirtableTableProps {
+  onTotalRecords?: (total: number) => void;
+}
+
+const AirtableTable = ({ onTotalRecords }: AirtableTableProps) => {
   const [currentOffset, setCurrentOffset] = useState<string | undefined>();
   const [previousOffsets, setPreviousOffsets] = useState<string[]>([]);
   const { toast } = useToast();
@@ -13,14 +17,21 @@ const AirtableTable = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["airtable", currentOffset],
     queryFn: () => fetchAirtableRecords(currentOffset),
-    onError: (error) => {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to fetch data from Airtable",
-      });
-    },
+    meta: {
+      onError: () => {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to fetch data from Airtable",
+        });
+      }
+    }
   });
+
+  // Notify parent component about total records when data changes
+  if (data?.records && onTotalRecords) {
+    onTotalRecords(data.records.length);
+  }
 
   const handleNextPage = () => {
     if (data?.offset) {
