@@ -244,9 +244,9 @@ const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords =
   return (
     <>
       <div className="overflow-x-auto rounded-lg px-6">
-        <table className="w-full border-collapse min-w-[800px] bg-[#1a1f2e]">
+        <table className="w-full border-collapse min-w-[800px] bg-background">
           <thead>
-            <tr className="bg-[#1E2433] text-gray-300">
+            <tr className="bg-secondary text-foreground">
               <th className="p-6 text-left font-medium">SOURCE</th>
               <th className="p-6 text-left font-medium">POSTE</th>
               <th className="p-6 text-left font-medium">LIEN</th>
@@ -258,7 +258,7 @@ const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords =
             {filteredRecords.map((record) => (
               <tr
                 key={record.id}
-                className="border-b border-[#2A3041] hover:bg-[#1E2433] transition-colors bg-[#232838]"
+                className="border-b border-border hover:bg-secondary/50 transition-colors"
               >
                 <td className="p-6">
                   {record.fields.lien && (
@@ -269,7 +269,7 @@ const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords =
                     />
                   )}
                 </td>
-                <td className="p-6 font-medium text-white">{record.fields.Poste}</td>
+                <td className="p-6 font-medium text-foreground">{record.fields.Poste}</td>
                 <td className="p-6">
                   <a 
                     href={record.fields.lien} 
@@ -285,7 +285,7 @@ const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords =
                     </Button>
                   </a>
                 </td>
-                <td className="p-6 text-gray-300">{record.fields.Localisation}</td>
+                <td className="p-6 text-muted-foreground">{record.fields.Localisation}</td>
                 <td className="p-6">
                   <Button 
                     variant="ghost" 

@@ -137,14 +137,14 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-gray-800">
+      <header className="border-b border-border">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <svg className="w-8 h-8 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
               </svg>
-              <h1 className="text-xl font-semibold">JobScraper Pro</h1>
+              <h1 className="text-xl font-semibold">Intérim centrale</h1>
             </div>
             <nav className="flex items-center gap-6">
               <a href="/" className="flex items-center gap-1 hover:text-blue-400">
@@ -161,21 +161,19 @@ const Index = () => {
                   Favoris
                 </a>
               )}
-              <button className="p-2 rounded-full hover:bg-gray-700">
-                <Sun className="w-5 h-5" />
-              </button>
+              <ThemeToggle />
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button 
                       variant="ghost" 
-                      className="relative flex items-center gap-2 border border-gray-700 hover:border-gray-600 rounded-lg px-4 py-2"
+                      className="relative flex items-center gap-2 border border-border hover:bg-secondary rounded-lg px-4 py-2"
                     >
                       <User className="w-4 h-4" />
                       <span className="hidden md:inline">{user.email}</span>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 border border-gray-700">
+                  <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuItem onClick={handleSignOut} className="text-red-500">
                       <LogOut className="w-4 h-4 mr-2" />
                       Déconnexion
