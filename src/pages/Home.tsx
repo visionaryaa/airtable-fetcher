@@ -55,7 +55,7 @@ const Home = () => {
             </p>
             
             <div className="grid md:grid-cols-2 gap-8">
-              <div className="bg-card p-8 rounded-xl shadow-2xl">
+              <div className="bg-card dark:bg-[#1A1F2C]/80 backdrop-blur-sm p-8 rounded-xl shadow-lg dark:shadow-[#403E43]/20">
                 <h2 className="text-2xl font-semibold mb-4">
                   Plus de 10 agences intérim en un seul endroit
                 </h2>
@@ -71,7 +71,7 @@ const Home = () => {
                 </Button>
               </div>
 
-              <div className="bg-card p-8 rounded-xl shadow-2xl">
+              <div className="bg-card dark:bg-[#1A1F2C]/80 backdrop-blur-sm p-8 rounded-xl shadow-lg dark:shadow-[#403E43]/20">
                 <img
                   src="https://www.sapir.ac.il/sites/default/files/styles/box_image/public/2023-11/iStock-1437820717%20copy.jpg?itok=x-7jMRvt"
                   alt="Happy woman at job interview"
@@ -95,7 +95,7 @@ const Home = () => {
                 {agencies.map((agency, index) => (
                   <CarouselItem key={index} className="basis-1/4 md:basis-1/5">
                     <div className="p-2">
-                      <div className="bg-card rounded-lg p-4 h-24 flex items-center justify-center">
+                      <div className="bg-card dark:bg-[#1A1F2C]/80 backdrop-blur-sm rounded-lg p-4 h-24 flex items-center justify-center shadow-lg dark:shadow-[#403E43]/20">
                         <img
                           src={agency.logo}
                           alt={`${agency.name} logo`}
