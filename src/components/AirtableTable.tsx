@@ -77,15 +77,22 @@ const AirtableTable = ({ onTotalRecords, sortOrder }: AirtableTableProps) => {
     console.log("Data received:", data);
     if (data?.records) {
       console.log("Records found:", data.records.length);
-      if (currentOffset) {
-        setAllRecords(prev => [...prev, ...data.records]);
-      } else {
+      
+      // If there's no offset, this is the initial load - replace all records
+      if (!currentOffset) {
         setAllRecords(data.records);
+      } else {
+        // If there is an offset, append the new records
+        setAllRecords(prev => [...prev, ...data.records]);
       }
 
+      // Handle pagination
       if (data.offset) {
-        setPreviousOffsets((prev) => [...prev, currentOffset || ""]);
+        setPreviousOffsets(prev => [...prev, currentOffset || ""]);
         setCurrentOffset(data.offset);
+      } else {
+        // No more records to fetch
+        setCurrentOffset(undefined);
       }
     }
   }, [data?.records, currentOffset, data?.offset]);
