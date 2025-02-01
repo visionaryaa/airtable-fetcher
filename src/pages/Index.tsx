@@ -136,7 +136,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#1a1f2e] text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-gray-800">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -152,13 +152,15 @@ const Index = () => {
                 Accueil
               </a>
               <a href="/jobs" className="hover:text-blue-400">Offres</a>
-              <a 
-                href="/favoris" 
-                className="flex items-center gap-1 hover:text-blue-400"
-              >
-                <Heart className="w-4 h-4" />
-                Favoris
-              </a>
+              {user && (
+                <a 
+                  href="/favoris" 
+                  className="flex items-center gap-1 hover:text-blue-400"
+                >
+                  <Heart className="w-4 h-4" />
+                  Favoris
+                </a>
+              )}
               <button className="p-2 rounded-full hover:bg-gray-700">
                 <Sun className="w-5 h-5" />
               </button>
