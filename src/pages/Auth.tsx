@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import Navbar from "@/components/Navbar";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -79,7 +78,6 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
       <div className="container mx-auto px-4 py-8 flex items-center justify-center">
         <div className="bg-card p-8 rounded-lg shadow-lg w-full max-w-md">
           <h2 className="text-2xl font-bold mb-6 text-center">
