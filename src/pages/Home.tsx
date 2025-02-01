@@ -2,6 +2,8 @@ import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carouse
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import Autoplay from "embla-carousel-autoplay";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -21,62 +23,72 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#1a1f2e] text-white">
-      <div className="container mx-auto px-4 py-20">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
-          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-            JobScraper Pro
-          </h1>
-          
-          <p className="text-xl text-gray-300 mb-8">
-            Votre plateforme centralisée pour trouver les meilleures offres d'emploi en logistique à Liège
-          </p>
-          
-          <div className="bg-[#2a2f3d] p-8 rounded-xl shadow-2xl mb-12">
-            <h2 className="text-2xl font-semibold mb-4">
-              Plus de 10 agences intérim en un seul endroit
-            </h2>
-            <p className="text-gray-300 mb-6">
-              Nous rassemblons automatiquement toutes les offres d'emploi en logistique de la région liégeoise 
-              provenant des meilleures agences intérim. Plus besoin de visiter des dizaines de sites différents !
+    <div className="min-h-screen bg-[#1a1f2e] text-white flex flex-col">
+      <Navbar />
+      
+      <main className="flex-grow">
+        <div className="container mx-auto px-4 py-20">
+          <div className="max-w-4xl mx-auto text-center space-y-8">
+            <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+              JobScraper Pro
+            </h1>
+            
+            <p className="text-xl text-gray-300 mb-8">
+              Votre plateforme centralisée pour trouver les meilleures offres d'emploi en logistique à Liège
             </p>
-            <Button 
-              onClick={() => navigate('/jobs')} 
-              className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4"
-            >
-              Voir les offres
-            </Button>
-          </div>
+            
+            <div className="bg-[#2a2f3d] p-8 rounded-xl shadow-2xl mb-12">
+              <h2 className="text-2xl font-semibold mb-4">
+                Plus de 10 agences intérim en un seul endroit
+              </h2>
+              <p className="text-gray-300 mb-6">
+                Nous rassemblons automatiquement toutes les offres d'emploi en logistique de la région liégeoise 
+                provenant des meilleures agences intérim. Plus besoin de visiter des dizaines de sites différents !
+              </p>
+              <Button 
+                onClick={() => navigate('/jobs')} 
+                className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4"
+              >
+                Voir les offres
+              </Button>
+            </div>
 
-          <div className="mt-16">
-            <h3 className="text-xl font-semibold mb-8">Nos agences partenaires</h3>
-            <Carousel 
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              plugins={[plugin]}
-              className="w-full"
-            >
-              <CarouselContent>
-                {agencies.map((agency, index) => (
-                  <CarouselItem key={index} className="basis-1/4 md:basis-1/5">
-                    <div className="p-2">
-                      <div className="bg-white rounded-lg p-4 h-24 flex items-center justify-center">
-                        <img
-                          src={agency.logo}
-                          alt={`${agency.name} logo`}
-                          className="max-h-16 w-auto object-contain"
-                        />
+            <div className="mt-16">
+              <h3 className="text-xl font-semibold mb-8">Nos agences partenaires</h3>
+              <Carousel 
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+                plugins={[plugin]}
+                className="w-full"
+              >
+                <CarouselContent>
+                  {agencies.map((agency, index) => (
+                    <CarouselItem key={index} className="basis-1/4 md:basis-1/5">
+                      <div className="p-2">
+                        <div className="bg-white rounded-lg p-4 h-24 flex items-center justify-center">
+                          <img
+                            src={agency.logo}
+                            alt={`${agency.name} logo`}
+                            className="max-h-16 w-auto object-contain"
+                            onError={(e) => {
+                              const img = e.target as HTMLImageElement;
+                              img.src = '/placeholder.svg';
+                            }}
+                          />
+                        </div>
                       </div>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
+            </div>
           </div>
         </div>
-      </div>
+      </main>
+
+      <Footer />
     </div>
   );
 };
