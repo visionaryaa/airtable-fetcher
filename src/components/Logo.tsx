@@ -3,8 +3,8 @@ const Logo = () => {
     <svg width="200" height="48" viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg" className="fill-current">
       <defs>
         <linearGradient id="gradBlue" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" style="stop-color:#0073e6; stop-opacity:1" />
-          <stop offset="100%" style="stop-color:#00c6ff; stop-opacity:1" />
+          <stop offset="0%" style={{ stopColor: "#0073e6", stopOpacity: 1 }} />
+          <stop offset="100%" style={{ stopColor: "#00c6ff", stopOpacity: 1 }} />
         </linearGradient>
       </defs>
       
