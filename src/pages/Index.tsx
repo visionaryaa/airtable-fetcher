@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AirtableTable from "@/components/AirtableTable";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/components/AuthProvider";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import Navbar from "@/components/Navbar";
 import {
   Select,
   SelectContent,
@@ -13,16 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Loader2, Sun, Plus, Heart, LogOut, User, Home, Menu } from "lucide-react";
-import { X } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { Loader2, Plus, X } from "lucide-react";
 
 const Index = () => {
   const [totalRecords, setTotalRecords] = useState(0);
@@ -117,135 +108,9 @@ const Index = () => {
     }
   };
 
-  const handleAuthClick = () => {
-    navigate('/auth');
-  };
-
-  const handleSignOut = async () => {
-    try {
-      await supabase.auth.signOut();
-      toast({
-        title: "Déconnexion réussie",
-        description: "Vous avez été déconnecté avec succès.",
-      });
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Une erreur est survenue lors de la déconnexion.",
-      });
-    }
-  };
-
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <svg className="w-8 h-8 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
-              </svg>
-              <h1 className="text-xl font-semibold">Intérim centrale</h1>
-            </div>
-            
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-6">
-              <Link to="/" className="flex items-center gap-1 hover:text-blue-400">
-                <Home className="w-4 h-4" />
-                Accueil
-              </Link>
-              <Link to="/jobs" className="hover:text-blue-400">Offres</Link>
-              {user && (
-                <Link 
-                  to="/favoris" 
-                  className="flex items-center gap-1 hover:text-blue-400"
-                >
-                  <Heart className="w-4 h-4" />
-                  Favoris
-                </Link>
-              )}
-              <ThemeToggle />
-              {user ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      className="relative flex items-center gap-2 border border-border hover:bg-secondary rounded-lg px-4 py-2"
-                    >
-                      <User className="w-4 h-4" />
-                      <span className="hidden md:inline">{user.email}</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem onClick={handleSignOut} className="text-red-500">
-                      <LogOut className="w-4 h-4 mr-2" />
-                      Déconnexion
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                <Button 
-                  variant="default" 
-                  className="bg-blue-600 hover:bg-blue-700"
-                  onClick={handleAuthClick}
-                >
-                  Connexion
-                </Button>
-              )}
-            </nav>
-
-            {/* Mobile Navigation */}
-            <div className="flex items-center gap-4 md:hidden">
-              <ThemeToggle />
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Menu className="h-5 w-5" />
-                    <span className="sr-only">Toggle menu</span>
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left">
-                  <nav className="flex flex-col space-y-4">
-                    <Link to="/" className="flex items-center gap-2 text-foreground/60 hover:text-foreground">
-                      <Home className="w-4 h-4" />
-                      Accueil
-                    </Link>
-                    <Link to="/jobs" className="text-foreground/60 hover:text-foreground">
-                      Offres
-                    </Link>
-                    {user && (
-                      <Link to="/favoris" className="flex items-center gap-2 text-foreground/60 hover:text-foreground">
-                        <Heart className="w-4 h-4" />
-                        Favoris
-                      </Link>
-                    )}
-                    {user ? (
-                      <Button 
-                        variant="ghost" 
-                        onClick={handleSignOut}
-                        className="justify-start px-2 text-red-500"
-                      >
-                        <LogOut className="w-4 h-4 mr-2" />
-                        Déconnexion
-                      </Button>
-                    ) : (
-                      <Button 
-                        variant="default" 
-                        onClick={handleAuthClick}
-                        className="bg-blue-600 hover:bg-blue-700"
-                      >
-                        Connexion
-                      </Button>
-                    )}
-                  </nav>
-                </SheetContent>
-              </Sheet>
-            </div>
-          </div>
-        </div>
-      </header>
-
+      <Navbar />
       <main className="container mx-auto py-8 px-4">
         <div className="flex flex-col space-y-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
