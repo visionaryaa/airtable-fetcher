@@ -137,7 +137,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-[#1a1f2e] text-white">
-      {/* Header */}
       <header className="border-b border-gray-800">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -162,12 +161,15 @@ const Index = () => {
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative flex items-center gap-2">
+                    <Button 
+                      variant="ghost" 
+                      className="relative flex items-center gap-2 border border-gray-700 hover:border-gray-600 rounded-lg px-4 py-2"
+                    >
                       <User className="w-4 h-4" />
                       <span className="hidden md:inline">{user.email}</span>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuContent align="end" className="w-56 border border-gray-700">
                     <DropdownMenuItem onClick={handleSignOut} className="text-red-500">
                       <LogOut className="w-4 h-4 mr-2" />
                       Déconnexion
