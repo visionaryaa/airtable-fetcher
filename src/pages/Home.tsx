@@ -28,62 +28,72 @@ const Home = () => {
       
       <main className="flex-grow">
         <div className="container mx-auto px-4 py-20">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-              Intérim centrale
-            </h1>
-            
-            <p className="text-xl text-gray-300 mb-8">
-              Votre plateforme centralisée pour trouver les meilleures offres d'emploi en logistique à Liège
-            </p>
-            
-            <div className="bg-[#2a2f3d] p-8 rounded-xl shadow-2xl mb-12">
-              <h2 className="text-2xl font-semibold mb-4">
-                Plus de 10 agences intérim en un seul endroit
-              </h2>
-              <p className="text-gray-300 mb-6">
-                Nous rassemblons automatiquement toutes les offres d'emploi en logistique de la région liégeoise 
-                provenant des meilleures agences intérim. Plus besoin de visiter des dizaines de sites différents !
+          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <div className="text-left space-y-8">
+              <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+                Intérim centrale
+              </h1>
+              
+              <p className="text-2xl text-gray-300 mb-8">
+                Trouvez votre nouveau job bien plus vite grâce à Intérim centrale
               </p>
-              <Button 
-                onClick={() => navigate('/jobs')} 
-                className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4"
-              >
-                Voir les offres
-              </Button>
+              
+              <div className="bg-[#2a2f3d] p-8 rounded-xl shadow-2xl mb-12">
+                <h2 className="text-2xl font-semibold mb-4">
+                  Plus de 10 agences intérim en un seul endroit
+                </h2>
+                <p className="text-gray-300 mb-6">
+                  Nous rassemblons automatiquement toutes les offres d'emploi en logistique de la région liégeoise 
+                  provenant des meilleures agences intérim. Plus besoin de visiter des dizaines de sites différents !
+                </p>
+                <Button 
+                  onClick={() => navigate('/jobs')} 
+                  className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4"
+                >
+                  Voir les offres
+                </Button>
+              </div>
             </div>
 
-            <div className="mt-16">
-              <h3 className="text-xl font-semibold mb-8">Nos agences partenaires</h3>
-              <Carousel 
-                opts={{
-                  align: "start",
-                  loop: true,
-                }}
-                plugins={[plugin]}
-                className="w-full"
-              >
-                <CarouselContent>
-                  {agencies.map((agency, index) => (
-                    <CarouselItem key={index} className="basis-1/4 md:basis-1/5">
-                      <div className="p-2">
-                        <div className="bg-white rounded-lg p-4 h-24 flex items-center justify-center">
-                          <img
-                            src={agency.logo}
-                            alt={`${agency.name} logo`}
-                            className="max-h-16 w-auto object-contain"
-                            onError={(e) => {
-                              const img = e.target as HTMLImageElement;
-                              img.src = '/placeholder.svg';
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-              </Carousel>
+            <div className="hidden md:block">
+              <img
+                src="https://media.istockphoto.com/id/1437820717/photo/happy-female-candidate-on-a-job-interview-in-the-office.jpg"
+                alt="Happy woman at job interview"
+                className="rounded-2xl shadow-2xl w-full h-auto object-cover"
+              />
             </div>
+          </div>
+
+          <div className="mt-16">
+            <h3 className="text-xl font-semibold mb-8">Nos agences partenaires</h3>
+            <Carousel 
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              plugins={[plugin]}
+              className="w-full"
+            >
+              <CarouselContent>
+                {agencies.map((agency, index) => (
+                  <CarouselItem key={index} className="basis-1/4 md:basis-1/5">
+                    <div className="p-2">
+                      <div className="bg-white rounded-lg p-4 h-24 flex items-center justify-center">
+                        <img
+                          src={agency.logo}
+                          alt={`${agency.name} logo`}
+                          className="max-h-16 w-auto object-contain"
+                          onError={(e) => {
+                            const img = e.target as HTMLImageElement;
+                            img.src = '/placeholder.svg';
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
           </div>
         </div>
       </main>
