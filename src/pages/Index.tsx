@@ -245,7 +245,7 @@ const Index = () => {
                   <Input
                     type="text"
                     placeholder="Rechercher un poste..."
-                    className="w-full bg-[#2a2f3d] border-gray-700 focus:border-blue-500"
+                    className="w-full bg-background border-input focus:border-ring"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -255,7 +255,7 @@ const Index = () => {
                 value={sortOrder}
                 onValueChange={(value: 'asc' | 'desc') => setSortOrder(value)}
               >
-                <SelectTrigger className="w-[200px] bg-[#2a2f3d] border-gray-700">
+                <SelectTrigger className="w-[200px] bg-background border-input">
                   <SelectValue placeholder="Trier par titre" />
                 </SelectTrigger>
                 <SelectContent>
@@ -265,14 +265,14 @@ const Index = () => {
               </Select>
             </div>
 
-            <div className="bg-[#2a2f3d] p-4 rounded-lg space-y-4">
+            <div className="bg-card p-4 rounded-lg space-y-4">
               <h3 className="text-lg font-medium">Mots à exclure des résultats</h3>
               <div className="flex items-center gap-2">
                 <Input
                   value={newWord}
                   onChange={(e) => setNewWord(e.target.value)}
                   placeholder="Ajouter un mot à exclure"
-                  className="bg-[#1a1f2e] border-gray-700 text-white"
+                  className="bg-background border-input text-foreground"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       handleAddWord();
@@ -281,7 +281,7 @@ const Index = () => {
                 />
                 <Button 
                   onClick={handleAddWord} 
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-primary hover:bg-primary/90"
                   size="icon"
                 >
                   <Plus className="h-4 w-4" />
@@ -291,12 +291,12 @@ const Index = () => {
                 {excludedWords.map((word) => (
                   <div
                     key={word}
-                    className="flex items-center gap-1 bg-[#1a1f2e] px-3 py-1 rounded-full"
+                    className="flex items-center gap-1 bg-muted px-3 py-1 rounded-full"
                   >
                     <span>{word}</span>
                     <button
                       onClick={() => handleRemoveWord(word)}
-                      className="text-gray-400 hover:text-red-500 ml-1"
+                      className="text-muted-foreground hover:text-destructive ml-1"
                     >
                       <X className="w-4 h-4" />
                     </button>
