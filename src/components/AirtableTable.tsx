@@ -129,7 +129,7 @@ const AirtableTable = ({ onTotalRecords, sortOrder }: AirtableTableProps) => {
 
   return (
     <div className="overflow-x-auto rounded-lg px-6">
-      <table className="w-full border-collapse min-w-[800px]">
+      <table className="w-full border-collapse min-w-[800px] bg-[#1a1f2e]">
         <thead>
           <tr className="bg-[#1E2433] text-gray-300">
             <th className="p-6 text-left font-medium">SOURCE</th>
@@ -143,7 +143,7 @@ const AirtableTable = ({ onTotalRecords, sortOrder }: AirtableTableProps) => {
           {sortedRecords.map((record) => (
             <tr
               key={record.id}
-              className="border-b border-[#2A3041] hover:bg-[#1E2433] transition-colors"
+              className="border-b border-[#2A3041] hover:bg-[#1E2433] transition-colors bg-[#232838]"
             >
               <td className="p-6">
                 {record.fields.lien && (
