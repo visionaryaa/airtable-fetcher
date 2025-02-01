@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Logo from "./Logo";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { LogIn, LogOut, Menu, User } from "lucide-react";
+import { LogIn, LogOut, Menu, User, Home } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -33,6 +33,12 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-2">
             <Button variant="ghost" asChild>
+              <Link to="/">
+                <Home className="h-4 w-4 mr-2" />
+                Accueil
+              </Link>
+            </Button>
+            <Button variant="ghost" asChild>
               <Link to="/jobs">Offres d'emploi</Link>
             </Button>
             {user && (
@@ -52,6 +58,10 @@ const Navbar = () => {
             </SheetTrigger>
             <SheetContent side="left">
               <nav className="flex flex-col space-y-4">
+                <Link to="/" className="text-foreground/60 hover:text-foreground">
+                  <Home className="h-4 w-4 inline-block mr-2" />
+                  Accueil
+                </Link>
                 <Link to="/jobs" className="text-foreground/60 hover:text-foreground">
                   Offres d'emploi
                 </Link>
