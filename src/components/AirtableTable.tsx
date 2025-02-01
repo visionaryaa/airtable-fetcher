@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Heart, Filter } from "lucide-react";
 import FilterDialog from "./FilterDialog";
+import { Input } from "@/components/ui/input";
 
 interface AirtableTableProps {
   onTotalRecords?: (total: number) => void;
@@ -62,6 +63,7 @@ const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery }: AirtableTable
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
+  const [filterText, setFilterText] = useState("");
   const { toast } = useToast();
 
   const { data, isLoading, isError } = useQuery({
@@ -99,7 +101,7 @@ const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery }: AirtableTable
     if (onTotalRecords) {
       onTotalRecords(filteredRecords.length);
     }
-  }, [allRecords.length, onTotalRecords, searchQuery, excludedWords]);
+  }, [allRecords.length, onTotalRecords, searchQuery, excludedWords, filterText]);
 
   const handleFilterConfirm = (words: string[]) => {
     setExcludedWords(words);
@@ -113,13 +115,20 @@ const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery }: AirtableTable
     const poste = record.fields.Poste?.toLowerCase() || '';
     const location = record.fields.Localisation?.toLowerCase() || '';
     const searchTerm = searchQuery?.toLowerCase() || '';
+    const filterTerm = filterText.toLowerCase();
     
     const containsExcludedWord = excludedWords.some(word => 
       poste.includes(word.toLowerCase()) || 
       location.includes(word.toLowerCase())
     );
 
-    return (poste.includes(searchTerm) || location.includes(searchTerm)) && !containsExcludedWord;
+    const matchesFilter = filterTerm === '' || 
+      poste.includes(filterTerm) || 
+      location.includes(filterTerm);
+
+    return (poste.includes(searchTerm) || location.includes(searchTerm)) && 
+           !containsExcludedWord && 
+           matchesFilter;
   }).sort((a, b) => {
     if (!sortOrder) return 0;
     const titleA = a.fields.Poste?.toLowerCase() || '';
@@ -158,6 +167,16 @@ const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery }: AirtableTable
         onConfirm={handleFilterConfirm}
       />
       
+      <div className="mb-4">
+        <Input
+          type="text"
+          placeholder="Filtrer les résultats..."
+          value={filterText}
+          onChange={(e) => setFilterText(e.target.value)}
+          className="w-full bg-[#2a2f3d] border-gray-700"
+        />
+      </div>
+
       <div className="overflow-x-auto rounded-lg px-6">
         <table className="w-full border-collapse min-w-[800px] bg-[#1a1f2e]">
           <thead>
