@@ -38,8 +38,14 @@ const AirtableTable = ({ onTotalRecords }: AirtableTableProps) => {
         // If no offset (first page), reset the records
         setAllRecords(data.records);
       }
+
+      // If there's more data to fetch, automatically get the next page
+      if (data.offset) {
+        setPreviousOffsets((prev) => [...prev, currentOffset || ""]);
+        setCurrentOffset(data.offset);
+      }
     }
-  }, [data?.records, currentOffset]);
+  }, [data?.records, currentOffset, data?.offset]);
 
   // Notify parent component about total records when allRecords changes
   useEffect(() => {
@@ -47,13 +53,6 @@ const AirtableTable = ({ onTotalRecords }: AirtableTableProps) => {
       onTotalRecords(allRecords.length);
     }
   }, [allRecords.length, onTotalRecords]);
-
-  const handleNextPage = () => {
-    if (data?.offset) {
-      setPreviousOffsets((prev) => [...prev, currentOffset || ""]);
-      setCurrentOffset(data.offset);
-    }
-  };
 
   const handlePreviousPage = () => {
     const newPreviousOffsets = [...previousOffsets];
@@ -118,13 +117,6 @@ const AirtableTable = ({ onTotalRecords }: AirtableTableProps) => {
           variant="outline"
         >
           Previous Page
-        </Button>
-        <Button
-          onClick={handleNextPage}
-          disabled={!data?.offset}
-          variant="outline"
-        >
-          Next Page
         </Button>
       </div>
     </div>
