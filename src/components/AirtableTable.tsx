@@ -55,7 +55,6 @@ const getLogoForUrl = (url: string) => {
 
 const AirtableTable = ({ onTotalRecords, sortOrder }: AirtableTableProps) => {
   const [currentOffset, setCurrentOffset] = useState<string | undefined>();
-  const [previousOffsets, setPreviousOffsets] = useState<string[]>([]);
   const [allRecords, setAllRecords] = useState<any[]>([]);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const { toast } = useToast();
@@ -74,41 +73,33 @@ const AirtableTable = ({ onTotalRecords, sortOrder }: AirtableTableProps) => {
     }
   });
 
+  // Handle initial data load and pagination
   useEffect(() => {
     if (data?.records) {
-      console.log("Records found:", data.records.length);
-      
-      // If there's no offset, this is the initial load
       if (!currentOffset) {
+        // Initial load - replace all records
         setAllRecords(data.records);
       } else {
-        // If there is an offset, append the new records
+        // Append new records for pagination
         setAllRecords(prev => [...prev, ...data.records]);
       }
 
-      // If there's more data to load, set the new offset
       if (data.offset) {
-        setCurrentOffset(data.offset);
-        setIsLoadingMore(true);
+        // Schedule next fetch with a delay
+        const timer = setTimeout(() => {
+          setCurrentOffset(data.offset);
+          setIsLoadingMore(true);
+        }, 1000);
+        return () => clearTimeout(timer);
       } else {
         setIsLoadingMore(false);
         setCurrentOffset(undefined);
       }
     }
-  }, [data?.records, currentOffset, data?.offset]);
+  }, [data]);
 
-  // Automatically fetch next batch when there's more data
+  // Update total records count
   useEffect(() => {
-    if (isLoadingMore && data?.offset) {
-      const timer = setTimeout(() => {
-        setCurrentOffset(data.offset);
-      }, 1000); // Add a small delay to prevent rate limiting
-      return () => clearTimeout(timer);
-    }
-  }, [data?.offset, isLoadingMore]);
-
-  useEffect(() => {
-    console.log("All records:", allRecords.length);
     if (onTotalRecords) {
       onTotalRecords(allRecords.length);
     }
