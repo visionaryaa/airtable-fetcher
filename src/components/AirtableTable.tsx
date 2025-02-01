@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { fetchAirtableRecords } from "@/services/airtable";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -12,6 +12,7 @@ interface AirtableTableProps {
 const AirtableTable = ({ onTotalRecords }: AirtableTableProps) => {
   const [currentOffset, setCurrentOffset] = useState<string | undefined>();
   const [previousOffsets, setPreviousOffsets] = useState<string[]>([]);
+  const [allRecords, setAllRecords] = useState<any[]>([]);
   const { toast } = useToast();
 
   const { data, isLoading, isError } = useQuery({
@@ -28,10 +29,24 @@ const AirtableTable = ({ onTotalRecords }: AirtableTableProps) => {
     }
   });
 
-  // Notify parent component about total records when data changes
-  if (data?.records && onTotalRecords) {
-    onTotalRecords(data.records.length);
-  }
+  useEffect(() => {
+    if (data?.records) {
+      // Append new records to our accumulated list
+      if (currentOffset) {
+        setAllRecords(prev => [...prev, ...data.records]);
+      } else {
+        // If no offset (first page), reset the records
+        setAllRecords(data.records);
+      }
+    }
+  }, [data?.records, currentOffset]);
+
+  // Notify parent component about total records when allRecords changes
+  useEffect(() => {
+    if (onTotalRecords) {
+      onTotalRecords(allRecords.length);
+    }
+  }, [allRecords.length, onTotalRecords]);
 
   const handleNextPage = () => {
     if (data?.offset) {
@@ -47,7 +62,7 @@ const AirtableTable = ({ onTotalRecords }: AirtableTableProps) => {
     setCurrentOffset(previousOffset);
   };
 
-  if (isLoading) {
+  if (isLoading && !allRecords.length) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -63,11 +78,11 @@ const AirtableTable = ({ onTotalRecords }: AirtableTableProps) => {
     );
   }
 
-  if (!data?.records.length) {
+  if (!allRecords.length) {
     return <div className="text-center py-8">No records found.</div>;
   }
 
-  const columns = Object.keys(data.records[0].fields);
+  const columns = Object.keys(allRecords[0].fields);
 
   return (
     <div className="overflow-x-auto">
@@ -82,7 +97,7 @@ const AirtableTable = ({ onTotalRecords }: AirtableTableProps) => {
           </tr>
         </thead>
         <tbody>
-          {data.records.map((record) => (
+          {allRecords.map((record) => (
             <tr
               key={record.id}
               className="border-b border-gray-200 hover:bg-gray-50"
@@ -106,7 +121,7 @@ const AirtableTable = ({ onTotalRecords }: AirtableTableProps) => {
         </Button>
         <Button
           onClick={handleNextPage}
-          disabled={!data.offset}
+          disabled={!data?.offset}
           variant="outline"
         >
           Next Page
