@@ -57,7 +57,7 @@ const Home = () => {
 
             <div className="hidden md:block">
               <img
-                src="https://media.istockphoto.com/id/1437820717/photo/happy-female-candidate-on-a-job-interview-in-the-office.jpg"
+                src="https://www.sapir.ac.il/sites/default/files/styles/box_image/public/2023-11/iStock-1437820717%20copy.jpg?itok=x-7jMRvt"
                 alt="Happy woman at job interview"
                 className="rounded-2xl shadow-2xl w-full h-auto object-cover"
               />
