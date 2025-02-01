@@ -18,6 +18,8 @@ const Index = () => {
   const [isDeletingLoading, setIsDeletingLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | undefined>();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const { toast } = useToast();
 
   const periodicRefresh = () => {
@@ -167,6 +169,8 @@ const Index = () => {
                   type="text"
                   placeholder="Rechercher un poste..."
                   className="w-full bg-[#2a2f3d] border-gray-700 focus:border-blue-500"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
             </div>
@@ -182,13 +186,22 @@ const Index = () => {
                 <SelectItem value="desc">Z-A</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline" className="border-gray-700 hover:bg-gray-700">
+            <Button 
+              variant="outline" 
+              className="border-gray-700 hover:bg-gray-700"
+              onClick={() => setFilterDialogOpen(true)}
+            >
               <Filter className="w-4 h-4 mr-2" />
               Filtres
             </Button>
           </div>
 
-          <AirtableTable onTotalRecords={setTotalRecords} key={refreshKey} sortOrder={sortOrder} />
+          <AirtableTable 
+            onTotalRecords={setTotalRecords} 
+            key={refreshKey} 
+            sortOrder={sortOrder}
+            searchQuery={searchQuery}
+          />
         </div>
       </main>
     </div>

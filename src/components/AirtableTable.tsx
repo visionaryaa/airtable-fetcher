@@ -3,11 +3,13 @@ import { useState, useEffect } from "react";
 import { fetchAirtableRecords } from "@/services/airtable";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Heart } from "lucide-react";
+import { Loader2, Heart, Filter } from "lucide-react";
+import FilterDialog from "./FilterDialog";
 
 interface AirtableTableProps {
   onTotalRecords?: (total: number) => void;
   sortOrder?: 'asc' | 'desc';
+  searchQuery?: string;
 }
 
 const AGENCY_LOGOS = [
@@ -53,11 +55,13 @@ const getLogoForUrl = (url: string) => {
   }
 };
 
-const AirtableTable = ({ onTotalRecords, sortOrder }: AirtableTableProps) => {
+const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery }: AirtableTableProps) => {
   const [currentOffset, setCurrentOffset] = useState<string | undefined>();
   const [previousOffsets, setPreviousOffsets] = useState<string[]>([]);
   const [allRecords, setAllRecords] = useState<any[]>([]);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+  const [excludedWords, setExcludedWords] = useState<string[]>([]);
   const { toast } = useToast();
 
   const { data, isLoading, isError } = useQuery({
@@ -76,15 +80,12 @@ const AirtableTable = ({ onTotalRecords, sortOrder }: AirtableTableProps) => {
 
   useEffect(() => {
     if (data?.records) {
-      // Append new records to our accumulated list
       if (currentOffset) {
         setAllRecords(prev => [...prev, ...data.records]);
       } else {
-        // If no offset (first page), reset the records
         setAllRecords(data.records);
       }
 
-      // If there's more data to fetch, automatically get the next page
       if (data.offset) {
         setPreviousOffsets(prev => [...prev, currentOffset || ""]);
         setCurrentOffset(data.offset);
@@ -94,15 +95,32 @@ const AirtableTable = ({ onTotalRecords, sortOrder }: AirtableTableProps) => {
     }
   }, [data]);
 
-  // Update total records count
   useEffect(() => {
     if (onTotalRecords) {
-      onTotalRecords(allRecords.length);
+      onTotalRecords(filteredRecords.length);
     }
-  }, [allRecords.length, onTotalRecords]);
+  }, [allRecords.length, onTotalRecords, searchQuery, excludedWords]);
 
-  // Sort records based on sortOrder
-  const sortedRecords = [...allRecords].sort((a, b) => {
+  const handleFilterConfirm = (words: string[]) => {
+    setExcludedWords(words);
+    toast({
+      title: "Filtres mis à jour",
+      description: "La table a été mise à jour avec vos filtres.",
+    });
+  };
+
+  const filteredRecords = allRecords.filter(record => {
+    const poste = record.fields.Poste?.toLowerCase() || '';
+    const location = record.fields.Localisation?.toLowerCase() || '';
+    const searchTerm = searchQuery?.toLowerCase() || '';
+    
+    const containsExcludedWord = excludedWords.some(word => 
+      poste.includes(word.toLowerCase()) || 
+      location.includes(word.toLowerCase())
+    );
+
+    return (poste.includes(searchTerm) || location.includes(searchTerm)) && !containsExcludedWord;
+  }).sort((a, b) => {
     if (!sortOrder) return 0;
     const titleA = a.fields.Poste?.toLowerCase() || '';
     const titleB = b.fields.Poste?.toLowerCase() || '';
@@ -127,69 +145,73 @@ const AirtableTable = ({ onTotalRecords, sortOrder }: AirtableTableProps) => {
     );
   }
 
-  if (!allRecords.length) {
+  if (!filteredRecords.length) {
     return <div className="text-center py-8">No records found.</div>;
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg px-6">
-      <table className="w-full border-collapse min-w-[800px] bg-[#1a1f2e]">
-        <thead>
-          <tr className="bg-[#1E2433] text-gray-300">
-            <th className="p-6 text-left font-medium">SOURCE</th>
-            <th className="p-6 text-left font-medium">POSTE</th>
-            <th className="p-6 text-left font-medium">LIEN</th>
-            <th className="p-6 text-left font-medium">LOCALISATION</th>
-            <th className="p-6 text-left font-medium">FAVORIS</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedRecords.map((record) => (
-            <tr
-              key={record.id}
-              className="border-b border-[#2A3041] hover:bg-[#1E2433] transition-colors bg-[#232838]"
-            >
-              <td className="p-6">
-                {record.fields.lien && (
-                  <img
-                    src={getLogoForUrl(record.fields.lien)}
-                    alt="Agency logo"
-                    className="w-8 h-8 rounded-full object-cover"
-                  />
-                )}
-              </td>
-              <td className="p-6 font-medium text-white">{record.fields.Poste}</td>
-              <td className="p-6">
-                <a 
-                  href={record.fields.lien} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                >
-                  <Button
-                    variant="default"
-                    className="bg-blue-600 hover:bg-blue-700"
-                    size="sm"
-                  >
-                    Voir l'offre
-                  </Button>
-                </a>
-              </td>
-              <td className="p-6 text-gray-300">{record.fields.Localisation}</td>
-              <td className="p-6">
-                <Button variant="ghost" size="sm" className="hover:text-red-500">
-                  <Heart className="w-5 h-5" />
-                </Button>
-              </td>
+    <>
+      <FilterDialog
+        open={filterDialogOpen}
+        onOpenChange={setFilterDialogOpen}
+        excludedWords={excludedWords}
+        onConfirm={handleFilterConfirm}
+      />
+      
+      <div className="overflow-x-auto rounded-lg px-6">
+        <table className="w-full border-collapse min-w-[800px] bg-[#1a1f2e]">
+          <thead>
+            <tr className="bg-[#1E2433] text-gray-300">
+              <th className="p-6 text-left font-medium">SOURCE</th>
+              <th className="p-6 text-left font-medium">POSTE</th>
+              <th className="p-6 text-left font-medium">LIEN</th>
+              <th className="p-6 text-left font-medium">LOCALISATION</th>
+              <th className="p-6 text-left font-medium">FAVORIS</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      {isLoadingMore && (
-        <div className="flex justify-center items-center py-4">
-          <Loader2 className="h-6 w-6 animate-spin" />
-        </div>
-      )}
-    </div>
+          </thead>
+          <tbody>
+            {filteredRecords.map((record) => (
+              <tr
+                key={record.id}
+                className="border-b border-[#2A3041] hover:bg-[#1E2433] transition-colors bg-[#232838]"
+              >
+                <td className="p-6">
+                  {record.fields.lien && (
+                    <img
+                      src={getLogoForUrl(record.fields.lien)}
+                      alt="Agency logo"
+                      className="w-8 h-8 rounded-full object-cover"
+                    />
+                  )}
+                </td>
+                <td className="p-6 font-medium text-white">{record.fields.Poste}</td>
+                <td className="p-6">
+                  <a 
+                    href={record.fields.lien} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    <Button
+                      variant="default"
+                      className="bg-blue-600 hover:bg-blue-700"
+                      size="sm"
+                    >
+                      Voir l'offre
+                    </Button>
+                  </a>
+                </td>
+                <td className="p-6 text-gray-300">{record.fields.Localisation}</td>
+                <td className="p-6">
+                  <Button variant="ghost" size="sm" className="hover:text-red-500">
+                    <Heart className="w-5 h-5" />
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 };
 
