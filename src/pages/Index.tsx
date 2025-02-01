@@ -26,13 +26,15 @@ const Index = () => {
 
   const handleAddWord = () => {
     if (newWord && !excludedWords.includes(newWord)) {
-      setExcludedWords([...excludedWords, newWord]);
+      setExcludedWords(prev => [...prev, newWord]);
       setNewWord("");
+      // No need to manually trigger a refresh as AirtableTable will react to excludedWords changes
     }
   };
 
   const handleRemoveWord = (wordToRemove: string) => {
     setExcludedWords(excludedWords.filter(word => word !== wordToRemove));
+    // No need to manually trigger a refresh as AirtableTable will react to excludedWords changes
   };
 
   const periodicRefresh = () => {
@@ -63,7 +65,6 @@ const Index = () => {
         description: "La recherche d'offres d'emploi est en cours...",
       });
       
-      // Start periodic refresh
       const interval = periodicRefresh();
       return () => clearInterval(interval);
     } catch (error) {
@@ -87,7 +88,6 @@ const Index = () => {
         description: "Les données sont en cours de suppression...",
       });
 
-      // Wait for 7 seconds before refreshing
       setTimeout(() => {
         setRefreshKey(prev => prev + 1);
         setIsDeletingLoading(false);
