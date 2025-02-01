@@ -1,4 +1,4 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Logo from "./Logo";
@@ -12,20 +12,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
 
 const Navbar = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/');
-  };
-
-  const isActive = (path: string) => {
-    return location.pathname === path;
   };
 
   return (
@@ -38,23 +32,11 @@ const Navbar = () => {
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-2">
-            <Button 
-              variant={isActive('/') ? "default" : "ghost"} 
-              asChild
-            >
-              <Link to="/">Accueil</Link>
-            </Button>
-            <Button 
-              variant={isActive('/jobs') ? "default" : "ghost"} 
-              asChild
-            >
+            <Button variant="ghost" asChild>
               <Link to="/jobs">Offres d'emploi</Link>
             </Button>
             {user && (
-              <Button 
-                variant={isActive('/favoris') ? "default" : "ghost"} 
-                asChild
-              >
+              <Button variant="ghost" asChild>
                 <Link to="/favoris">Favoris</Link>
               </Button>
             )}
@@ -70,32 +52,11 @@ const Navbar = () => {
             </SheetTrigger>
             <SheetContent side="left">
               <nav className="flex flex-col space-y-4">
-                <Link 
-                  to="/" 
-                  className={cn(
-                    "text-foreground/60 hover:text-foreground",
-                    isActive('/') && "text-foreground font-medium"
-                  )}
-                >
-                  Accueil
-                </Link>
-                <Link 
-                  to="/jobs" 
-                  className={cn(
-                    "text-foreground/60 hover:text-foreground",
-                    isActive('/jobs') && "text-foreground font-medium"
-                  )}
-                >
+                <Link to="/jobs" className="text-foreground/60 hover:text-foreground">
                   Offres d'emploi
                 </Link>
                 {user && (
-                  <Link 
-                    to="/favoris" 
-                    className={cn(
-                      "text-foreground/60 hover:text-foreground",
-                      isActive('/favoris') && "text-foreground font-medium"
-                    )}
-                  >
+                  <Link to="/favoris" className="text-foreground/60 hover:text-foreground">
                     Favoris
                   </Link>
                 )}
