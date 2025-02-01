@@ -3,13 +3,13 @@ import { useState, useEffect } from "react";
 import { fetchAirtableRecords } from "@/services/airtable";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Heart, Filter } from "lucide-react";
-import FilterDialog from "./FilterDialog";
+import { Loader2, Heart } from "lucide-react";
 
 interface AirtableTableProps {
   onTotalRecords?: (total: number) => void;
   sortOrder?: 'asc' | 'desc';
   searchQuery?: string;
+  excludedWords?: string[];
 }
 
 const AGENCY_LOGOS = [
@@ -55,13 +55,10 @@ const getLogoForUrl = (url: string) => {
   }
 };
 
-const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery }: AirtableTableProps) => {
+const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords = [] }: AirtableTableProps) => {
   const [currentOffset, setCurrentOffset] = useState<string | undefined>();
   const [previousOffsets, setPreviousOffsets] = useState<string[]>([]);
   const [allRecords, setAllRecords] = useState<any[]>([]);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [filterDialogOpen, setFilterDialogOpen] = useState(false);
-  const [excludedWords, setExcludedWords] = useState<string[]>([]);
   const { toast } = useToast();
 
   const { data, isLoading, isError } = useQuery({
@@ -89,8 +86,6 @@ const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery }: AirtableTable
       if (data.offset) {
         setPreviousOffsets(prev => [...prev, currentOffset || ""]);
         setCurrentOffset(data.offset);
-      } else {
-        setIsLoadingMore(false);
       }
     }
   }, [data]);
@@ -100,14 +95,6 @@ const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery }: AirtableTable
       onTotalRecords(filteredRecords.length);
     }
   }, [allRecords.length, onTotalRecords, searchQuery, excludedWords]);
-
-  const handleFilterConfirm = (words: string[]) => {
-    setExcludedWords(words);
-    toast({
-      title: "Filtres mis à jour",
-      description: `${words.length} mot${words.length > 1 ? 's' : ''} exclu${words.length > 1 ? 's' : ''} des résultats.`,
-    });
-  };
 
   const filteredRecords = allRecords.filter(record => {
     const poste = record.fields.Poste?.toLowerCase() || '';
@@ -151,13 +138,6 @@ const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery }: AirtableTable
 
   return (
     <>
-      <FilterDialog
-        open={filterDialogOpen}
-        onOpenChange={setFilterDialogOpen}
-        excludedWords={excludedWords}
-        onConfirm={handleFilterConfirm}
-      />
-      
       <div className="overflow-x-auto rounded-lg px-6">
         <table className="w-full border-collapse min-w-[800px] bg-[#1a1f2e]">
           <thead>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import AirtableTable from "@/components/AirtableTable";
 import { Button } from "@/components/ui/button";
-import { Loader2, Sun, Filter } from "lucide-react";
+import { Loader2, Sun, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { X } from "lucide-react";
 
 const Index = () => {
   const [totalRecords, setTotalRecords] = useState(0);
@@ -19,8 +20,20 @@ const Index = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | undefined>();
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+  const [excludedWords, setExcludedWords] = useState<string[]>([]);
+  const [newWord, setNewWord] = useState("");
   const { toast } = useToast();
+
+  const handleAddWord = () => {
+    if (newWord && !excludedWords.includes(newWord)) {
+      setExcludedWords([...excludedWords, newWord]);
+      setNewWord("");
+    }
+  };
+
+  const handleRemoveWord = (wordToRemove: string) => {
+    setExcludedWords(excludedWords.filter(word => word !== wordToRemove));
+  };
 
   const periodicRefresh = () => {
     let count = 0;
@@ -162,38 +175,72 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <div className="relative">
+          <div className="space-y-4">
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder="Rechercher un poste..."
+                    className="w-full bg-[#2a2f3d] border-gray-700 focus:border-blue-500"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+              </div>
+              <Select
+                value={sortOrder}
+                onValueChange={(value: 'asc' | 'desc') => setSortOrder(value)}
+              >
+                <SelectTrigger className="w-[200px] bg-[#2a2f3d] border-gray-700">
+                  <SelectValue placeholder="Trier par titre" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="asc">A-Z</SelectItem>
+                  <SelectItem value="desc">Z-A</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="bg-[#2a2f3d] p-4 rounded-lg space-y-4">
+              <h3 className="text-lg font-medium">Mots à exclure des résultats</h3>
+              <div className="flex items-center gap-2">
                 <Input
-                  type="text"
-                  placeholder="Rechercher un poste..."
-                  className="w-full bg-[#2a2f3d] border-gray-700 focus:border-blue-500"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  value={newWord}
+                  onChange={(e) => setNewWord(e.target.value)}
+                  placeholder="Ajouter un mot à exclure"
+                  className="bg-[#1a1f2e] border-gray-700 text-white"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleAddWord();
+                    }
+                  }}
                 />
+                <Button 
+                  onClick={handleAddWord} 
+                  className="bg-blue-600 hover:bg-blue-700"
+                  size="icon"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {excludedWords.map((word) => (
+                  <div
+                    key={word}
+                    className="flex items-center gap-1 bg-[#1a1f2e] px-3 py-1 rounded-full"
+                  >
+                    <span>{word}</span>
+                    <button
+                      onClick={() => handleRemoveWord(word)}
+                      className="text-gray-400 hover:text-red-500 ml-1"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
-            <Select
-              value={sortOrder}
-              onValueChange={(value: 'asc' | 'desc') => setSortOrder(value)}
-            >
-              <SelectTrigger className="w-[200px] bg-[#2a2f3d] border-gray-700">
-                <SelectValue placeholder="Trier par titre" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="asc">A-Z</SelectItem>
-                <SelectItem value="desc">Z-A</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button 
-              variant="outline" 
-              className="border-gray-700 hover:bg-gray-700"
-              onClick={() => setFilterDialogOpen(true)}
-            >
-              <Filter className="w-4 h-4 mr-2" />
-              Filtres
-            </Button>
           </div>
 
           <AirtableTable 
@@ -201,6 +248,7 @@ const Index = () => {
             key={refreshKey} 
             sortOrder={sortOrder}
             searchQuery={searchQuery}
+            excludedWords={excludedWords}
           />
         </div>
       </main>
