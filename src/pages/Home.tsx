@@ -29,13 +29,12 @@ const Home = () => {
       <main className="flex-grow">
         <div className="container mx-auto px-4 py-20">
           <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-            <div className="text-left space-y-8">
-              <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-                Intérim centrale
-              </h1>
-              
-              <p className="text-2xl text-gray-300 mb-8">
-                Trouvez votre nouveau job bien plus vite grâce à Intérim centrale
+            <div className="text-left space-y-8">              
+              <p className="text-4xl font-bold mb-8">
+                Trouvez votre nouveau job bien plus vite grâce à{" "}
+                <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+                  Intérim centrale
+                </span>
               </p>
               
               <div className="bg-[#2a2f3d] p-8 rounded-xl shadow-2xl mb-12">
