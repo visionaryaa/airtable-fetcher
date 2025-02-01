@@ -1,31 +1,27 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import { Suspense } from "react";
-import Home from "@/pages/Home";
-import Auth from "@/pages/Auth";
-import Favoris from "@/pages/Favoris";
-import NotFound from "@/pages/NotFound";
-import Index from "@/pages/Index";
-import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
-import { useAuth } from "./components/AuthProvider";
+import { Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import Home from "./pages/Home";
+import Index from "./pages/Index";
+import Auth from "./pages/Auth";
+import Favoris from "./pages/Favoris";
+import Settings from "./pages/Settings";
+import NotFound from "./pages/NotFound";
 
 const AppRoutes = () => {
-  const { user } = useAuth();
-
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex min-h-screen flex-col">
       <Navbar />
-      <main className="flex-1">
-        <Suspense fallback={<div>Loading...</div>}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/jobs" element={<Index />} />
-            {user && <Route path="/favoris" element={<Favoris />} />}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-      </main>
+      <div className="flex-1">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/jobs" element={<Index />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/favoris" element={<Favoris />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
       <Footer />
     </div>
   );

@@ -3,13 +3,14 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Logo from "./Logo";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { LogIn, LogOut, Menu, User, Home } from "lucide-react";
+import { LogIn, LogOut, Menu, User, Home, Settings } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
@@ -66,9 +67,15 @@ const Navbar = () => {
                   Offres d'emploi
                 </Link>
                 {user && (
-                  <Link to="/favoris" className="text-foreground/60 hover:text-foreground">
-                    Favoris
-                  </Link>
+                  <>
+                    <Link to="/favoris" className="text-foreground/60 hover:text-foreground">
+                      Favoris
+                    </Link>
+                    <Link to="/settings" className="text-foreground/60 hover:text-foreground">
+                      <Settings className="h-4 w-4 inline-block mr-2" />
+                      Paramètres
+                    </Link>
+                  </>
                 )}
               </nav>
             </SheetContent>
@@ -87,6 +94,13 @@ const Navbar = () => {
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem className="text-muted-foreground">
                     {user.email}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/settings">
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Paramètres</span>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />

@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/AuthProvider";
 import AirtableTable from "@/components/AirtableTable";
 import SearchFilters from "@/components/jobs/SearchFilters";
 import JobControls from "@/components/jobs/JobControls";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Badge } from "@/components/ui/badge";
 
 const Index = () => {
   const [totalRecords, setTotalRecords] = useState(0);
@@ -16,6 +19,28 @@ const Index = () => {
   const [newWord, setNewWord] = useState("");
   const { toast } = useToast();
   const { user } = useAuth();
+
+  const { data: userFilters } = useQuery({
+    queryKey: ['user-filters', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data, error } = await supabase
+        .from('user_filters')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  useEffect(() => {
+    if (userFilters?.excluded_words) {
+      setExcludedWords(userFilters.excluded_words);
+    }
+  }, [userFilters]);
 
   const periodicRefresh = () => {
     let count = 0;
@@ -98,16 +123,29 @@ const Index = () => {
             onDelete={handleDelete}
           />
 
-          <SearchFilters
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            sortOrder={sortOrder}
-            setSortOrder={setSortOrder}
-            excludedWords={excludedWords}
-            setExcludedWords={setExcludedWords}
-            newWord={newWord}
-            setNewWord={setNewWord}
-          />
+          <div className="space-y-4">
+            {user && userFilters?.excluded_words.length > 0 && (
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary">
+                  {userFilters.excluded_words.length} filtre{userFilters.excluded_words.length > 1 ? 's' : ''} pré-appliqué{userFilters.excluded_words.length > 1 ? 's' : ''}
+                </Badge>
+                <span className="text-sm text-muted-foreground">
+                  depuis vos paramètres
+                </span>
+              </div>
+            )}
+
+            <SearchFilters
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              sortOrder={sortOrder}
+              setSortOrder={setSortOrder}
+              excludedWords={excludedWords}
+              setExcludedWords={setExcludedWords}
+              newWord={newWord}
+              setNewWord={setNewWord}
+            />
+          </div>
 
           <AirtableTable 
             onTotalRecords={setTotalRecords} 
