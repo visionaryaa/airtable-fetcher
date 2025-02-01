@@ -28,16 +28,16 @@ const Home = () => {
       
       <main className="flex-grow">
         <div className="container mx-auto px-4 py-20">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-            <div className="text-left space-y-8">              
-              <p className="text-4xl font-bold mb-8">
-                Trouvez votre nouveau job bien plus vite grâce à{" "}
-                <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-                  Intérim centrale
-                </span>
-              </p>
-              
-              <div className="bg-[#2a2f3d] p-8 rounded-xl shadow-2xl mb-12">
+          <div className="max-w-6xl mx-auto space-y-12">
+            <p className="text-4xl font-bold text-center">
+              Trouvez votre nouveau job bien plus vite grâce à{" "}
+              <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+                Intérim centrale
+              </span>
+            </p>
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="bg-[#2a2f3d] p-8 rounded-xl shadow-2xl">
                 <h2 className="text-2xl font-semibold mb-4">
                   Plus de 10 agences intérim en un seul endroit
                 </h2>
@@ -52,14 +52,14 @@ const Home = () => {
                   Voir les offres
                 </Button>
               </div>
-            </div>
 
-            <div className="hidden md:block">
-              <img
-                src="https://www.sapir.ac.il/sites/default/files/styles/box_image/public/2023-11/iStock-1437820717%20copy.jpg?itok=x-7jMRvt"
-                alt="Happy woman at job interview"
-                className="rounded-2xl shadow-2xl w-full h-auto object-cover"
-              />
+              <div className="bg-[#2a2f3d] p-8 rounded-xl shadow-2xl">
+                <img
+                  src="https://www.sapir.ac.il/sites/default/files/styles/box_image/public/2023-11/iStock-1437820717%20copy.jpg?itok=x-7jMRvt"
+                  alt="Happy woman at job interview"
+                  className="rounded-lg shadow-xl w-full h-full object-cover"
+                />
+              </div>
             </div>
           </div>
 
