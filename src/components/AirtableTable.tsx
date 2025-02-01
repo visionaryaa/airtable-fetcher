@@ -2,8 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { fetchAirtableRecords } from "@/services/airtable";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
-import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2, Heart } from "lucide-react";
 
 interface AirtableTableProps {
   onTotalRecords?: (total: number) => void;
@@ -81,44 +81,53 @@ const AirtableTable = ({ onTotalRecords }: AirtableTableProps) => {
     return <div className="text-center py-8">No records found.</div>;
   }
 
-  const columns = Object.keys(allRecords[0].fields);
-
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto rounded-lg">
       <table className="w-full border-collapse min-w-[800px]">
         <thead>
-          <tr className="bg-gray-100">
-            {columns.map((column) => (
-              <th key={column} className="p-4 text-left font-medium text-gray-600">
-                {column}
-              </th>
-            ))}
+          <tr className="bg-[#2a2f3d] text-gray-300">
+            <th className="p-4 text-left font-medium">SOURCE</th>
+            <th className="p-4 text-left font-medium">POSTE</th>
+            <th className="p-4 text-left font-medium">LIEN</th>
+            <th className="p-4 text-left font-medium">LOCALISATION</th>
+            <th className="p-4 text-left font-medium">FAVORIS</th>
           </tr>
         </thead>
         <tbody>
           {allRecords.map((record) => (
             <tr
               key={record.id}
-              className="border-b border-gray-200 hover:bg-gray-50"
+              className="border-b border-gray-800 hover:bg-[#2a2f3d] transition-colors"
             >
-              {columns.map((column) => (
-                <td key={`${record.id}-${column}`} className="p-4">
-                  {String(record.fields[column] || "")}
-                </td>
-              ))}
+              <td className="p-4">
+                {record.fields.source && (
+                  <img
+                    src={record.fields.source}
+                    alt="Company logo"
+                    className="w-8 h-8 rounded-full"
+                  />
+                )}
+              </td>
+              <td className="p-4 font-medium text-white">{record.fields.title}</td>
+              <td className="p-4">
+                <Button
+                  variant="default"
+                  className="bg-blue-600 hover:bg-blue-700"
+                  size="sm"
+                >
+                  Voir l'offre
+                </Button>
+              </td>
+              <td className="p-4 text-gray-300">{record.fields.location}</td>
+              <td className="p-4">
+                <Button variant="ghost" size="sm" className="hover:text-red-500">
+                  <Heart className="w-5 h-5" />
+                </Button>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <div className="flex justify-between items-center mt-4 px-4">
-        <Button
-          onClick={handlePreviousPage}
-          disabled={previousOffsets.length === 0}
-          variant="outline"
-        >
-          Previous Page
-        </Button>
-      </div>
     </div>
   );
 };
