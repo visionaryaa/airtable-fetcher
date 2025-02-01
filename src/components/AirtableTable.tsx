@@ -105,7 +105,7 @@ const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery }: AirtableTable
     setExcludedWords(words);
     toast({
       title: "Filtres mis à jour",
-      description: "La table a été mise à jour avec vos filtres.",
+      description: `${words.length} mot${words.length > 1 ? 's' : ''} exclu${words.length > 1 ? 's' : ''} des résultats.`,
     });
   };
 

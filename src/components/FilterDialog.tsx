@@ -8,7 +8,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { X } from "lucide-react";
+import { X, Plus } from "lucide-react";
 
 interface FilterDialogProps {
   open: boolean;
@@ -41,7 +41,7 @@ const FilterDialog = ({ open, onOpenChange, excludedWords, onConfirm }: FilterDi
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] bg-[#1a1f2e] text-white">
         <DialogHeader>
-          <DialogTitle>Filtrer les mots</DialogTitle>
+          <DialogTitle>Mots à exclure des résultats</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="flex items-center gap-2">
@@ -49,27 +49,31 @@ const FilterDialog = ({ open, onOpenChange, excludedWords, onConfirm }: FilterDi
               value={newWord}
               onChange={(e) => setNewWord(e.target.value)}
               placeholder="Ajouter un mot à exclure"
-              className="bg-[#2a2f3d] border-gray-700"
+              className="bg-[#2a2f3d] border-gray-700 text-white"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   handleAddWord();
                 }
               }}
             />
-            <Button onClick={handleAddWord} className="bg-blue-600 hover:bg-blue-700">
-              Ajouter
+            <Button 
+              onClick={handleAddWord} 
+              className="bg-blue-600 hover:bg-blue-700"
+              size="icon"
+            >
+              <Plus className="h-4 w-4" />
             </Button>
           </div>
           <div className="flex flex-wrap gap-2">
             {words.map((word) => (
               <div
                 key={word}
-                className="flex items-center gap-1 bg-[#2a2f3d] px-2 py-1 rounded"
+                className="flex items-center gap-1 bg-[#2a2f3d] px-3 py-1 rounded-full"
               >
                 <span>{word}</span>
                 <button
                   onClick={() => handleRemoveWord(word)}
-                  className="text-gray-400 hover:text-red-500"
+                  className="text-gray-400 hover:text-red-500 ml-1"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -79,7 +83,7 @@ const FilterDialog = ({ open, onOpenChange, excludedWords, onConfirm }: FilterDi
         </div>
         <DialogFooter>
           <Button onClick={handleConfirm} className="bg-blue-600 hover:bg-blue-700">
-            Confirmer
+            Appliquer les filtres
           </Button>
         </DialogFooter>
       </DialogContent>
