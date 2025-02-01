@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Heart, ExternalLink } from "lucide-react";
+import { Loader2, Heart, ExternalLink, Building, Briefcase, Factory, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,6 +14,30 @@ interface FavoritesTableProps {
   searchQuery?: string;
   excludedWords?: string[];
 }
+
+const getSourceIcon = (jobLink: string) => {
+  if (jobLink.includes('randstad')) {
+    return <Building className="w-6 h-6 text-blue-500" />;
+  } else if (jobLink.includes('manpower')) {
+    return <Briefcase className="w-6 h-6 text-red-500" />;
+  } else if (jobLink.includes('adecco')) {
+    return <Factory className="w-6 h-6 text-green-500" />;
+  } else {
+    return <User className="w-6 h-6 text-gray-500" />;
+  }
+};
+
+const getSourceName = (jobLink: string) => {
+  if (jobLink.includes('randstad')) {
+    return 'Randstad';
+  } else if (jobLink.includes('manpower')) {
+    return 'Manpower';
+  } else if (jobLink.includes('adecco')) {
+    return 'Adecco';
+  } else {
+    return 'Autre';
+  }
+};
 
 const FavoritesTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords = [] }: FavoritesTableProps) => {
   const { toast } = useToast();
@@ -107,6 +131,10 @@ const FavoritesTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords 
     <Card key={favorite.id} className="mb-4">
       <CardContent className="pt-6">
         <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            {getSourceIcon(favorite.job_link)}
+            <span className="text-sm text-muted-foreground">{getSourceName(favorite.job_link)}</span>
+          </div>
           <h3 className="font-medium text-foreground">{favorite.job_title}</h3>
           <div className="text-sm text-muted-foreground">
             {favorite.job_location}
@@ -145,6 +173,7 @@ const FavoritesTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords 
       <table className="w-full border-collapse min-w-[800px] bg-background">
         <thead>
           <tr className="bg-secondary text-foreground">
+            <th className="p-6 text-left font-medium">SOURCE</th>
             <th className="p-6 text-left font-medium">POSTE</th>
             <th className="p-6 text-left font-medium">LOCALISATION</th>
             <th className="p-6 text-left font-medium">LIEN</th>
@@ -157,6 +186,12 @@ const FavoritesTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords 
               key={favorite.id}
               className="border-b border-border hover:bg-secondary/50 transition-colors"
             >
+              <td className="p-6">
+                <div className="flex items-center gap-2">
+                  {getSourceIcon(favorite.job_link)}
+                  <span className="text-sm">{getSourceName(favorite.job_link)}</span>
+                </div>
+              </td>
               <td className="p-6 font-medium text-foreground">{favorite.job_title}</td>
               <td className="p-6 text-muted-foreground">{favorite.job_location}</td>
               <td className="p-6">
