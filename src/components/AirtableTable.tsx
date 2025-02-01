@@ -57,6 +57,7 @@ const AirtableTable = ({ onTotalRecords, sortOrder }: AirtableTableProps) => {
   const [currentOffset, setCurrentOffset] = useState<string | undefined>();
   const [previousOffsets, setPreviousOffsets] = useState<string[]>([]);
   const [allRecords, setAllRecords] = useState<any[]>([]);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const { toast } = useToast();
 
   const { data, isLoading, isError } = useQuery({
@@ -74,11 +75,10 @@ const AirtableTable = ({ onTotalRecords, sortOrder }: AirtableTableProps) => {
   });
 
   useEffect(() => {
-    console.log("Data received:", data);
     if (data?.records) {
       console.log("Records found:", data.records.length);
       
-      // If there's no offset, this is the initial load - replace all records
+      // If there's no offset, this is the initial load
       if (!currentOffset) {
         setAllRecords(data.records);
       } else {
@@ -86,16 +86,26 @@ const AirtableTable = ({ onTotalRecords, sortOrder }: AirtableTableProps) => {
         setAllRecords(prev => [...prev, ...data.records]);
       }
 
-      // Handle pagination
+      // If there's more data to load, set the new offset
       if (data.offset) {
-        setPreviousOffsets(prev => [...prev, currentOffset || ""]);
         setCurrentOffset(data.offset);
+        setIsLoadingMore(true);
       } else {
-        // No more records to fetch
+        setIsLoadingMore(false);
         setCurrentOffset(undefined);
       }
     }
   }, [data?.records, currentOffset, data?.offset]);
+
+  // Automatically fetch next batch when there's more data
+  useEffect(() => {
+    if (isLoadingMore && data?.offset) {
+      const timer = setTimeout(() => {
+        setCurrentOffset(data.offset);
+      }, 1000); // Add a small delay to prevent rate limiting
+      return () => clearTimeout(timer);
+    }
+  }, [data?.offset, isLoadingMore]);
 
   useEffect(() => {
     console.log("All records:", allRecords.length);
@@ -187,6 +197,11 @@ const AirtableTable = ({ onTotalRecords, sortOrder }: AirtableTableProps) => {
           ))}
         </tbody>
       </table>
+      {isLoadingMore && (
+        <div className="flex justify-center items-center py-4">
+          <Loader2 className="h-6 w-6 animate-spin" />
+        </div>
+      )}
     </div>
   );
 };
