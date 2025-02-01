@@ -4,10 +4,12 @@ import { useNavigate } from "react-router-dom";
 import Autoplay from "embla-carousel-autoplay";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Home = () => {
   const navigate = useNavigate();
   const plugin = Autoplay({ delay: 2000 });
+  const isMobile = useIsMobile();
 
   const agencies = [
     { 
@@ -83,34 +85,54 @@ const Home = () => {
 
           <div className="mt-16">
             <h3 className="text-xl font-semibold mb-8">Nos agences partenaires</h3>
-            <Carousel 
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              plugins={[plugin]}
-              className="w-full"
-            >
-              <CarouselContent>
+            {isMobile ? (
+              <div className="grid grid-cols-2 gap-2">
                 {agencies.map((agency, index) => (
-                  <CarouselItem key={index} className="basis-1/4 md:basis-1/5">
-                    <div className="p-2">
-                      <div className="bg-card dark:bg-[#1A1F2C]/80 backdrop-blur-sm rounded-lg p-4 h-24 flex items-center justify-center shadow-lg dark:shadow-[#403E43]/20">
-                        <img
-                          src={agency.logo}
-                          alt={`${agency.name} logo`}
-                          className="max-h-16 w-auto object-contain"
-                          onError={(e) => {
-                            const img = e.target as HTMLImageElement;
-                            img.src = '/placeholder.svg';
-                          }}
-                        />
-                      </div>
+                  <div key={index} className="aspect-square">
+                    <div className="h-full bg-card dark:bg-[#1A1F2C]/80 backdrop-blur-sm rounded-lg p-2 flex items-center justify-center shadow-lg dark:shadow-[#403E43]/20">
+                      <img
+                        src={agency.logo}
+                        alt={`${agency.name} logo`}
+                        className="max-w-full max-h-full object-contain"
+                        onError={(e) => {
+                          const img = e.target as HTMLImageElement;
+                          img.src = '/placeholder.svg';
+                        }}
+                      />
                     </div>
-                  </CarouselItem>
+                  </div>
                 ))}
-              </CarouselContent>
-            </Carousel>
+              </div>
+            ) : (
+              <Carousel 
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+                plugins={[plugin]}
+                className="w-full"
+              >
+                <CarouselContent>
+                  {agencies.map((agency, index) => (
+                    <CarouselItem key={index} className="basis-1/4 md:basis-1/5">
+                      <div className="p-2">
+                        <div className="bg-card dark:bg-[#1A1F2C]/80 backdrop-blur-sm rounded-lg p-4 h-24 flex items-center justify-center shadow-lg dark:shadow-[#403E43]/20">
+                          <img
+                            src={agency.logo}
+                            alt={`${agency.name} logo`}
+                            className="max-h-16 w-auto object-contain"
+                            onError={(e) => {
+                              const img = e.target as HTMLImageElement;
+                              img.src = '/placeholder.svg';
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
+            )}
           </div>
         </div>
       </main>
