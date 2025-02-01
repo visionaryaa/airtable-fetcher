@@ -12,7 +12,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Sun, Plus, Heart, LogOut } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Loader2, Sun, Plus, Heart, LogOut, User } from "lucide-react";
 import { X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -154,14 +160,20 @@ const Index = () => {
                 <Sun className="w-5 h-5" />
               </button>
               {user ? (
-                <Button 
-                  variant="default" 
-                  className="bg-red-600 hover:bg-red-700"
-                  onClick={handleSignOut}
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Déconnexion
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative flex items-center gap-2">
+                      <User className="w-4 h-4" />
+                      <span className="hidden md:inline">{user.email}</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuItem onClick={handleSignOut} className="text-red-500">
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Déconnexion
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               ) : (
                 <Button 
                   variant="default" 
