@@ -7,6 +7,7 @@ import Auth from "./pages/Auth";
 import Favoris from "./pages/Favoris";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import JobSearch from "./pages/JobSearch";
 
 const AppRoutes = () => {
   return (
@@ -19,6 +20,7 @@ const AppRoutes = () => {
           <Route path="/auth" element={<Auth />} />
           <Route path="/favoris" element={<Favoris />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/job-search" element={<JobSearch />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
