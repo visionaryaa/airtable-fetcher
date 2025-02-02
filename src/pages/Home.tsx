@@ -58,8 +58,8 @@ const Home = () => {
           }
         >
           <img
-            src="https://www.sapir.ac.il/sites/default/files/styles/box_image/public/2023-11/iStock-1437820717%20copy.jpg?itok=x-7jMRvt"
-            alt="Happy woman at job interview"
+            src="/lovable-uploads/5ca0cf41-88c1-40f8-9bbd-0aff91bbb91f.png"
+            alt="Interface de recherche d'emploi"
             className="mx-auto rounded-2xl object-cover h-full object-left-top"
             draggable={false}
           />
