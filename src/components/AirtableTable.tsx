@@ -14,6 +14,7 @@ interface AirtableTableProps {
   sortOrder?: 'asc' | 'desc';
   searchQuery?: string;
   excludedWords?: string[];
+  baseKey?: 'logisticsLiege' | 'customSearch';
 }
 
 const AGENCY_LOGOS = [
@@ -59,7 +60,13 @@ const getLogoForUrl = (url: string) => {
   }
 };
 
-const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords = [] }: AirtableTableProps) => {
+const AirtableTable = ({ 
+  onTotalRecords, 
+  sortOrder, 
+  searchQuery, 
+  excludedWords = [],
+  baseKey = 'logisticsLiege'
+}: AirtableTableProps) => {
   const [currentOffset, setCurrentOffset] = useState<string | undefined>();
   const [previousOffsets, setPreviousOffsets] = useState<string[]>([]);
   const [allRecords, setAllRecords] = useState<any[]>([]);
@@ -141,8 +148,8 @@ const AirtableTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords =
   });
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["airtable", currentOffset],
-    queryFn: () => fetchAirtableRecords(currentOffset),
+    queryKey: ["airtable", currentOffset, baseKey],
+    queryFn: () => fetchAirtableRecords(currentOffset, baseKey),
     meta: {
       onError: () => {
         toast({

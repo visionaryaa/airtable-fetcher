@@ -1,6 +1,15 @@
 const AIRTABLE_API_KEY = 'patq4JIuuLh5xgo34.4456c0e7774bd235c10f6e2fc2a251c8014b76b3a2b76a6e6c56859bc88ee8b1';
-const BASE_ID = 'app1uI6yNTTPK7NRq';
-const TABLE_ID = 'tblchMlIvxyhvuY9D';
+
+const AIRTABLE_BASES = {
+  logisticsLiege: {
+    baseId: 'app1uI6yNTTPK7NRq',
+    tableId: 'tblchMlIvxyhvuY9D',
+  },
+  customSearch: {
+    baseId: 'appH9eP8uC0TPOuG3',
+    tableId: 'tblchMlIvxyhvuY9D',
+  }
+} as const;
 
 export interface AirtableResponse {
   records: Array<{
@@ -11,9 +20,10 @@ export interface AirtableResponse {
   offset?: string;
 }
 
-export const fetchAirtableRecords = async (offset?: string): Promise<AirtableResponse> => {
+export const fetchAirtableRecords = async (offset?: string, baseKey: keyof typeof AIRTABLE_BASES = 'logisticsLiege'): Promise<AirtableResponse> => {
   console.log("Fetching records with offset:", offset); // Debug log
-  const url = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}${offset ? `?offset=${offset}` : ''}`;
+  const { baseId, tableId } = AIRTABLE_BASES[baseKey];
+  const url = `https://api.airtable.com/v0/${baseId}/${tableId}${offset ? `?offset=${offset}` : ''}`;
   
   try {
     const response = await fetch(url, {

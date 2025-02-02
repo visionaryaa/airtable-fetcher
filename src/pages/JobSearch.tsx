@@ -21,6 +21,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Search } from "lucide-react";
+import AirtableTable from "@/components/AirtableTable";
+import SearchFilters from "@/components/jobs/SearchFilters";
+import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/components/AuthProvider";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const formSchema = z.object({
   nom_du_job: z.string().min(1, "Le nom du job est requis"),
@@ -31,6 +37,28 @@ const formSchema = z.object({
 const JobSearch = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | undefined>();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [excludedWords, setExcludedWords] = useState<string[]>([]);
+  const [newWord, setNewWord] = useState("");
+  const { user } = useAuth();
+
+  const { data: userFilters } = useQuery({
+    queryKey: ['user-filters', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data, error } = await supabase
+        .from('user_filters')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -77,7 +105,7 @@ const JobSearch = () => {
   return (
     <div className="min-h-screen bg-background">
       <main className="container mx-auto py-8 px-4">
-        <div className="max-w-xl mx-auto space-y-6">
+        <div className="max-w-xl mx-auto space-y-6 mb-12">
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-bold">Recherche personnalisée</h1>
             <p className="text-muted-foreground">
@@ -170,6 +198,38 @@ const JobSearch = () => {
               </Button>
             </form>
           </Form>
+        </div>
+
+        <div className="space-y-6">
+          {user && userFilters?.excluded_words.length > 0 && (
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary">
+                {userFilters.excluded_words.length} filtre{userFilters.excluded_words.length > 1 ? 's' : ''} pré-appliqué{userFilters.excluded_words.length > 1 ? 's' : ''}
+              </Badge>
+              <span className="text-sm text-muted-foreground">
+                depuis vos paramètres
+              </span>
+            </div>
+          )}
+
+          <SearchFilters
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            sortOrder={sortOrder}
+            setSortOrder={setSortOrder}
+            excludedWords={excludedWords}
+            setExcludedWords={setExcludedWords}
+            newWord={newWord}
+            setNewWord={setNewWord}
+          />
+
+          <AirtableTable 
+            onTotalRecords={setTotalRecords} 
+            sortOrder={sortOrder}
+            searchQuery={searchQuery}
+            excludedWords={excludedWords}
+            baseKey="customSearch"
+          />
         </div>
       </main>
     </div>
