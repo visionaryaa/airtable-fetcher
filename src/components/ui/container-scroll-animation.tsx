@@ -22,14 +22,14 @@ export const ContainerScroll = ({
 
   if (isMobile) {
     return (
-      <div className="min-h-screen pt-20">
+      <div className="min-h-screen pt-24">
         <div className="container mx-auto px-4">
           <header className="text-center mb-8">
             {titleComponent}
           </header>
-          <Card>
+          <div className="max-w-5xl mx-auto">
             {children}
-          </Card>
+          </div>
         </div>
       </div>
     );
