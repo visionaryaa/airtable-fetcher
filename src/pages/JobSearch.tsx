@@ -24,7 +24,7 @@ import { Search } from "lucide-react";
 
 const formSchema = z.object({
   nom_du_job: z.string().min(1, "Le nom du job est requis"),
-  code_postale: z.string().length(5, "Le code postal doit contenir 5 chiffres"),
+  code_postale: z.string().length(4, "Le code postal doit contenir 4 chiffres").regex(/^\d+$/, "Le code postal doit contenir uniquement des chiffres"),
   rayon: z.string(),
 });
 
@@ -112,12 +112,12 @@ const JobSearch = () => {
                     <FormLabel>Code postal</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Ex: 75001"
-                        maxLength={5}
+                        placeholder="Ex: 1000"
+                        maxLength={4}
                         {...field}
                         onChange={(e) => {
                           const value = e.target.value.replace(/[^0-9]/g, "");
-                          if (value.length <= 5) {
+                          if (value.length <= 4) {
                             field.onChange(value);
                           }
                         }}
