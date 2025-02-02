@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import Autoplay from "embla-carousel-autoplay";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -43,15 +44,29 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <main>
-        <div className="container mx-auto px-4 py-20">
+        <ContainerScroll
+          titleComponent={
+            <>
+              <h1 className="text-4xl font-semibold">
+                Trouvez votre nouveau job bien plus vite grâce à{" "}
+                <br />
+                <span className="text-4xl md:text-[6rem] font-bold mt-1 leading-none bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+                  Intérim centrale
+                </span>
+              </h1>
+            </>
+          }
+        >
+          <img
+            src="https://www.sapir.ac.il/sites/default/files/styles/box_image/public/2023-11/iStock-1437820717%20copy.jpg?itok=x-7jMRvt"
+            alt="Happy woman at job interview"
+            className="mx-auto rounded-2xl object-cover h-full object-left-top"
+            draggable={false}
+          />
+        </ContainerScroll>
+
+        <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto space-y-12">
-            <p className="text-4xl font-bold text-center">
-              Trouvez votre nouveau job bien plus vite grâce à{" "}
-              <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-                Intérim centrale
-              </span>
-            </p>
-            
             <div className="grid md:grid-cols-2 gap-8">
               <div className="bg-card dark:bg-[#1A1F2C]/80 backdrop-blur-sm p-8 rounded-xl shadow-lg dark:shadow-[#403E43]/20">
                 <h2 className="text-2xl font-semibold mb-4">
