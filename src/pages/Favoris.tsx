@@ -3,6 +3,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/AuthProvider";
 import SearchFilters from "@/components/jobs/SearchFilters";
 import FavoritesTable from "@/components/FavoritesTable";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const Favoris = () => {
   const [totalRecords, setTotalRecords] = useState(0);
@@ -17,8 +19,14 @@ const Favoris = () => {
     return (
       <div className="min-h-screen bg-background text-foreground">
         <main className="container mx-auto py-8 px-4">
-          <div className="text-center py-8">
-            Veuillez vous connecter pour voir vos favoris.
+          <div className="max-w-md mx-auto text-center space-y-6">
+            <h2 className="text-2xl font-bold">Connectez-vous pour voir vos favoris</h2>
+            <p className="text-muted-foreground">
+              Vous devez être connecté pour accéder à vos offres d'emploi favorites.
+            </p>
+            <Button asChild className="bg-blue-600 hover:bg-blue-700">
+              <Link to="/auth">Se connecter</Link>
+            </Button>
           </div>
         </main>
       </div>

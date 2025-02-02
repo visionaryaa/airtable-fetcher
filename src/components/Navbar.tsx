@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Logo from "./Logo";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { LogIn, LogOut, Menu, User, Home, Settings } from "lucide-react";
+import { LogIn, LogOut, Menu, User, Home, Settings, Heart } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -42,11 +42,12 @@ const Navbar = () => {
             <Button variant="ghost" asChild>
               <Link to="/jobs">Offres d'emploi</Link>
             </Button>
-            {user && (
-              <Button variant="ghost" asChild>
-                <Link to="/favoris">Favoris</Link>
-              </Button>
-            )}
+            <Button variant="ghost" asChild>
+              <Link to="/favoris">
+                <Heart className="h-4 w-4 mr-2" />
+                Favoris
+              </Link>
+            </Button>
           </nav>
 
           {/* Mobile Navigation */}
@@ -66,16 +67,15 @@ const Navbar = () => {
                 <Link to="/jobs" className="text-foreground/60 hover:text-foreground">
                   Offres d'emploi
                 </Link>
+                <Link to="/favoris" className="text-foreground/60 hover:text-foreground">
+                  <Heart className="h-4 w-4 inline-block mr-2" />
+                  Favoris
+                </Link>
                 {user && (
-                  <>
-                    <Link to="/favoris" className="text-foreground/60 hover:text-foreground">
-                      Favoris
-                    </Link>
-                    <Link to="/settings" className="text-foreground/60 hover:text-foreground">
-                      <Settings className="h-4 w-4 inline-block mr-2" />
-                      Paramètres
-                    </Link>
-                  </>
+                  <Link to="/settings" className="text-foreground/60 hover:text-foreground">
+                    <Settings className="h-4 w-4 inline-block mr-2" />
+                    Paramètres
+                  </Link>
                 )}
               </nav>
             </SheetContent>
