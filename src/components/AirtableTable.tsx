@@ -52,7 +52,10 @@ const getLogoForUrl = (url: string) => {
   try {
     const urlObject = new URL(url);
     const domain = urlObject.hostname.replace('www2.', 'www.').replace('www.', '');
+    console.log('Processing URL:', url);
+    console.log('Extracted domain:', domain);
     const agencyInfo = AGENCY_LOGOS.find(agency => domain.includes(agency.domain));
+    console.log('Found agency info:', agencyInfo);
     return agencyInfo?.logo;
   } catch (error) {
     console.error('Error parsing URL:', error);
