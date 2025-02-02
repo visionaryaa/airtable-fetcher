@@ -2,6 +2,7 @@
 import React, { useRef } from "react";
 import { useScroll, useTransform, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const ContainerScroll = ({
   titleComponent,
@@ -11,12 +12,28 @@ export const ContainerScroll = ({
   children: React.ReactNode;
 }) => {
   const containerRef = useRef<any>(null);
+  const isMobile = useIsMobile();
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
   });
 
   const scaleDimensions = useTransform(scrollYProgress, [0, 1], [0.7, 0.9]);
+
+  if (isMobile) {
+    return (
+      <div className="min-h-screen pt-20">
+        <div className="container mx-auto px-4">
+          <header className="text-center mb-8">
+            {titleComponent}
+          </header>
+          <Card>
+            {children}
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -63,7 +80,7 @@ export const Card = ({
           "0 0 #0000004d, 0 9px 20px #0000004a, 0 37px 37px #00000042, 0 84px 50px #00000026, 0 149px 60px #0000000a, 0 233px 65px #00000003",
       }}
       className={cn(
-        "max-w-5xl -mt-8 md:-mt-12 mx-auto h-[30rem] md:h-[40rem] w-full border-4 border-[#6C6C6C] p-2 md:p-6 bg-[#222222] rounded-[30px] shadow-2xl",
+        "max-w-5xl mx-auto h-[30rem] md:h-[40rem] w-full border-4 border-[#6C6C6C] p-2 md:p-6 bg-[#222222] rounded-[30px] shadow-2xl",
         className
       )}
     >
