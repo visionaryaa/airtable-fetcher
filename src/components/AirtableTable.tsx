@@ -11,7 +11,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AirtableTableProps {
   onTotalRecords?: (total: number) => void;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: 'asc' | 'desc' | 'agency_asc' | 'agency_desc';
   searchQuery?: string;
   excludedWords?: string[];
   baseKey?: 'logisticsLiege' | 'customSearch';
@@ -212,15 +212,20 @@ const AirtableTable = ({
   }).sort((a, b) => {
     if (!sortOrder) return 0;
     
-    if (sortOrder === 'asc' || sortOrder === 'desc') {
+    if (sortOrder === 'agency_asc' || sortOrder === 'agency_desc') {
       const domainA = getDomainFromUrl(a.fields.lien || '');
       const domainB = getDomainFromUrl(b.fields.lien || '');
-      return sortOrder === 'asc' 
+      return sortOrder === 'agency_asc' 
         ? domainA.localeCompare(domainB)
         : domainB.localeCompare(domainA);
     }
     
-    return 0;
+    // Sort by job title
+    const posteA = a.fields.Poste || '';
+    const posteB = b.fields.Poste || '';
+    return sortOrder === 'asc' 
+      ? posteA.localeCompare(posteB)
+      : posteB.localeCompare(posteA);
   });
 
   const isJobFavorited = (jobLink: string) => {

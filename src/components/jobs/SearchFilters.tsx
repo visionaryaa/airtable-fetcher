@@ -61,11 +61,13 @@ const SearchFilters = ({
           onValueChange={(value: 'asc' | 'desc') => setSortOrder(value)}
         >
           <SelectTrigger className="w-[200px] bg-background border-input">
-            <SelectValue placeholder="Trier par agence" />
+            <SelectValue placeholder="Trier par..." />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="asc">Agences A-Z</SelectItem>
-            <SelectItem value="desc">Agences Z-A</SelectItem>
+            <SelectItem value="asc">Postes A-Z</SelectItem>
+            <SelectItem value="desc">Postes Z-A</SelectItem>
+            <SelectItem value="agency_asc">Agences A-Z</SelectItem>
+            <SelectItem value="agency_desc">Agences Z-A</SelectItem>
           </SelectContent>
         </Select>
       </div>
