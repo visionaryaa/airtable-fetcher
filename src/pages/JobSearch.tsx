@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -20,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Search } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 import AirtableTable from "@/components/AirtableTable";
 import SearchFilters from "@/components/jobs/SearchFilters";
 import { Badge } from "@/components/ui/badge";
@@ -37,6 +38,7 @@ const formSchema = z.object({
 const JobSearch = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeletingLoading, setIsDeletingLoading] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | 'agency_asc' | 'agency_desc'>();
   const [searchQuery, setSearchQuery] = useState("");
@@ -69,17 +71,41 @@ const JobSearch = () => {
     },
   });
 
+  const handleDelete = async () => {
+    setIsDeletingLoading(true);
+    try {
+      const response = await fetch('https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=delete');
+      if (!response.ok) throw new Error('Failed to trigger deletion');
+      
+      toast({
+        title: "Réinitialisation en cours",
+        description: "La base de données est en cours de réinitialisation...",
+      });
+
+      setTimeout(() => {
+        setIsDeletingLoading(false);
+        toast({
+          title: "Réinitialisation terminée",
+          description: "La base de données a été réinitialisée avec succès.",
+        });
+      }, 7000);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la réinitialisation.",
+      });
+      setIsDeletingLoading(false);
+    }
+  };
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
     try {
       const response = await fetch(
-        "https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52",
+        `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(values.nom_du_job)}&code_postale=${encodeURIComponent(values.code_postale)}&rayon=${encodeURIComponent(values.rayon)}`,
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
+          method: "GET",
         }
       );
 
@@ -183,20 +209,42 @@ const JobSearch = () => {
                   )}
                 />
 
-                <Button
-                  type="submit"
-                  className="w-full md:self-end"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    "Recherche en cours..."
-                  ) : (
-                    <>
-                      <Search className="mr-2 h-4 w-4" />
-                      Rechercher
-                    </>
-                  )}
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    type="submit"
+                    className="flex-1"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Recherche...
+                      </>
+                    ) : (
+                      <>
+                        <Search className="mr-2 h-4 w-4" />
+                        Rechercher
+                      </>
+                    )}
+                  </Button>
+
+                  <Button
+                    type="button"
+                    onClick={handleDelete}
+                    disabled={isDeletingLoading}
+                    variant="destructive"
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    {isDeletingLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Réinitialisation...
+                      </>
+                    ) : (
+                      'Réinitialiser'
+                    )}
+                  </Button>
+                </div>
               </div>
             </form>
           </Form>
