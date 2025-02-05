@@ -361,8 +361,22 @@ const AirtableTable = ({
     return <div className="text-center py-8">No records found.</div>;
   }
 
-  return (
+return (
     <>
+      {/* Job Count Display */}
+      <div className="mb-6 px-4 md:px-6">
+        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100">
+              Offres d'emploi disponibles
+            </h3>
+            <p className="text-blue-600 dark:text-blue-300">
+              {filteredRecords.length} offre{filteredRecords.length !== 1 ? 's' : ''} trouvée{filteredRecords.length !== 1 ? 's' : ''}
+            </p>
+          </div>
+        </div>
+      </div>
+
       {isMobile ? (
         <div className="px-4">
           {filteredRecords.map(record => renderMobileCard(record))}
