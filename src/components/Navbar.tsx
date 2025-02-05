@@ -1,3 +1,4 @@
+
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -24,7 +25,6 @@ const Navbar = () => {
 
   const mobileNavItems = [
     { to: "/", label: "Accueil", icon: Home },
-    { to: "/jobs", label: "Offres d'emploi" },
     { to: "/job-search", label: "Recherche", icon: Search },
     { to: "/favoris", label: "Favoris", icon: Heart },
     { to: "/settings", label: "Paramètres", icon: Settings },
@@ -45,9 +45,6 @@ const Navbar = () => {
                 <Home className="h-4 w-4 mr-2" />
                 Accueil
               </Link>
-            </Button>
-            <Button variant="ghost" asChild>
-              <Link to="/jobs">Offres d'emploi</Link>
             </Button>
             <Button variant="ghost" asChild>
               <Link to="/job-search">

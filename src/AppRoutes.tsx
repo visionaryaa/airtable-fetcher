@@ -1,8 +1,8 @@
+
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
-import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Favoris from "./pages/Favoris";
 import Settings from "./pages/Settings";
@@ -16,7 +16,6 @@ const AppRoutes = () => {
       <div className="flex-1">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/jobs" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/favoris" element={<Favoris />} />
           <Route path="/settings" element={<Settings />} />

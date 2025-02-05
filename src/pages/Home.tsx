@@ -1,3 +1,4 @@
+
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -62,10 +63,10 @@ const Home = () => {
                   provenant des meilleures agences intérim. Plus besoin de visiter des dizaines de sites différents !
                 </p>
                 <Button 
-                  onClick={() => navigate('/jobs')} 
+                  onClick={() => navigate('/job-search')} 
                   className="bg-primary hover:bg-primary/90 text-lg px-8 py-4"
                 >
-                  Voir les offres
+                  Rechercher
                 </Button>
               </div>
 
