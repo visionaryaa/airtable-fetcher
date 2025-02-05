@@ -10,7 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 interface FavoritesTableProps {
   onTotalRecords?: (total: number) => void;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: 'asc' | 'desc' | 'agency_asc' | 'agency_desc';
   searchQuery?: string;
   excludedWords?: string[];
 }
