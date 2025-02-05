@@ -1,3 +1,4 @@
+
 import { Input } from "@/components/ui/input";
 import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -60,11 +61,11 @@ const SearchFilters = ({
           onValueChange={(value: 'asc' | 'desc') => setSortOrder(value)}
         >
           <SelectTrigger className="w-[200px] bg-background border-input">
-            <SelectValue placeholder="Trier par titre" />
+            <SelectValue placeholder="Trier par agence" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="asc">A-Z</SelectItem>
-            <SelectItem value="desc">Z-A</SelectItem>
+            <SelectItem value="asc">Agences A-Z</SelectItem>
+            <SelectItem value="desc">Agences Z-A</SelectItem>
           </SelectContent>
         </Select>
       </div>
