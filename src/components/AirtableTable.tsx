@@ -52,10 +52,19 @@ const AGENCY_LOGOS = [
   }
 ];
 
-const getLogoForUrl = (url: string) => {
+const getDomainFromUrl = (url: string) => {
   try {
     const urlObject = new URL(url);
-    const domain = urlObject.hostname.replace('www2.', 'www.').replace('www.', '');
+    return urlObject.hostname.replace('www2.', 'www.').replace('www.', '');
+  } catch (error) {
+    console.error('Error parsing URL:', error);
+    return url;
+  }
+};
+
+const getLogoForUrl = (url: string) => {
+  try {
+    const domain = getDomainFromUrl(url);
     console.log('Processing URL:', url);
     console.log('Extracted domain:', domain);
     const agencyInfo = AGENCY_LOGOS.find(agency => domain.includes(agency.domain));
@@ -202,11 +211,16 @@ const AirtableTable = ({
     return (poste.includes(searchTerm) || location.includes(searchTerm)) && !containsExcludedWord;
   }).sort((a, b) => {
     if (!sortOrder) return 0;
-    const titleA = a.fields.Poste?.toLowerCase() || '';
-    const titleB = b.fields.Poste?.toLowerCase() || '';
-    return sortOrder === 'asc' 
-      ? titleA.localeCompare(titleA)
-      : titleB.localeCompare(titleB);
+    
+    if (sortOrder === 'asc' || sortOrder === 'desc') {
+      const domainA = getDomainFromUrl(a.fields.lien || '');
+      const domainB = getDomainFromUrl(b.fields.lien || '');
+      return sortOrder === 'asc' 
+        ? domainA.localeCompare(domainB)
+        : domainB.localeCompare(domainA);
+    }
+    
+    return 0;
   });
 
   const isJobFavorited = (jobLink: string) => {
