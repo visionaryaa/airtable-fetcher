@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
@@ -32,11 +33,11 @@ const JobControls = ({
         >
           {isScrapingLoading ? (
             <>
-              <Loader2 className="animate-spin" />
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Recherche...
             </>
           ) : (
-            '+ Générer'
+            'Rechercher'
           )}
         </Button>
 
@@ -48,11 +49,11 @@ const JobControls = ({
         >
           {isDeletingLoading ? (
             <>
-              <Loader2 className="animate-spin" />
-              Suppression...
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Réinitialisation...
             </>
           ) : (
-            'Supprimer'
+            'Réinitialiser la base'
           )}
         </Button>
       </div>

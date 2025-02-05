@@ -13,8 +13,8 @@ import {
 interface SearchFiltersProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  sortOrder?: 'asc' | 'desc';
-  setSortOrder: (order: 'asc' | 'desc') => void;
+  sortOrder?: 'asc' | 'desc' | 'agency_asc' | 'agency_desc';
+  setSortOrder: (order: 'asc' | 'desc' | 'agency_asc' | 'agency_desc') => void;
   excludedWords: string[];
   setExcludedWords: (words: string[]) => void;
   newWord: string;

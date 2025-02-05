@@ -61,9 +61,19 @@ const Index = () => {
   };
 
   const handleScrape = async () => {
+    // Check if all three fields are filled
+    if (!searchQuery.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Veuillez remplir le champ de recherche.",
+      });
+      return;
+    }
+
     setIsScrapingLoading(true);
     try {
-      const response = await fetch('https://hook.eu2.make.com/275e2xl21itwarp2pskui1wp4fs6ohcs?action=scrape');
+      const response = await fetch(`https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&search=${encodeURIComponent(searchQuery)}`);
       if (!response.ok) throw new Error('Failed to trigger scraping');
       
       toast({
@@ -86,27 +96,27 @@ const Index = () => {
   const handleDelete = async () => {
     setIsDeletingLoading(true);
     try {
-      const response = await fetch('https://hook.eu2.make.com/275e2xl21itwarp2pskui1wp4fs6ohcs?action=delete');
+      const response = await fetch('https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=delete');
       if (!response.ok) throw new Error('Failed to trigger deletion');
       
       toast({
-        title: "Suppression en cours",
-        description: "Les données sont en cours de suppression...",
+        title: "Réinitialisation en cours",
+        description: "La base de données est en cours de réinitialisation...",
       });
 
       setTimeout(() => {
         setRefreshKey(prev => prev + 1);
         setIsDeletingLoading(false);
         toast({
-          title: "Suppression terminée",
-          description: "Toutes les données ont été supprimées.",
+          title: "Réinitialisation terminée",
+          description: "La base de données a été réinitialisée avec succès.",
         });
       }, 7000);
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Erreur",
-        description: "Une erreur est survenue lors de la suppression.",
+        description: "Une erreur est survenue lors de la réinitialisation.",
       });
       setIsDeletingLoading(false);
     }
