@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -39,7 +38,7 @@ const JobSearch = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | undefined>();
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | 'agency_asc' | 'agency_desc'>();
   const [searchQuery, setSearchQuery] = useState("");
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
   const [newWord, setNewWord] = useState("");
@@ -240,4 +239,3 @@ const JobSearch = () => {
 };
 
 export default JobSearch;
-
