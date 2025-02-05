@@ -16,7 +16,7 @@ const Home = () => {
     },
     { 
       name: "Tempo-Team", 
-      logo: "https://scontent.fbru2-1.fna.fbcdn.net/v/t39.30808-6/352321179_802641697768990_7499832421124251242_n.png?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=GoOS2AtHBusQ7kNvgHYxTXc&_nc_zt=23&_nc_ht=scontent.fbru2-1.fna&_nc_gid=Ae_9EPVESkA8wMfDsEVP_6L&oh=00_AYCWUQSFWcAyItU6tzoRhWSwgmXvNMnk_iuILxmJsxa71Q&oe=67A19741" 
+      logo: "https://i.postimg.cc/KjzxPhbD/352321179-802641697768990-7499832421124251242-n.png" 
     },
     { 
       name: "Adecco", 
