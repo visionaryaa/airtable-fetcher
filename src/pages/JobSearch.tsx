@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -105,7 +106,7 @@ const JobSearch = () => {
   return (
     <div className="min-h-screen bg-background">
       <main className="container mx-auto py-8 px-4">
-        <div className="max-w-xl mx-auto space-y-6 mb-12">
+        <div className="max-w-5xl mx-auto space-y-6 mb-12">
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-bold">Recherche personnalisée</h1>
             <p className="text-muted-foreground">
@@ -116,86 +117,88 @@ const JobSearch = () => {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-6 bg-card p-6 rounded-lg shadow-sm"
+              className="space-y-6 md:space-y-0 bg-card p-6 rounded-lg shadow-sm"
             >
-              <FormField
-                control={form.control}
-                name="nom_du_job"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nom du job</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Ex: Manutentionnaire" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="code_postale"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Code postal</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Ex: 1000"
-                        maxLength={4}
-                        {...field}
-                        onChange={(e) => {
-                          const value = e.target.value.replace(/[^0-9]/g, "");
-                          if (value.length <= 4) {
-                            field.onChange(value);
-                          }
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="rayon"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Rayon de recherche</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <FormField
+                  control={form.control}
+                  name="nom_du_job"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nom du job</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionnez un rayon" />
-                        </SelectTrigger>
+                        <Input placeholder="Ex: Manutentionnaire" {...field} />
                       </FormControl>
-                      <SelectContent>
-                        <SelectItem value="5">5km</SelectItem>
-                        <SelectItem value="25">25km</SelectItem>
-                        <SelectItem value="40">40km</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  "Recherche en cours..."
-                ) : (
-                  <>
-                    <Search className="mr-2 h-4 w-4" />
-                    Rechercher
-                  </>
-                )}
-              </Button>
+                <FormField
+                  control={form.control}
+                  name="code_postale"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Code postal</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Ex: 1000"
+                          maxLength={4}
+                          {...field}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/[^0-9]/g, "");
+                            if (value.length <= 4) {
+                              field.onChange(value);
+                            }
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="rayon"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Rayon de recherche</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionnez un rayon" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="5">5km</SelectItem>
+                          <SelectItem value="25">25km</SelectItem>
+                          <SelectItem value="40">40km</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button
+                  type="submit"
+                  className="w-full md:self-end"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    "Recherche en cours..."
+                  ) : (
+                    <>
+                      <Search className="mr-2 h-4 w-4" />
+                      Rechercher
+                    </>
+                  )}
+                </Button>
+              </div>
             </form>
           </Form>
         </div>
@@ -237,3 +240,4 @@ const JobSearch = () => {
 };
 
 export default JobSearch;
+
