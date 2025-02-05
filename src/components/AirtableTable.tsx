@@ -20,7 +20,7 @@ interface AirtableTableProps {
 const AGENCY_LOGOS = [
   {
     domain: 'proselect.be',
-    logo: 'https://scontent.fbru2-1.fna.fbcdn.net/v/t39.30808-6/424861504_903474951786484_6860552531033903105_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=9f87pSSpry0Q7kNvgFyrnoT&_nc_zt=23&_nc_ht=scontent.fbru2-1.fna&_nc_gid=Ak1S7cV8uODElYBPLoC2BP7&oh=00_AYD11qaICw8KiEXJHPd2k0JeIOgaHaTW9IRlvZoyE62k0g&oe=67A1CC7A'
+    logo: 'https://i.postimg.cc/tg2Xq57M/IMG-7594.png'
   },
   {
     domain: 'tempo-team.be',
