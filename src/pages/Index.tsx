@@ -61,7 +61,6 @@ const Index = () => {
   };
 
   const handleScrape = async () => {
-    // Check if all three fields are filled
     if (!searchQuery.trim()) {
       toast({
         variant: "destructive",
