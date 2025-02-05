@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Logo from "./Logo";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { LogIn, LogOut, Menu, User, Home, Settings, Heart, Search } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,6 +21,14 @@ const Navbar = () => {
     await supabase.auth.signOut();
     navigate('/');
   };
+
+  const mobileNavItems = [
+    { to: "/", label: "Accueil", icon: Home },
+    { to: "/jobs", label: "Offres d'emploi" },
+    { to: "/job-search", label: "Recherche", icon: Search },
+    { to: "/favoris", label: "Favoris", icon: Heart },
+    { to: "/settings", label: "Paramètres", icon: Settings },
+  ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -57,39 +64,33 @@ const Navbar = () => {
           </nav>
 
           {/* Mobile Navigation */}
-          <Sheet>
-            <SheetTrigger asChild className="md:hidden">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild className="md:hidden">
               <Button variant="ghost" size="icon">
                 <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle menu</span>
+                <span className="sr-only">Menu</span>
               </Button>
-            </SheetTrigger>
-            <SheetContent side="left">
-              <nav className="flex flex-col space-y-4">
-                <Link to="/" className="text-foreground/60 hover:text-foreground">
-                  <Home className="h-4 w-4 inline-block mr-2" />
-                  Accueil
-                </Link>
-                <Link to="/jobs" className="text-foreground/60 hover:text-foreground">
-                  Offres d'emploi
-                </Link>
-                <Link to="/job-search" className="text-foreground/60 hover:text-foreground">
-                  <Search className="h-4 w-4 inline-block mr-2" />
-                  Recherche
-                </Link>
-                <Link to="/favoris" className="text-foreground/60 hover:text-foreground">
-                  <Heart className="h-4 w-4 inline-block mr-2" />
-                  Favoris
-                </Link>
-                {user && (
-                  <Link to="/settings" className="text-foreground/60 hover:text-foreground">
-                    <Settings className="h-4 w-4 inline-block mr-2" />
-                    Paramètres
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[200px]">
+              {mobileNavItems.map((item) => (
+                <DropdownMenuItem key={item.to} asChild>
+                  <Link to={item.to} className="w-full flex items-center">
+                    {item.icon && <item.icon className="mr-2 h-4 w-4" />}
+                    {item.label}
                   </Link>
-                )}
-              </nav>
-            </SheetContent>
-          </Sheet>
+                </DropdownMenuItem>
+              ))}
+              {user && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Déconnexion
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* Account Section */}
           <div className="flex items-center space-x-2">
