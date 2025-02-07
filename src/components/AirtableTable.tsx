@@ -54,7 +54,6 @@ const AGENCY_LOGOS = [
     domain: 'dajobs.be',
     logo: 'https://i.postimg.cc/fL7Dcvyd/347248690-792113835829706-805731174237376164-n.png'
   },
-  ,
   {
     domain: 'sdworx.jobs',
     logo: 'https://i.postimg.cc/XJ8FtyxC/339105639-183429217812911-8132452130259136190-n.png'
