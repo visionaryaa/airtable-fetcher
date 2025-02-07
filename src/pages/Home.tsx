@@ -1,9 +1,11 @@
+
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import Autoplay from "embla-carousel-autoplay";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AuroraBackground } from "@/components/ui/aurora-background";
+import { LogoCarousel } from "@/components/ui/logo-carousel";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -11,48 +13,21 @@ const Home = () => {
   const isMobile = useIsMobile();
 
   const agencies = [
-    { 
-      name: "Proselect", 
-      logo: "https://scontent.fbru2-1.fna.fbcdn.net/v/t39.30808-6/424861504_903474951786484_6860552531033903105_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=9f87pSSpry0Q7kNvgFyrnoT&_nc_zt=23&_nc_ht=scontent.fbru2-1.fna&_nc_gid=Ak1S7cV8uODElYBPLoC2BP7&oh=00_AYD11qaICw8KiEXJHPd2k0JeIOgaHaTW9IRlvZoyE62k0g&oe=67A1CC7A" 
-    },
-    { 
-      name: "Tempo-Team", 
-      logo: "https://i.postimg.cc/KjzxPhbD/352321179-802641697768990-7499832421124251242-n.png" 
-    },
-    { 
-      name: "Adecco", 
-      logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpHiI1ANEpe5BlJpLQDI_4M8jl1AnJciaqaw&s" 
-    },
-    { 
-      name: "ASAP", 
-      logo: "https://a.storyblok.com/f/118264/240x240/c475b21edc/asap-logo-2.png" 
-    },
-    { 
-      name: "Synergie", 
-      logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMXkqv_r78fpVwVE9xDY6rd0GfS3bMlK1sWA&s" 
-    },
-    { 
-      name: "Randstad", 
-      logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5L2880dU-fMT-PjiSxVWWbwI6Vb8l3Vw6Q&s" 
-    },
-    { 
-      name: "Accent Jobs", 
-      logo: "https://scontent-bru2-1.xx.fbcdn.net/v/t39.30808-1/282401818_7471306532942250_8129507684428268966_n.jpg?stp=dst-jpg_s720x720_tt6&_nc_cat=103&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=V7V32kIB9kQQ7kNvgGrchjq&_nc_zt=24&_nc_ht=scontent-bru2-1.xx&_nc_gid=AxGzm78UeCGDdyODeeOkUVP&oh=00_AYCkOMbUGq7QW9APk_A0wqGGCWF4f3gkf8SaipnTsGtuZA&oe=67A1EB3A" 
-    },
-    { 
-      name: "Start People", 
-      logo: "https://startpeople.be/images/default-source/start-people-images/start-people-logo.png" 
-    },
-    { 
-      name: "AGO Jobs", 
-      logo: "https://www.agojobs.com/themes/custom/ago/logo.svg" 
-    }
+    { name: "Proselect", id: 1, img: "/proselect-logo.jpg" },
+    { name: "Tempo-Team", id: 2, img: "/tempo-team-logo.png" },
+    { name: "Adecco", id: 3, img: "/adecco-logo.jpg" },
+    { name: "ASAP", id: 4, img: "/asap-logo.png" },
+    { name: "Synergie", id: 5, img: "/synergie-logo.jpg" },
+    { name: "Randstad", id: 6, img: "/randstad-logo.jpg" },
+    { name: "Accent Jobs", id: 7, img: "/accent-jobs-logo.jpg" },
+    { name: "Start People", id: 8, img: "/start-people-logo.png" },
+    { name: "AGO Jobs", id: 9, img: "/ago-jobs-logo.svg" }
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground">
       <AuroraBackground className="w-full">
-        <main>
+        <main className="pt-14"> {/* Add padding-top to prevent overlap with navbar */}
           <div className="container mx-auto px-4 py-20">
             <div className="max-w-6xl mx-auto space-y-12">
               <p className="text-4xl font-bold text-center">
@@ -97,7 +72,7 @@ const Home = () => {
                     <div key={index} className="aspect-square">
                       <div className="h-full bg-card dark:bg-[#1A1F2C]/80 backdrop-blur-sm rounded-lg p-2 flex items-center justify-center shadow-lg dark:shadow-[#403E43]/20">
                         <img
-                          src={agency.logo}
+                          src={agency.img}
                           alt={`${agency.name} logo`}
                           className="max-w-full max-h-full object-contain"
                           onError={(e) => {
@@ -124,7 +99,7 @@ const Home = () => {
                         <div className="p-2">
                           <div className="bg-card dark:bg-[#1A1F2C]/80 backdrop-blur-sm rounded-lg p-4 h-24 flex items-center justify-center shadow-lg dark:shadow-[#403E43]/20">
                             <img
-                              src={agency.logo}
+                              src={agency.img}
                               alt={`${agency.name} logo`}
                               className="max-h-16 w-auto object-contain"
                               onError={(e) => {
