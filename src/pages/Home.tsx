@@ -24,15 +24,13 @@ const Home = () => {
   ];
 
   return (
-    <div className="relative min-h-screen w-full overflow-x-hidden">
-      <div className="fixed inset-0">
-        <AuroraBackground className="h-full w-full">
-          <div /> {/* Empty div as child to satisfy the children prop requirement */}
-        </AuroraBackground>
-      </div>
-      
-      <main className="relative z-10 min-h-screen">
-        <div className="container mx-auto px-4 pt-24 md:pt-28">
+    <div className="relative min-h-screen w-full">
+      <AuroraBackground className="fixed inset-0">
+        <div className="absolute inset-0" />
+      </AuroraBackground>
+
+      <div className="relative z-10">
+        <div className="container mx-auto px-4 py-24 md:py-28">
           {/* Hero Section */}
           <section className="mb-20">
             <div className="mx-auto max-w-6xl">
@@ -128,7 +126,7 @@ const Home = () => {
             </div>
           </section>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
