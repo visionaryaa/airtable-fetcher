@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import Autoplay from "embla-carousel-autoplay";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AuroraBackground } from "@/components/ui/aurora-background";
-import { LogoCarousel } from "@/components/ui/logo-carousel";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -25,11 +24,7 @@ const Home = () => {
   ];
 
   return (
-    <div className="relative min-h-screen w-full overflow-x-hidden">
-      <div className="fixed inset-0 w-full">
-        <AuroraBackground className="h-full w-full" />
-      </div>
-      
+    <AuroraBackground>
       <div className="relative z-10 w-full pt-[72px]">
         <div className="container mx-auto px-4">
           {/* Hero Section */}
@@ -128,7 +123,7 @@ const Home = () => {
           </section>
         </div>
       </div>
-    </div>
+    </AuroraBackground>
   );
 };
 
