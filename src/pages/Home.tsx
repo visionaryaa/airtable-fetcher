@@ -24,12 +24,12 @@ const Home = () => {
   ];
 
   return (
-    <div className="relative min-h-screen w-full">
+    <div className="flex min-h-screen flex-col">
       <AuroraBackground className="fixed inset-0">
         <div className="absolute inset-0" />
       </AuroraBackground>
 
-      <div className="relative z-10">
+      <div className="relative z-10 flex-1">
         <div className="container mx-auto px-4 py-24 md:py-28">
           {/* Hero Section */}
           <section className="mb-20">
