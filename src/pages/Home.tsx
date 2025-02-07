@@ -24,11 +24,15 @@ const Home = () => {
   ];
 
   return (
-    <AuroraBackground>
-      <div className="relative z-10 w-full pt-[72px]">
-        <div className="container mx-auto px-4">
+    <div className="relative min-h-screen w-full overflow-x-hidden">
+      <div className="fixed inset-0">
+        <AuroraBackground className="h-full w-full" />
+      </div>
+      
+      <main className="relative z-10 min-h-screen">
+        <div className="container mx-auto px-4 pt-24 md:pt-28">
           {/* Hero Section */}
-          <section className="mb-20 py-12 md:py-20">
+          <section className="mb-20">
             <div className="mx-auto max-w-6xl">
               <h1 className="mb-16 text-4xl font-bold text-center md:text-5xl">
                 Trouvez votre nouveau job bien plus vite grâce à{" "}
@@ -122,8 +126,8 @@ const Home = () => {
             </div>
           </section>
         </div>
-      </div>
-    </AuroraBackground>
+      </main>
+    </div>
   );
 };
 
