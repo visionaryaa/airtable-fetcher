@@ -25,17 +25,18 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <AuroraBackground className="w-full">
-        <main className="pt-14"> {/* Add padding-top to prevent overlap with navbar */}
-          <div className="container mx-auto px-4 py-20">
-            <div className="max-w-6xl mx-auto space-y-12">
-              <p className="text-4xl font-bold text-center">
+    <div className="min-h-screen bg-background">
+      <AuroraBackground>
+        <div className="container mx-auto px-4">
+          {/* Hero Section with proper spacing */}
+          <section className="pt-24 md:pt-32 pb-20">
+            <div className="max-w-6xl mx-auto">
+              <h1 className="text-4xl md:text-5xl font-bold text-center mb-16">
                 Trouvez votre nouveau job bien plus vite grâce à{" "}
                 <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
                   Intérim centrale
                 </span>
-              </p>
+              </h1>
               
               <div className="grid md:grid-cols-2 gap-8">
                 <div className="bg-card dark:bg-[#1A1F2C]/80 backdrop-blur-sm p-8 rounded-xl shadow-lg dark:shadow-[#403E43]/20">
@@ -63,14 +64,17 @@ const Home = () => {
                 </div>
               </div>
             </div>
+          </section>
 
-            <div className="mt-16">
-              <h3 className="text-xl font-semibold mb-8">Les agences d'intérim intégrés dans notre plateforme</h3>
+          {/* Agencies Section */}
+          <section className="py-16 md:py-24">
+            <div className="max-w-6xl mx-auto">
+              <h3 className="text-xl font-semibold mb-12">Les agences d'intérim intégrés dans notre plateforme</h3>
               {isMobile ? (
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-4">
                   {agencies.map((agency, index) => (
                     <div key={index} className="aspect-square">
-                      <div className="h-full bg-card dark:bg-[#1A1F2C]/80 backdrop-blur-sm rounded-lg p-2 flex items-center justify-center shadow-lg dark:shadow-[#403E43]/20">
+                      <div className="h-full bg-card dark:bg-[#1A1F2C]/80 backdrop-blur-sm rounded-lg p-4 flex items-center justify-center shadow-lg dark:shadow-[#403E43]/20">
                         <img
                           src={agency.img}
                           alt={`${agency.name} logo`}
@@ -115,8 +119,8 @@ const Home = () => {
                 </Carousel>
               )}
             </div>
-          </div>
-        </main>
+          </section>
+        </div>
       </AuroraBackground>
     </div>
   );
