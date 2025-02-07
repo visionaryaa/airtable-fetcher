@@ -26,7 +26,9 @@ const Home = () => {
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden">
       <div className="fixed inset-0">
-        <AuroraBackground className="h-full w-full" />
+        <AuroraBackground className="h-full w-full">
+          <div /> {/* Empty div as child to satisfy the children prop requirement */}
+        </AuroraBackground>
       </div>
       
       <main className="relative z-10 min-h-screen">
