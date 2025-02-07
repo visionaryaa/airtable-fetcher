@@ -49,7 +49,19 @@ const AGENCY_LOGOS = [
   {
     domain: 'startpeople.be',
     logo: 'https://media.licdn.com/dms/image/v2/D4E03AQGzYaEHyR2N_w/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1666681919673?e=2147483647&v=beta&t=oyXA1mGdfaPAMHB0YsV3dUAQEN0Ic0DfVltZaVtSywc'
-  }
+  },
+  {
+    domain: 'dajobs.be',
+    logo: 'https://i.postimg.cc/fL7Dcvyd/347248690-792113835829706-805731174237376164-n.png'
+  },
+  ,
+  {
+    domain: 'sdworx.jobs',
+    logo: 'https://i.postimg.cc/XJ8FtyxC/339105639-183429217812911-8132452130259136190-n.png'
+  },
+
+
+  
 ];
 
 const getDomainFromUrl = (url: string) => {
