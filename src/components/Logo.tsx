@@ -1,6 +1,7 @@
-const Logo = () => {
+
+const Logo = ({ className = "" }: { className?: string }) => {
   return (
-    <svg width="200" height="48" viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg" className="fill-current">
+    <svg width="200" height="48" viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg" className={`fill-current ${className}`}>
       <defs>
         <linearGradient id="gradBlue" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" style={{ stopColor: "#0073e6", stopOpacity: 1 }} />

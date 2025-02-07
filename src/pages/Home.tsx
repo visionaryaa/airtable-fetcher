@@ -1,9 +1,9 @@
-
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import Autoplay from "embla-carousel-autoplay";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { AuroraBackground } from "@/components/ui/aurora-background";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -50,97 +50,99 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <main>
-        <div className="container mx-auto px-4 py-20">
-          <div className="max-w-6xl mx-auto space-y-12">
-            <p className="text-4xl font-bold text-center">
-              Trouvez votre nouveau job bien plus vite grâce à{" "}
-              <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-                Intérim centrale
-              </span>
-            </p>
-            
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="bg-card dark:bg-[#1A1F2C]/80 backdrop-blur-sm p-8 rounded-xl shadow-lg dark:shadow-[#403E43]/20">
-                <h2 className="text-2xl font-semibold mb-4">
-                  Plus de 10 agences intérim en un seul endroit
-                </h2>
-                <p className="text-muted-foreground mb-6">
-                  Nous rassemblons automatiquement toutes les offres d'emploi en logistique de la région liégeoise 
-                  provenant des meilleures agences intérim. Plus besoin de visiter des dizaines de sites différents !
-                </p>
-                <Button 
-                  onClick={() => navigate('/job-search')} 
-                  className="bg-primary hover:bg-primary/90 text-lg px-8 py-4"
-                >
-                  Rechercher
-                </Button>
-              </div>
+    <div className="min-h-screen bg-background text-foreground overflow-hidden">
+      <AuroraBackground className="w-full">
+        <main>
+          <div className="container mx-auto px-4 py-20">
+            <div className="max-w-6xl mx-auto space-y-12">
+              <p className="text-4xl font-bold text-center">
+                Trouvez votre nouveau job bien plus vite grâce à{" "}
+                <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+                  Intérim centrale
+                </span>
+              </p>
+              
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="bg-card dark:bg-[#1A1F2C]/80 backdrop-blur-sm p-8 rounded-xl shadow-lg dark:shadow-[#403E43]/20">
+                  <h2 className="text-2xl font-semibold mb-4">
+                    Plus de 10 agences intérim en un seul endroit
+                  </h2>
+                  <p className="text-muted-foreground mb-6">
+                    Nous rassemblons automatiquement toutes les offres d'emploi en logistique de la région liégeoise 
+                    provenant des meilleures agences intérim. Plus besoin de visiter des dizaines de sites différents !
+                  </p>
+                  <Button 
+                    onClick={() => navigate('/job-search')} 
+                    className="bg-primary hover:bg-primary/90 text-lg px-8 py-4"
+                  >
+                    Rechercher
+                  </Button>
+                </div>
 
-              <div className="bg-card dark:bg-[#1A1F2C]/80 backdrop-blur-sm p-8 rounded-xl shadow-lg dark:shadow-[#403E43]/20">
-                <img
-                  src="https://www.sapir.ac.il/sites/default/files/styles/box_image/public/2023-11/iStock-1437820717%20copy.jpg?itok=x-7jMRvt"
-                  alt="Happy woman at job interview"
-                  className="rounded-lg shadow-xl w-full h-full object-cover"
-                />
+                <div className="bg-card dark:bg-[#1A1F2C]/80 backdrop-blur-sm p-8 rounded-xl shadow-lg dark:shadow-[#403E43]/20">
+                  <img
+                    src="https://www.sapir.ac.il/sites/default/files/styles/box_image/public/2023-11/iStock-1437820717%20copy.jpg?itok=x-7jMRvt"
+                    alt="Happy woman at job interview"
+                    className="rounded-lg shadow-xl w-full h-full object-cover"
+                  />
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="mt-16">
-            <h3 className="text-xl font-semibold mb-8">Les agences d'intérim intégrés dans notre plateforme</h3>
-            {isMobile ? (
-              <div className="grid grid-cols-2 gap-2">
-                {agencies.map((agency, index) => (
-                  <div key={index} className="aspect-square">
-                    <div className="h-full bg-card dark:bg-[#1A1F2C]/80 backdrop-blur-sm rounded-lg p-2 flex items-center justify-center shadow-lg dark:shadow-[#403E43]/20">
-                      <img
-                        src={agency.logo}
-                        alt={`${agency.name} logo`}
-                        className="max-w-full max-h-full object-contain"
-                        onError={(e) => {
-                          const img = e.target as HTMLImageElement;
-                          img.src = '/placeholder.svg';
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <Carousel 
-                opts={{
-                  align: "start",
-                  loop: true,
-                }}
-                plugins={[plugin]}
-                className="w-full"
-              >
-                <CarouselContent>
+            <div className="mt-16">
+              <h3 className="text-xl font-semibold mb-8">Les agences d'intérim intégrés dans notre plateforme</h3>
+              {isMobile ? (
+                <div className="grid grid-cols-2 gap-2">
                   {agencies.map((agency, index) => (
-                    <CarouselItem key={index} className="basis-1/4 md:basis-1/5">
-                      <div className="p-2">
-                        <div className="bg-card dark:bg-[#1A1F2C]/80 backdrop-blur-sm rounded-lg p-4 h-24 flex items-center justify-center shadow-lg dark:shadow-[#403E43]/20">
-                          <img
-                            src={agency.logo}
-                            alt={`${agency.name} logo`}
-                            className="max-h-16 w-auto object-contain"
-                            onError={(e) => {
-                              const img = e.target as HTMLImageElement;
-                              img.src = '/placeholder.svg';
-                            }}
-                          />
-                        </div>
+                    <div key={index} className="aspect-square">
+                      <div className="h-full bg-card dark:bg-[#1A1F2C]/80 backdrop-blur-sm rounded-lg p-2 flex items-center justify-center shadow-lg dark:shadow-[#403E43]/20">
+                        <img
+                          src={agency.logo}
+                          alt={`${agency.name} logo`}
+                          className="max-w-full max-h-full object-contain"
+                          onError={(e) => {
+                            const img = e.target as HTMLImageElement;
+                            img.src = '/placeholder.svg';
+                          }}
+                        />
                       </div>
-                    </CarouselItem>
+                    </div>
                   ))}
-                </CarouselContent>
-              </Carousel>
-            )}
+                </div>
+              ) : (
+                <Carousel 
+                  opts={{
+                    align: "start",
+                    loop: true,
+                  }}
+                  plugins={[plugin]}
+                  className="w-full"
+                >
+                  <CarouselContent>
+                    {agencies.map((agency, index) => (
+                      <CarouselItem key={index} className="basis-1/4 md:basis-1/5">
+                        <div className="p-2">
+                          <div className="bg-card dark:bg-[#1A1F2C]/80 backdrop-blur-sm rounded-lg p-4 h-24 flex items-center justify-center shadow-lg dark:shadow-[#403E43]/20">
+                            <img
+                              src={agency.logo}
+                              alt={`${agency.name} logo`}
+                              className="max-h-16 w-auto object-contain"
+                              onError={(e) => {
+                                const img = e.target as HTMLImageElement;
+                                img.src = '/placeholder.svg';
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                </Carousel>
+              )}
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </AuroraBackground>
     </div>
   );
 };

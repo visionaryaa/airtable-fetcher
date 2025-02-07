@@ -7,7 +7,7 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">
-            <Logo />
+            <Logo className="text-white" />
             <p className="text-gray-400 mt-2">
               Votre plateforme centralisée pour les offres d'emploi en logistique à Liège
             </p>
