@@ -38,6 +38,14 @@ const Home = () => {
     { 
       name: "Accent Jobs", 
       logo: "https://scontent-bru2-1.xx.fbcdn.net/v/t39.30808-1/282401818_7471306532942250_8129507684428268966_n.jpg?stp=dst-jpg_s720x720_tt6&_nc_cat=103&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=V7V32kIB9kQQ7kNvgGrchjq&_nc_zt=24&_nc_ht=scontent-bru2-1.xx&_nc_gid=AxGzm78UeCGDdyODeeOkUVP&oh=00_AYCkOMbUGq7QW9APk_A0wqGGCWF4f3gkf8SaipnTsGtuZA&oe=67A1EB3A" 
+    },
+    { 
+      name: "Start People", 
+      logo: "https://startpeople.be/images/default-source/start-people-images/start-people-logo.png" 
+    },
+    { 
+      name: "AGO Jobs", 
+      logo: "https://www.agojobs.com/themes/custom/ago/logo.svg" 
     }
   ];
 
