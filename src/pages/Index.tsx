@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/AuthProvider";
@@ -124,7 +125,6 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground">
       <main className="container mx-auto py-8 px-4">
         <div className="flex flex-col space-y-6">
-          
           <JobControls
             totalRecords={totalRecords}
             isScrapingLoading={isScrapingLoading}
