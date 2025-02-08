@@ -1,3 +1,4 @@
+
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -50,7 +51,7 @@ const Home = () => {
                     </h2>
                     <p className="text-muted-foreground mb-6">
                       Nous rassemblons automatiquement toutes les offres d'emploi en Belgique
-                      provenant des meilleures agences intérim. Plus besoin de visiter des dizaines de sites différents !
+                      provenant de toutes les principales agences d'intérim de Wallonie. Plus besoin de visiter des dizaines de sites différents !
                     </p>
                     <Button 
                       onClick={() => navigate('/job-search')} 
