@@ -1,4 +1,3 @@
-
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -47,10 +46,10 @@ const Home = () => {
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="bg-card/95 dark:bg-[#1A1F2C]/95 backdrop-blur-sm p-8 rounded-xl shadow-lg">
                     <h2 className="text-2xl font-semibold mb-4">
-                      Plus de 10 agences intérim en un seul endroit
+                      Plus de 15 agences intérim en un seul endroit
                     </h2>
                     <p className="text-muted-foreground mb-6">
-                      Nous rassemblons automatiquement toutes les offres d'emploi en logistique de la région liégeoise 
+                      Nous rassemblons automatiquement toutes les offres d'emploi en Belgique
                       provenant des meilleures agences intérim. Plus besoin de visiter des dizaines de sites différents !
                     </p>
                     <Button 
@@ -136,4 +135,3 @@ const Home = () => {
 };
 
 export default Home;
-
