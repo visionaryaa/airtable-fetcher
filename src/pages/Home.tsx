@@ -45,7 +45,7 @@ const Home = () => {
                   </span>
                 </h1>
                 
-                <div className="grid md:grid-cols-2 gap-8">
+                <div className="grid md:grid-cols-2 gap-8 items-center">
                   <div className="p-8 rounded-xl">
                     <h2 className="text-2xl font-semibold mb-4">
                       Plus de 15 agences intérim en un seul endroit
@@ -63,24 +63,8 @@ const Home = () => {
                   </div>
 
                   <div className="p-8 rounded-xl">
-                    <img
-                      src="https://www.sapir.ac.il/sites/default/files/styles/box_image/public/2023-11/iStock-1437820717%20copy.jpg?itok=x-7jMRvt"
-                      alt="Happy woman at job interview"
-                      className="rounded-lg shadow-xl w-full h-full object-cover"
-                    />
+                    <AnimatedBeamDemo />
                   </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Integration Section with AnimatedBeamDemo */}
-            <section className="mb-20">
-              <div className="mx-auto max-w-6xl">
-                <h2 className="text-3xl font-semibold text-center mb-12">
-                  Optimisez votre processus de recrutement
-                </h2>
-                <div className="relative w-full max-w-4xl mx-auto z-10">
-                  <AnimatedBeamDemo />
                 </div>
               </div>
             </section>
