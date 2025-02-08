@@ -1,3 +1,4 @@
+
 import React, { forwardRef, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { AnimatedBeam } from "@/components/ui/animated-beam";
@@ -42,21 +43,21 @@ export function AnimatedBeamDemo() {
 
   return (
     <div
-      className="relative flex h-[500px] w-full items-center justify-center overflow-hidden"
+      className="relative flex h-[400px] w-full items-center justify-center overflow-hidden"
       ref={containerRef}
     >
       <div className="flex size-full flex-col max-w-lg max-h-[200px] items-stretch justify-between">
         <div className="flex flex-row items-center justify-between">
           <Circle ref={div1Ref}>
-            <img src={agencies[0].img} alt={agencies[0].name} className="w-full h-full object-contain" />
+            <img src={agencies[0].img} alt={agencies[0].name} className="w-full h-full object-contain rounded-[15px]" />
           </Circle>
           <Circle ref={div5Ref}>
-            <img src={agencies[1].img} alt={agencies[1].name} className="w-full h-full object-contain" />
+            <img src={agencies[1].img} alt={agencies[1].name} className="w-full h-full object-contain rounded-[15px]" />
           </Circle>
         </div>
         <div className="flex flex-row items-center justify-between">
           <Circle ref={div2Ref}>
-            <img src={agencies[2].img} alt={agencies[2].name} className="w-full h-full object-contain" />
+            <img src={agencies[2].img} alt={agencies[2].name} className="w-full h-full object-contain rounded-[15px]" />
           </Circle>
           <Circle ref={div4Ref} className="size-20">
             <svg width="64" height="64" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" className="fill-current">
@@ -79,15 +80,15 @@ export function AnimatedBeamDemo() {
             </svg>
           </Circle>
           <Circle ref={div6Ref}>
-            <img src={agencies[3].img} alt={agencies[3].name} className="w-full h-full object-contain" />
+            <img src={agencies[3].img} alt={agencies[3].name} className="w-full h-full object-contain rounded-[15px]" />
           </Circle>
         </div>
         <div className="flex flex-row items-center justify-between">
           <Circle ref={div3Ref}>
-            <img src={agencies[4].img} alt={agencies[4].name} className="w-full h-full object-contain" />
+            <img src={agencies[4].img} alt={agencies[4].name} className="w-full h-full object-contain rounded-[15px]" />
           </Circle>
           <Circle ref={div7Ref}>
-            <img src={agencies[5].img} alt={agencies[5].name} className="w-full h-full object-contain" />
+            <img src={agencies[5].img} alt={agencies[5].name} className="w-full h-full object-contain rounded-[15px]" />
           </Circle>
         </div>
       </div>
@@ -136,3 +137,4 @@ export function AnimatedBeamDemo() {
     </div>
   );
 }
+

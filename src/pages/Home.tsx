@@ -34,11 +34,11 @@ const Home = () => {
 
       <div className="flex min-h-screen flex-col">
         <div className="flex-1">
-          <div className="container mx-auto px-4 py-24 md:py-28">
+          <div className="container mx-auto px-4 py-12">
             {/* Hero Section */}
-            <section className="mb-20">
+            <section className="mb-12">
               <div className="mx-auto max-w-6xl">
-                <h1 className="mb-16 text-4xl font-bold text-center md:text-5xl">
+                <h1 className="mb-8 text-4xl font-bold text-center md:text-5xl">
                   Trouvez votre nouveau job bien plus vite grâce à{" "}
                   <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
                     Intérim centrale
@@ -133,3 +133,4 @@ const Home = () => {
 };
 
 export default Home;
+
