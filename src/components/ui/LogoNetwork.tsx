@@ -69,21 +69,21 @@ export function LogoNetwork() {
         toRef={centerRef}
         curvature={-75}
         endYOffset={-10}
+        pathWidth={3}
+        pathOpacity={0.4}
         gradientStartColor="#646cff"
         gradientStopColor="#82aeff"
         pathColor="#e2e8f0"
-        pathWidth={3}
-        pathOpacity={0.4}
       />
       <AnimatedBeam
         containerRef={containerRef}
         fromRef={div2Ref}
         toRef={centerRef}
+        pathWidth={3}
+        pathOpacity={0.4}
         gradientStartColor="#646cff"
         gradientStopColor="#82aeff"
         pathColor="#e2e8f0"
-        pathWidth={3}
-        pathOpacity={0.4}
       />
       <AnimatedBeam
         containerRef={containerRef}
@@ -91,11 +91,11 @@ export function LogoNetwork() {
         toRef={centerRef}
         curvature={75}
         endYOffset={10}
+        pathWidth={3}
+        pathOpacity={0.4}
         gradientStartColor="#646cff"
         gradientStopColor="#82aeff"
         pathColor="#e2e8f0"
-        pathWidth={3}
-        pathOpacity={0.4}
       />
       <AnimatedBeam
         containerRef={containerRef}
@@ -104,22 +104,22 @@ export function LogoNetwork() {
         curvature={-75}
         endYOffset={-10}
         reverse
+        pathWidth={3}
+        pathOpacity={0.4}
         gradientStartColor="#646cff"
         gradientStopColor="#82aeff"
         pathColor="#e2e8f0"
-        pathWidth={3}
-        pathOpacity={0.4}
       />
       <AnimatedBeam
         containerRef={containerRef}
         fromRef={div5Ref}
         toRef={centerRef}
         reverse
+        pathWidth={3}
+        pathOpacity={0.4}
         gradientStartColor="#646cff"
         gradientStopColor="#82aeff"
         pathColor="#e2e8f0"
-        pathWidth={3}
-        pathOpacity={0.4}
       />
       <AnimatedBeam
         containerRef={containerRef}
@@ -128,11 +128,11 @@ export function LogoNetwork() {
         curvature={75}
         endYOffset={10}
         reverse
+        pathWidth={3}
+        pathOpacity={0.4}
         gradientStartColor="#646cff"
         gradientStopColor="#82aeff"
         pathColor="#e2e8f0"
-        pathWidth={3}
-        pathOpacity={0.4}
       />
     </div>
   );
