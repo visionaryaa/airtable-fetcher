@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import Autoplay from "embla-carousel-autoplay";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AuroraBackground } from "@/components/ui/aurora-background";
-import { LogoNetwork } from "@/components/ui/LogoNetwork";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -68,16 +67,6 @@ const Home = () => {
                     />
                   </div>
                 </div>
-              </div>
-            </section>
-
-            {/* Animated Logo Network Section */}
-            <section className="py-12 md:py-20">
-              <div className="mx-auto max-w-6xl">
-                <h2 className="text-3xl font-semibold text-center mb-12">
-                  Une plateforme centralisée pour toutes vos recherches d'emploi
-                </h2>
-                <LogoNetwork />
               </div>
             </section>
 
