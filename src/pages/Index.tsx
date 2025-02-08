@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/AuthProvider";
@@ -8,7 +7,6 @@ import JobControls from "@/components/jobs/JobControls";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
-import { LogoNetwork } from "@/components/ui/LogoNetwork";
 
 const Index = () => {
   const [totalRecords, setTotalRecords] = useState(0);
@@ -126,7 +124,6 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground">
       <main className="container mx-auto py-8 px-4">
         <div className="flex flex-col space-y-6">
-          <LogoNetwork />
           
           <JobControls
             totalRecords={totalRecords}
