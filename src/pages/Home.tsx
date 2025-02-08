@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Autoplay from "embla-carousel-autoplay";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AuroraBackground } from "@/components/ui/aurora-background";
+import { AnimatedBeamDemo } from "@/components/ui/animated-beam-demo";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -68,6 +69,18 @@ const Home = () => {
                       className="rounded-lg shadow-xl w-full h-full object-cover"
                     />
                   </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Integration Section */}
+            <section className="py-12 md:py-20">
+              <div className="mx-auto max-w-6xl">
+                <h3 className="text-xl font-semibold mb-8 text-center">
+                  Optimisez votre processus de recrutement
+                </h3>
+                <div className="w-full max-w-4xl mx-auto">
+                  <AnimatedBeamDemo />
                 </div>
               </div>
             </section>
