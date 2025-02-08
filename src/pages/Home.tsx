@@ -34,9 +34,9 @@ const Home = () => {
 
       <div className="flex min-h-screen flex-col">
         <div className="flex-1">
-          <div className="container mx-auto px-4 py-12">
+          <div className="container mx-auto px-4 py-8">
             {/* Hero Section */}
-            <section className="mb-12">
+            <section>
               <div className="mx-auto max-w-6xl">
                 <h1 className="mb-8 text-4xl font-bold text-center md:text-5xl">
                   Trouvez votre nouveau job bien plus vite grâce à{" "}
@@ -45,8 +45,13 @@ const Home = () => {
                   </span>
                 </h1>
                 
-                <div className="grid md:grid-cols-2 gap-8 items-center">
-                  <div className="p-8">
+                <div className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'md:grid-cols-2 gap-8'} items-center`}>
+                  {isMobile && (
+                    <div className="p-2">
+                      <AnimatedBeamDemo />
+                    </div>
+                  )}
+                  <div className="p-4">
                     <h2 className="text-2xl font-semibold mb-4">
                       Plus de 15 agences intérim en un seul endroit
                     </h2>
@@ -61,10 +66,11 @@ const Home = () => {
                       Rechercher
                     </Button>
                   </div>
-
-                  <div className="p-8">
-                    <AnimatedBeamDemo />
-                  </div>
+                  {!isMobile && (
+                    <div className="p-4">
+                      <AnimatedBeamDemo />
+                    </div>
+                  )}
                 </div>
               </div>
             </section>
@@ -133,4 +139,3 @@ const Home = () => {
 };
 
 export default Home;
-
