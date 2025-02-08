@@ -1,4 +1,3 @@
-
 import React, { forwardRef, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { AnimatedBeam } from "@/components/ui/animated-beam";
@@ -11,7 +10,7 @@ const Circle = forwardRef<
     <div
       ref={ref}
       className={cn(
-        "z-10 flex size-12 items-center justify-center rounded-full border-2 bg-white p-3 shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)]",
+        "z-10 flex size-12 items-center justify-center rounded-full border-2 bg-white shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)]",
         className,
       )}
     >
@@ -43,10 +42,10 @@ export function AnimatedBeamDemo() {
 
   return (
     <div
-      className="relative flex h-[500px] w-full items-center justify-center overflow-hidden rounded-lg p-10"
+      className="relative flex h-[500px] w-full items-center justify-center overflow-hidden"
       ref={containerRef}
     >
-      <div className="flex size-full flex-col max-w-lg max-h-[200px] items-stretch justify-between gap-10">
+      <div className="flex size-full flex-col max-w-lg max-h-[200px] items-stretch justify-between">
         <div className="flex flex-row items-center justify-between">
           <Circle ref={div1Ref}>
             <img src={agencies[0].img} alt={agencies[0].name} className="w-full h-full object-contain" />
@@ -137,4 +136,3 @@ export function AnimatedBeamDemo() {
     </div>
   );
 }
-
