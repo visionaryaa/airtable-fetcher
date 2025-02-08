@@ -34,31 +34,31 @@ export function LogoNetwork() {
       <div className="flex size-full max-w-lg max-h-[400px] items-stretch justify-between gap-10 relative">
         <div className="flex flex-row items-center justify-between absolute inset-0">
           <Circle ref={div1Ref}>
-            <img src="/proselect-logo.jpg" alt="Proselect" className="w-full h-full object-contain" />
+            <img src="https://i.postimg.cc/tg2Xq57M/IMG-7594.png" alt="Proselect" className="w-full h-full object-contain" />
           </Circle>
           <Circle ref={div4Ref}>
-            <img src="/adecco-logo.jpg" alt="Adecco" className="w-full h-full object-contain" />
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpHiI1ANEpe5BlJpLQDI_4M8jl1AnJciaqaw&s" alt="Adecco" className="w-full h-full object-contain" />
           </Circle>
         </div>
         
         <div className="flex flex-row items-center justify-between absolute inset-0 top-1/4">
           <Circle ref={div2Ref}>
-            <img src="/tempo-team-logo.png" alt="Tempo Team" className="w-full h-full object-contain" />
+            <img src="https://i.postimg.cc/kX2ZPLhf/352321179-802641697768990-7499832421124251242-n-1.png" alt="Tempo Team" className="w-full h-full object-contain" />
           </Circle>
           <div ref={centerRef} className="size-24 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             <Logo className="w-full h-full" />
           </div>
           <Circle ref={div5Ref}>
-            <img src="/asap-logo.png" alt="ASAP" className="w-full h-full object-contain" />
+            <img src="https://a.storyblok.com/f/118264/240x240/c475b21edc/asap-logo-2.png" alt="ASAP" className="w-full h-full object-contain" />
           </Circle>
         </div>
         
         <div className="flex flex-row items-center justify-between absolute inset-0 top-2/3">
           <Circle ref={div3Ref}>
-            <img src="/randstad-logo.jpg" alt="Randstad" className="w-full h-full object-contain" />
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5L2880dU-fMT-PjiSxVWWbwI6Vb8l3Vw6Q&s" alt="Randstad" className="w-full h-full object-contain" />
           </Circle>
           <Circle ref={div6Ref}>
-            <img src="/accent-jobs-logo.jpg" alt="Accent Jobs" className="w-full h-full object-contain" />
+            <img src="https://i.postimg.cc/053yKcZg/IMG-7592.png" alt="Accent Jobs" className="w-full h-full object-contain" />
           </Circle>
         </div>
       </div>
