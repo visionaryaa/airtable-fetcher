@@ -4,7 +4,7 @@
 import React, { forwardRef, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { AnimatedBeam } from "@/components/ui/animated-beam";
-import { GoogleDrive, NotePencil, AppWindow, BrainCircuit, Zap, MessagesSquare, MessagesSquareIcon } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp } from "lucide-react";
 
 const Circle = forwardRef<
   HTMLDivElement,
@@ -37,35 +37,35 @@ export function AnimatedBeamDemo() {
 
   return (
     <div
-      className="relative flex h-[500px] w-full items-center justify-center overflow-hidden rounded-lg border bg-background p-10 md:shadow-xl"
+      className="relative flex h-[500px] w-full items-center justify-center overflow-hidden rounded-lg border bg-background/50 p-10 md:shadow-xl"
       ref={containerRef}
     >
       <div className="flex size-full flex-col max-w-lg max-h-[200px] items-stretch justify-between gap-10">
         <div className="flex flex-row items-center justify-between">
           <Circle ref={div1Ref}>
-            <GoogleDrive className="h-6 w-6" />
+            <ArrowUp className="h-6 w-6" />
           </Circle>
           <Circle ref={div5Ref}>
-            <NotePencil className="h-6 w-6" />
+            <ArrowRight className="h-6 w-6" />
           </Circle>
         </div>
         <div className="flex flex-row items-center justify-between">
           <Circle ref={div2Ref}>
-            <AppWindow className="h-6 w-6" />
+            <ArrowLeft className="h-6 w-6" />
           </Circle>
           <Circle ref={div4Ref} className="size-16">
-            <BrainCircuit className="h-8 w-8" />
+            <ArrowUp className="h-8 w-8" />
           </Circle>
           <Circle ref={div6Ref}>
-            <Zap className="h-6 w-6" />
+            <ArrowRight className="h-6 w-6" />
           </Circle>
         </div>
         <div className="flex flex-row items-center justify-between">
           <Circle ref={div3Ref}>
-            <MessagesSquare className="h-6 w-6" />
+            <ArrowDown className="h-6 w-6" />
           </Circle>
           <Circle ref={div7Ref}>
-            <MessagesSquareIcon className="h-6 w-6" />
+            <ArrowDown className="h-6 w-6" />
           </Circle>
         </div>
       </div>
