@@ -45,7 +45,7 @@ const Home = () => {
                 </h1>
                 
                 <div className="grid md:grid-cols-2 gap-8">
-                  <div className="bg-card/95 dark:bg-[#1A1F2C]/95 backdrop-blur-sm p-8 rounded-xl shadow-lg">
+                  <div className="p-8 rounded-xl">
                     <h2 className="text-2xl font-semibold mb-4">
                       Plus de 15 agences intérim en un seul endroit
                     </h2>
@@ -61,7 +61,7 @@ const Home = () => {
                     </Button>
                   </div>
 
-                  <div className="bg-card/95 dark:bg-[#1A1F2C]/95 backdrop-blur-sm p-8 rounded-xl shadow-lg">
+                  <div className="p-8 rounded-xl">
                     <img
                       src="https://www.sapir.ac.il/sites/default/files/styles/box_image/public/2023-11/iStock-1437820717%20copy.jpg?itok=x-7jMRvt"
                       alt="Happy woman at job interview"
@@ -82,7 +82,7 @@ const Home = () => {
                   <div className="grid grid-cols-2 gap-4">
                     {agencies.map((agency, index) => (
                       <div key={index} className="aspect-square">
-                        <div className="h-full bg-card/95 dark:bg-[#1A1F2C]/95 backdrop-blur-sm rounded-lg p-4 flex items-center justify-center shadow-lg">
+                        <div className="h-full rounded-lg p-4 flex items-center justify-center shadow-lg">
                           <img
                             src={agency.img}
                             alt={`${agency.name} logo`}
@@ -109,7 +109,7 @@ const Home = () => {
                       {agencies.map((agency, index) => (
                         <CarouselItem key={index} className="basis-1/4 md:basis-1/5">
                           <div className="p-2">
-                            <div className="bg-card/95 dark:bg-[#1A1F2C]/95 backdrop-blur-sm rounded-lg p-4 h-24 flex items-center justify-center shadow-lg">
+                            <div className="rounded-lg p-4 h-24 flex items-center justify-center shadow-lg">
                               <img
                                 src={agency.img}
                                 alt={`${agency.name} logo`}
