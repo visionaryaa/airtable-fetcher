@@ -73,13 +73,13 @@ const Home = () => {
               </div>
             </section>
 
-            {/* Integration Section */}
-            <section className="py-12 md:py-20">
+            {/* Integration Section with AnimatedBeamDemo */}
+            <section className="mb-20">
               <div className="mx-auto max-w-6xl">
-                <h3 className="text-xl font-semibold mb-8 text-center">
+                <h2 className="text-3xl font-semibold text-center mb-12">
                   Optimisez votre processus de recrutement
-                </h3>
-                <div className="w-full max-w-4xl mx-auto">
+                </h2>
+                <div className="relative w-full max-w-4xl mx-auto z-10">
                   <AnimatedBeamDemo />
                 </div>
               </div>
