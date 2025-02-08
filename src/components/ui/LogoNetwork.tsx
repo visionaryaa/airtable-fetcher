@@ -72,6 +72,8 @@ export function LogoNetwork() {
         gradientStartColor="#646cff"
         gradientStopColor="#82aeff"
         pathColor="#e2e8f0"
+        pathWidth={3}
+        pathOpacity={0.4}
       />
       <AnimatedBeam
         containerRef={containerRef}
@@ -80,6 +82,8 @@ export function LogoNetwork() {
         gradientStartColor="#646cff"
         gradientStopColor="#82aeff"
         pathColor="#e2e8f0"
+        pathWidth={3}
+        pathOpacity={0.4}
       />
       <AnimatedBeam
         containerRef={containerRef}
@@ -90,6 +94,8 @@ export function LogoNetwork() {
         gradientStartColor="#646cff"
         gradientStopColor="#82aeff"
         pathColor="#e2e8f0"
+        pathWidth={3}
+        pathOpacity={0.4}
       />
       <AnimatedBeam
         containerRef={containerRef}
@@ -101,6 +107,8 @@ export function LogoNetwork() {
         gradientStartColor="#646cff"
         gradientStopColor="#82aeff"
         pathColor="#e2e8f0"
+        pathWidth={3}
+        pathOpacity={0.4}
       />
       <AnimatedBeam
         containerRef={containerRef}
@@ -110,6 +118,8 @@ export function LogoNetwork() {
         gradientStartColor="#646cff"
         gradientStopColor="#82aeff"
         pathColor="#e2e8f0"
+        pathWidth={3}
+        pathOpacity={0.4}
       />
       <AnimatedBeam
         containerRef={containerRef}
@@ -121,6 +131,8 @@ export function LogoNetwork() {
         gradientStartColor="#646cff"
         gradientStopColor="#82aeff"
         pathColor="#e2e8f0"
+        pathWidth={3}
+        pathOpacity={0.4}
       />
     </div>
   );
