@@ -20,7 +20,9 @@ const Home = () => {
     { name: "Randstad", id: 6, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5L2880dU-fMT-PjiSxVWWbwI6Vb8l3Vw6Q&s" },
     { name: "Accent Jobs", id: 7, img: "https://i.postimg.cc/053yKcZg/IMG-7592.png" },
     { name: "Start People", id: 8, img: "https://media.licdn.com/dms/image/v2/D4E03AQGzYaEHyR2N_w/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1666681919673?e=2147483647&v=beta&t=oyXA1mGdfaPAMHB0YsV3dUAQEN0Ic0DfVltZaVtSywc" },
-    { name: "AGO Jobs", id: 9, img: "https://i.postimg.cc/fL7Dcvyd/347248690-792113835829706-805731174237376164-n.png" }
+    { name: "AGO Jobs", id: 9, img: "https://i.postimg.cc/fL7Dcvyd/347248690-792113835829706-805731174237376164-n.png" },
+    { name: "SD Worx", id: 10, img: "https://i.postimg.cc/XJ8FtyxC/339105639-183429217812911-8132452130259136190-n.png" },
+    { name: "Robert Half", id: 11, img: "https://i.postimg.cc/13vSMqjT/383209240-608879378108206-6829050048883403071-n.jpg" }
   ];
 
   return (
