@@ -1,6 +1,4 @@
 
-"use client";
-
 import React, { forwardRef, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { AnimatedBeam } from "@/components/ui/animated-beam";
@@ -63,7 +61,24 @@ export function AnimatedBeamDemo() {
             <img src={agencies[2].img} alt={agencies[2].name} className="w-full h-full object-contain" />
           </Circle>
           <Circle ref={div4Ref} className="size-20">
-            <Logo className="w-10 h-10" />
+            <svg width="64" height="64" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" className="fill-current">
+              <defs>
+                <linearGradient id="gradBlue" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style={{ stopColor: "#0073e6", stopOpacity: 1 }} />
+                  <stop offset="100%" style={{ stopColor: "#00c6ff", stopOpacity: 1 }} />
+                </linearGradient>
+              </defs>
+              <circle cx="60" cy="60" r="40" fill="url(#gradBlue)" />
+              <circle cx="60" cy="60" r="8" fill="#ffffff" />
+              <line x1="60" y1="20" x2="60" y2="48" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" />
+              <line x1="60" y1="72" x2="60" y2="100" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" />
+              <line x1="20" y1="60" x2="48" y2="60" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" />
+              <line x1="72" y1="60" x2="100" y2="60" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" />
+              <line x1="32" y1="32" x2="50" y2="50" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
+              <line x1="70" y1="70" x2="88" y2="88" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
+              <line x1="32" y1="88" x2="50" y2="70" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
+              <line x1="70" y1="50" x2="88" y2="32" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
+            </svg>
           </Circle>
           <Circle ref={div6Ref}>
             <img src={agencies[3].img} alt={agencies[3].name} className="w-full h-full object-contain" />
