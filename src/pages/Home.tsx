@@ -46,7 +46,7 @@ const Home = () => {
                 </h1>
                 
                 <div className="grid md:grid-cols-2 gap-8 items-center">
-                  <div className="p-8 rounded-xl">
+                  <div className="p-8">
                     <h2 className="text-2xl font-semibold mb-4">
                       Plus de 15 agences intérim en un seul endroit
                     </h2>
@@ -62,7 +62,7 @@ const Home = () => {
                     </Button>
                   </div>
 
-                  <div className="p-8 rounded-xl">
+                  <div className="p-8">
                     <AnimatedBeamDemo />
                   </div>
                 </div>
