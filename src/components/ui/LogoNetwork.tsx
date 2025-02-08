@@ -69,11 +69,17 @@ export function LogoNetwork() {
         toRef={centerRef}
         curvature={-75}
         endYOffset={-10}
+        gradientStartColor="#646cff"
+        gradientStopColor="#82aeff"
+        pathColor="#e2e8f0"
       />
       <AnimatedBeam
         containerRef={containerRef}
         fromRef={div2Ref}
         toRef={centerRef}
+        gradientStartColor="#646cff"
+        gradientStopColor="#82aeff"
+        pathColor="#e2e8f0"
       />
       <AnimatedBeam
         containerRef={containerRef}
@@ -81,6 +87,9 @@ export function LogoNetwork() {
         toRef={centerRef}
         curvature={75}
         endYOffset={10}
+        gradientStartColor="#646cff"
+        gradientStopColor="#82aeff"
+        pathColor="#e2e8f0"
       />
       <AnimatedBeam
         containerRef={containerRef}
@@ -89,12 +98,18 @@ export function LogoNetwork() {
         curvature={-75}
         endYOffset={-10}
         reverse
+        gradientStartColor="#646cff"
+        gradientStopColor="#82aeff"
+        pathColor="#e2e8f0"
       />
       <AnimatedBeam
         containerRef={containerRef}
         fromRef={div5Ref}
         toRef={centerRef}
         reverse
+        gradientStartColor="#646cff"
+        gradientStopColor="#82aeff"
+        pathColor="#e2e8f0"
       />
       <AnimatedBeam
         containerRef={containerRef}
@@ -103,6 +118,9 @@ export function LogoNetwork() {
         curvature={75}
         endYOffset={10}
         reverse
+        gradientStartColor="#646cff"
+        gradientStopColor="#82aeff"
+        pathColor="#e2e8f0"
       />
     </div>
   );
