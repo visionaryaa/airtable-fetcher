@@ -12,15 +12,15 @@ const Home = () => {
   const isMobile = useIsMobile();
 
   const agencies = [
-    { name: "Proselect", id: 1, img: "/proselect-logo.jpg" },
-    { name: "Tempo-Team", id: 2, img: "/tempo-team-logo.png" },
-    { name: "Adecco", id: 3, img: "/adecco-logo.jpg" },
-    { name: "ASAP", id: 4, img: "/asap-logo.png" },
-    { name: "Synergie", id: 5, img: "/synergie-logo.jpg" },
-    { name: "Randstad", id: 6, img: "/randstad-logo.jpg" },
-    { name: "Accent Jobs", id: 7, img: "/accent-jobs-logo.jpg" },
-    { name: "Start People", id: 8, img: "/start-people-logo.png" },
-    { name: "AGO Jobs", id: 9, img: "/ago-jobs-logo.svg" }
+    { name: "Proselect", id: 1, img: "https://i.postimg.cc/tg2Xq57M/IMG-7594.png" },
+    { name: "Tempo-Team", id: 2, img: "https://i.postimg.cc/kX2ZPLhf/352321179-802641697768990-7499832421124251242-n-1.png" },
+    { name: "Adecco", id: 3, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpHiI1ANEpe5BlJpLQDI_4M8jl1AnJciaqaw&s" },
+    { name: "ASAP", id: 4, img: "https://a.storyblok.com/f/118264/240x240/c475b21edc/asap-logo-2.png" },
+    { name: "Synergie", id: 5, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMXkqv_r78fpVwVE9xDY6rd0GfS3bMlK1sWA&s" },
+    { name: "Randstad", id: 6, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5L2880dU-fMT-PjiSxVWWbwI6Vb8l3Vw6Q&s" },
+    { name: "Accent Jobs", id: 7, img: "https://i.postimg.cc/053yKcZg/IMG-7592.png" },
+    { name: "Start People", id: 8, img: "https://media.licdn.com/dms/image/v2/D4E03AQGzYaEHyR2N_w/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1666681919673?e=2147483647&v=beta&t=oyXA1mGdfaPAMHB0YsV3dUAQEN0Ic0DfVltZaVtSywc" },
+    { name: "AGO Jobs", id: 9, img: "https://i.postimg.cc/fL7Dcvyd/347248690-792113835829706-805731174237376164-n.png" }
   ];
 
   return (
@@ -134,3 +134,4 @@ const Home = () => {
 };
 
 export default Home;
+
