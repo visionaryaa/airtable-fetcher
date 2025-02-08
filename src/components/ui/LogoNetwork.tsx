@@ -28,37 +28,37 @@ export function LogoNetwork() {
 
   return (
     <div
-      className="relative flex h-[500px] w-full items-center justify-center overflow-hidden rounded-lg bg-card/95 dark:bg-[#1A1F2C]/95 backdrop-blur-sm p-10 shadow-xl"
+      className="relative flex h-[400px] w-full items-center justify-center overflow-hidden rounded-lg bg-white/5 backdrop-blur-sm p-10 shadow-xl"
       ref={containerRef}
     >
-      <div className="flex size-full max-w-lg max-h-[400px] items-stretch justify-between gap-10 relative">
+      <div className="flex size-full max-w-3xl items-stretch justify-between gap-10 relative">
         <div className="flex flex-row items-center justify-between absolute inset-0">
           <Circle ref={div1Ref}>
-            <img src="https://i.postimg.cc/tg2Xq57M/IMG-7594.png" alt="Proselect" className="w-full h-full object-contain" />
+            <img src="https://www.gstatic.com/images/branding/product/2x/drive_2020q4_48dp.png" alt="Google Drive" className="w-10 h-10 object-contain" />
           </Circle>
           <Circle ref={div4Ref}>
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpHiI1ANEpe5BlJpLQDI_4M8jl1AnJciaqaw&s" alt="Adecco" className="w-full h-full object-contain" />
+            <img src="https://www.gstatic.com/images/branding/product/1x/docs_2020q4_48dp.png" alt="Google Docs" className="w-10 h-10 object-contain" />
           </Circle>
         </div>
         
         <div className="flex flex-row items-center justify-between absolute inset-0 top-1/4">
           <Circle ref={div2Ref}>
-            <img src="https://i.postimg.cc/kX2ZPLhf/352321179-802641697768990-7499832421124251242-n-1.png" alt="Tempo Team" className="w-full h-full object-contain" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png" alt="Notion" className="w-10 h-10 object-contain" />
           </Circle>
           <div ref={centerRef} className="size-24 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             <Logo className="w-full h-full" />
           </div>
           <Circle ref={div5Ref}>
-            <img src="https://a.storyblok.com/f/118264/240x240/c475b21edc/asap-logo-2.png" alt="ASAP" className="w-full h-full object-contain" />
+            <img src="https://cdn.zapier.com/zapier/images/favicon.ico" alt="Zapier" className="w-10 h-10 object-contain" />
           </Circle>
         </div>
         
         <div className="flex flex-row items-center justify-between absolute inset-0 top-2/3">
           <Circle ref={div3Ref}>
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5L2880dU-fMT-PjiSxVWWbwI6Vb8l3Vw6Q&s" alt="Randstad" className="w-full h-full object-contain" />
+            <img src="https://static.whatsapp.net/rsrc.php/v3/yP/r/rYZqPCBaG70.png" alt="WhatsApp" className="w-10 h-10 object-contain" />
           </Circle>
           <Circle ref={div6Ref}>
-            <img src="https://i.postimg.cc/053yKcZg/IMG-7592.png" alt="Accent Jobs" className="w-full h-full object-contain" />
+            <img src="https://static.xx.fbcdn.net/rsrc.php/v3/y0/r/XNhD3z4SR_Q.png" alt="Messenger" className="w-10 h-10 object-contain" />
           </Circle>
         </div>
       </div>
@@ -69,8 +69,8 @@ export function LogoNetwork() {
         toRef={centerRef}
         curvature={-75}
         endYOffset={-10}
-        pathWidth={3}
-        pathOpacity={0.4}
+        pathWidth={1}
+        pathOpacity={0.2}
         gradientStartColor="#646cff"
         gradientStopColor="#82aeff"
         pathColor="#e2e8f0"
@@ -79,8 +79,8 @@ export function LogoNetwork() {
         containerRef={containerRef}
         fromRef={div2Ref}
         toRef={centerRef}
-        pathWidth={3}
-        pathOpacity={0.4}
+        pathWidth={1}
+        pathOpacity={0.2}
         gradientStartColor="#646cff"
         gradientStopColor="#82aeff"
         pathColor="#e2e8f0"
@@ -91,8 +91,8 @@ export function LogoNetwork() {
         toRef={centerRef}
         curvature={75}
         endYOffset={10}
-        pathWidth={3}
-        pathOpacity={0.4}
+        pathWidth={1}
+        pathOpacity={0.2}
         gradientStartColor="#646cff"
         gradientStopColor="#82aeff"
         pathColor="#e2e8f0"
@@ -104,8 +104,8 @@ export function LogoNetwork() {
         curvature={-75}
         endYOffset={-10}
         reverse
-        pathWidth={3}
-        pathOpacity={0.4}
+        pathWidth={1}
+        pathOpacity={0.2}
         gradientStartColor="#646cff"
         gradientStopColor="#82aeff"
         pathColor="#e2e8f0"
@@ -115,8 +115,8 @@ export function LogoNetwork() {
         fromRef={div5Ref}
         toRef={centerRef}
         reverse
-        pathWidth={3}
-        pathOpacity={0.4}
+        pathWidth={1}
+        pathOpacity={0.2}
         gradientStartColor="#646cff"
         gradientStopColor="#82aeff"
         pathColor="#e2e8f0"
@@ -128,8 +128,8 @@ export function LogoNetwork() {
         curvature={75}
         endYOffset={10}
         reverse
-        pathWidth={3}
-        pathOpacity={0.4}
+        pathWidth={1}
+        pathOpacity={0.2}
         gradientStartColor="#646cff"
         gradientStopColor="#82aeff"
         pathColor="#e2e8f0"
