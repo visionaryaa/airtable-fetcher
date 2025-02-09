@@ -8,6 +8,34 @@ import JobControls from "@/components/jobs/JobControls";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Loader2 } from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
+
+const agencies = [
+  { name: "Proselect", img: "https://i.postimg.cc/tg2Xq57M/IMG-7594.png" },
+  { name: "Tempo-Team", img: "https://i.postimg.cc/kX2ZPLhf/352321179-802641697768990-7499832421124251242-n-1.png" },
+  { name: "Adecco", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpHiI1ANEpe5BlJpLQDI_4M8jl1AnJciaqaw&s" },
+  { name: "ASAP", img: "https://a.storyblok.com/f/118264/240x240/c475b21edc/asap-logo-2.png" },
+  { name: "Synergie", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMXkqv_r78fpVwVE9xDY6rd0GfS3bMlK1sWA&s" },
+  { name: "Randstad", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5L2880dU-fMT-PjiSxVWWbwI6Vb8l3Vw6Q&s" },
+  { name: "Accent Jobs", img: "https://i.postimg.cc/053yKcZg/IMG-7592.png" },
+  { name: "Start People", img: "https://media.licdn.com/dms/image/v2/D4E03AQGzYaEHyR2N_w/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1666681919673?e=2147483647&v=beta&t=oyXA1mGdfaPAMHB0YsV3dUAQEN0Ic0DfVltZaVtSywc" },
+  { name: "AGO Jobs", img: "https://i.postimg.cc/fL7Dcvyd/347248690-792113835829706-805731174237376164-n.png" },
+  { name: "SD Worx", img: "https://i.postimg.cc/XJ8FtyxC/339105639-183429217812911-8132452130259136190-n.png" },
+  { name: "Robert Half", img: "https://i.postimg.cc/13vSMqjT/383209240-608879378108206-6829050048883403071-n.jpg" }
+];
 
 const Index = () => {
   const [totalRecords, setTotalRecords] = useState(0);
@@ -18,6 +46,7 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
   const [newWord, setNewWord] = useState("");
+  const [showLoadingDialog, setShowLoadingDialog] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
 
@@ -48,7 +77,7 @@ const Index = () => {
     const interval = setInterval(() => {
       setRefreshKey(prev => prev + 1);
       count++;
-      if (count >= 12) {
+      if (count >= 6) {  // 6 times * 5 seconds = 30 seconds
         clearInterval(interval);
         setIsScrapingLoading(false);
         toast({
@@ -71,15 +100,19 @@ const Index = () => {
     }
 
     setIsScrapingLoading(true);
+    setShowLoadingDialog(true);
+
     try {
       const response = await fetch(`https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&search=${encodeURIComponent(searchQuery)}`);
       if (!response.ok) throw new Error('Failed to trigger scraping');
       
-      toast({
-        title: "Recherche lancée",
-        description: "La recherche d'offres d'emploi est en cours...",
-      });
+      // Wait for 10 seconds with the dialog open
+      await new Promise(resolve => setTimeout(resolve, 10000));
       
+      // Close the dialog after 10 seconds
+      setShowLoadingDialog(false);
+
+      // Start periodic refresh after dialog closes
       const interval = periodicRefresh();
       return () => clearInterval(interval);
     } catch (error) {
@@ -89,6 +122,7 @@ const Index = () => {
         description: "Une erreur est survenue lors de la recherche.",
       });
       setIsScrapingLoading(false);
+      setShowLoadingDialog(false);
     }
   };
 
@@ -110,7 +144,7 @@ const Index = () => {
           title: "Réinitialisation terminée",
           description: "La base de données a été réinitialisée avec succès.",
         });
-      }, 7000);
+      }, 3000);
     } catch (error) {
       toast({
         variant: "destructive",
@@ -123,6 +157,56 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <Dialog open={showLoadingDialog} onOpenChange={setShowLoadingDialog}>
+        <DialogContent className="sm:max-w-md bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-100">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-blue-900">Recherche en cours</DialogTitle>
+            <DialogDescription className="space-y-6">
+              <p className="text-center text-blue-800 text-lg">
+                Notre algorithme recherche pour vous toutes les offres d'emplois à pourvoir publiés sur les sites de toutes les grandes intérims wallonnes
+              </p>
+              
+              <Carousel
+                opts={{
+                  align: "center",
+                  loop: true,
+                }}
+                plugins={[
+                  Autoplay({
+                    delay: 2000,
+                  }),
+                ]}
+                className="w-full max-w-xs mx-auto"
+              >
+                <CarouselContent>
+                  {agencies.map((agency, index) => (
+                    <CarouselItem key={index}>
+                      <div className="p-2">
+                        <div className="flex items-center justify-center h-24 bg-white rounded-lg shadow-sm">
+                          <img
+                            src={agency.img}
+                            alt={`${agency.name} logo`}
+                            className="max-h-20 w-auto object-contain"
+                            onError={(e) => {
+                              const img = e.target as HTMLImageElement;
+                              img.src = '/placeholder.svg';
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
+
+              <div className="flex justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
       <main className="container mx-auto py-8 px-4">
         <div className="flex flex-col space-y-6">
           <JobControls
@@ -171,3 +255,4 @@ const Index = () => {
 };
 
 export default Index;
+
