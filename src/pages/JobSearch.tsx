@@ -26,7 +26,7 @@ import AirtableTable from "@/components/AirtableTable";
 import SearchFilters from "@/components/jobs/SearchFilters";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/AuthProvider";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 const formSchema = z.object({
@@ -45,6 +45,7 @@ const JobSearch = () => {
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
   const [newWord, setNewWord] = useState("");
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data: userFilters } = useQuery({
     queryKey: ['user-filters', user?.id],
@@ -82,19 +83,23 @@ const JobSearch = () => {
         description: "La base de données est en cours de réinitialisation...",
       });
 
-      setTimeout(() => {
-        setIsDeletingLoading(false);
-        toast({
-          title: "Réinitialisation terminée",
-          description: "La base de données a été réinitialisée avec succès.",
-        });
-      }, 7000);
+      // Wait for 3 seconds
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      // Refresh the table data
+      await queryClient.invalidateQueries({ queryKey: ['airtable'] });
+      
+      toast({
+        title: "Réinitialisation terminée",
+        description: "La base de données a été réinitialisée avec succès.",
+      });
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Erreur",
         description: "Une erreur est survenue lors de la réinitialisation.",
       });
+    } finally {
       setIsDeletingLoading(false);
     }
   };
