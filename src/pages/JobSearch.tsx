@@ -28,6 +28,13 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/AuthProvider";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const formSchema = z.object({
   nom_du_job: z.string().min(1, "Le nom du job est requis"),
@@ -44,6 +51,7 @@ const JobSearch = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
   const [newWord, setNewWord] = useState("");
+  const [showLoadingDialog, setShowLoadingDialog] = useState(false);
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -63,14 +71,22 @@ const JobSearch = () => {
     enabled: !!user,
   });
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      nom_du_job: "",
-      code_postale: "",
-      rayon: "25",
-    },
-  });
+  const periodicRefresh = () => {
+    let count = 0;
+    const interval = setInterval(() => {
+      queryClient.invalidateQueries({ queryKey: ['airtable'] });
+      count++;
+      if (count >= 6) {  // 6 times * 5 seconds = 30 seconds
+        clearInterval(interval);
+        setIsSubmitting(false);
+        toast({
+          title: "Mise à jour terminée",
+          description: "La recherche est terminée.",
+        });
+      }
+    }, 5000);
+    return interval;
+  };
 
   const handleDelete = async () => {
     setIsDeletingLoading(true);
@@ -104,25 +120,19 @@ const JobSearch = () => {
     }
   };
 
-  const periodicRefresh = () => {
-    let count = 0;
-    const interval = setInterval(() => {
-      queryClient.invalidateQueries({ queryKey: ['airtable'] });
-      count++;
-      if (count >= 6) {  // 6 times * 5 seconds = 30 seconds
-        clearInterval(interval);
-        setIsSubmitting(false);
-        toast({
-          title: "Mise à jour terminée",
-          description: "La recherche est terminée.",
-        });
-      }
-    }, 5000);
-    return interval;
-  };
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      nom_du_job: "",
+      code_postale: "",
+      rayon: "25",
+    },
+  });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
+    setShowLoadingDialog(true);
+    
     try {
       const response = await fetch(
         `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(values.nom_du_job)}&code_postale=${encodeURIComponent(values.code_postale)}&rayon=${encodeURIComponent(values.rayon)}`,
@@ -135,17 +145,13 @@ const JobSearch = () => {
         throw new Error("Erreur lors de la recherche");
       }
 
-      // Show initial toast with loading animation
-      const toastId = toast({
-        title: "Notre algorithme recherche vos offres d'emploi",
-        description: "Notre algorithme recherche pour vous toutes les offres d'emplois à pourvoir publiés sur les sites de toutes les grandes intérims wallonnes",
-        duration: 10000, // 10 seconds
-      });
-
-      // Wait for 10 seconds
+      // Wait for 10 seconds with the dialog open
       await new Promise(resolve => setTimeout(resolve, 10000));
+      
+      // Close the dialog after 10 seconds
+      setShowLoadingDialog(false);
 
-      // Refresh data initially after 10 seconds
+      // Refresh data initially after dialog closes
       await queryClient.invalidateQueries({ queryKey: ['airtable'] });
 
       // Start periodic refresh
@@ -159,11 +165,26 @@ const JobSearch = () => {
         description: "Une erreur est survenue lors de la recherche.",
       });
       setIsSubmitting(false);
+      setShowLoadingDialog(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-background">
+      <Dialog open={showLoadingDialog} onOpenChange={setShowLoadingDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Recherche en cours</DialogTitle>
+            <DialogDescription className="flex flex-col items-center space-y-4">
+              <p className="text-center">
+                Notre algorithme recherche pour vous toutes les offres d'emplois à pourvoir publiés sur les sites de toutes les grandes intérims wallonnes
+              </p>
+              <Loader2 className="h-8 w-8 animate-spin" />
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
       <main className="container mx-auto py-8 px-4">
         <div className="max-w-5xl mx-auto space-y-6 mb-12">
           <div className="text-center space-y-2">
