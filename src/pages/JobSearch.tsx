@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import {
   Form,
   FormControl,
@@ -35,6 +34,26 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
+
+const agencies = [
+  { name: "Proselect", img: "https://i.postimg.cc/tg2Xq57M/IMG-7594.png" },
+  { name: "Tempo-Team", img: "https://i.postimg.cc/kX2ZPLhf/352321179-802641697768990-7499832421124251242-n-1.png" },
+  { name: "Adecco", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpHiI1ANEpe5BlJpLQDI_4M8jl1AnJciaqaw&s" },
+  { name: "ASAP", img: "https://a.storyblok.com/f/118264/240x240/c475b21edc/asap-logo-2.png" },
+  { name: "Synergie", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMXkqv_r78fpVwVE9xDY6rd0GfS3bMlK1sWA&s" },
+  { name: "Randstad", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5L2880dU-fMT-PjiSxVWWbwI6Vb8l3Vw6Q&s" },
+  { name: "Accent Jobs", img: "https://i.postimg.cc/053yKcZg/IMG-7592.png" },
+  { name: "Start People", img: "https://media.licdn.com/dms/image/v2/D4E03AQGzYaEHyR2N_w/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1666681919673?e=2147483647&v=beta&t=oyXA1mGdfaPAMHB0YsV3dUAQEN0Ic0DfVltZaVtSywc" },
+  { name: "AGO Jobs", img: "https://i.postimg.cc/fL7Dcvyd/347248690-792113835829706-805731174237376164-n.png" },
+  { name: "SD Worx", img: "https://i.postimg.cc/XJ8FtyxC/339105639-183429217812911-8132452130259136190-n.png" },
+  { name: "Robert Half", img: "https://i.postimg.cc/13vSMqjT/383209240-608879378108206-6829050048883403071-n.jpg" }
+];
 
 const formSchema = z.object({
   nom_du_job: z.string().min(1, "Le nom du job est requis"),
@@ -172,14 +191,50 @@ const JobSearch = () => {
   return (
     <div className="min-h-screen bg-background">
       <Dialog open={showLoadingDialog} onOpenChange={setShowLoadingDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-gradient-to-br from-[#0A0F1E] to-[#1A1F2C] border-none">
           <DialogHeader>
-            <DialogTitle>Recherche en cours</DialogTitle>
-            <DialogDescription className="flex flex-col items-center space-y-4">
-              <p className="text-center">
+            <DialogTitle className="text-2xl font-bold text-white">Recherche en cours</DialogTitle>
+            <DialogDescription className="space-y-6">
+              <p className="text-center text-gray-300 text-lg">
                 Notre algorithme recherche pour vous toutes les offres d'emplois à pourvoir publiés sur les sites de toutes les grandes intérims wallonnes
               </p>
-              <Loader2 className="h-8 w-8 animate-spin" />
+              
+              <Carousel
+                opts={{
+                  align: "center",
+                  loop: true,
+                }}
+                plugins={[
+                  Autoplay({
+                    delay: 2000,
+                  }),
+                ]}
+                className="w-full max-w-xs mx-auto"
+              >
+                <CarouselContent>
+                  {agencies.map((agency, index) => (
+                    <CarouselItem key={index}>
+                      <div className="p-2">
+                        <div className="flex items-center justify-center h-24 bg-white/10 backdrop-blur-sm rounded-lg">
+                          <img
+                            src={agency.img}
+                            alt={`${agency.name} logo`}
+                            className="max-h-20 w-auto object-contain mix-blend-luminosity hover:mix-blend-normal transition-all duration-300"
+                            onError={(e) => {
+                              const img = e.target as HTMLImageElement;
+                              img.src = '/placeholder.svg';
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
+
+              <div className="flex justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
+              </div>
             </DialogDescription>
           </DialogHeader>
         </DialogContent>
@@ -342,4 +397,3 @@ const JobSearch = () => {
 };
 
 export default JobSearch;
-
