@@ -1,5 +1,6 @@
 
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
@@ -10,6 +11,13 @@ import NotFound from "./pages/NotFound";
 import JobSearch from "./pages/JobSearch";
 
 const AppRoutes = () => {
+  const location = useLocation();
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
@@ -29,3 +37,4 @@ const AppRoutes = () => {
 };
 
 export default AppRoutes;
+
