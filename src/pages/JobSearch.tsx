@@ -104,6 +104,23 @@ const JobSearch = () => {
     }
   };
 
+  const periodicRefresh = () => {
+    let count = 0;
+    const interval = setInterval(() => {
+      queryClient.invalidateQueries({ queryKey: ['airtable'] });
+      count++;
+      if (count >= 6) {  // 6 times * 5 seconds = 30 seconds
+        clearInterval(interval);
+        setIsSubmitting(false);
+        toast({
+          title: "Mise à jour terminée",
+          description: "La recherche est terminée.",
+        });
+      }
+    }, 5000);
+    return interval;
+  };
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
     try {
@@ -118,17 +135,29 @@ const JobSearch = () => {
         throw new Error("Erreur lors de la recherche");
       }
 
-      toast({
-        title: "Recherche lancée avec succès",
-        description: "Nous traitons votre demande.",
+      // Show initial toast with loading animation
+      const toastId = toast({
+        title: "Notre algorithme recherche vos offres d'emploi",
+        description: "Notre algorithme recherche pour vous toutes les offres d'emplois à pourvoir publiés sur les sites de toutes les grandes intérims wallonnes",
+        duration: 10000, // 10 seconds
       });
+
+      // Wait for 10 seconds
+      await new Promise(resolve => setTimeout(resolve, 10000));
+
+      // Refresh data initially after 10 seconds
+      await queryClient.invalidateQueries({ queryKey: ['airtable'] });
+
+      // Start periodic refresh
+      const interval = periodicRefresh();
+      return () => clearInterval(interval);
+
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Erreur",
         description: "Une erreur est survenue lors de la recherche.",
       });
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -292,3 +321,4 @@ const JobSearch = () => {
 };
 
 export default JobSearch;
+
