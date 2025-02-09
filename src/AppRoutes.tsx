@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound";
 import JobSearch from "./pages/JobSearch";
 
 const ScrollToTop = () => {
+  const location = useLocation();
   const isMobile = useIsMobile();
   
   useLayoutEffect(() => {
@@ -22,7 +23,7 @@ const ScrollToTop = () => {
     } else {
       window.scrollTo(0, 0);
     }
-  }, [isMobile]);
+  }, [location.pathname, isMobile]); // Add location.pathname to dependencies
 
   return null;
 };
@@ -48,3 +49,4 @@ const AppRoutes = () => {
 };
 
 export default AppRoutes;
+
