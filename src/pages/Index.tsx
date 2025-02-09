@@ -137,14 +137,17 @@ const Index = () => {
         description: "La base de données est en cours de réinitialisation...",
       });
 
-      setTimeout(() => {
-        setRefreshKey(prev => prev + 1);
-        setIsDeletingLoading(false);
-        toast({
-          title: "Réinitialisation terminée",
-          description: "La base de données a été réinitialisée avec succès.",
-        });
-      }, 3000);
+      // First, wait for the deletion to complete (3 seconds)
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      // Then trigger a refresh of the table by updating refreshKey
+      setRefreshKey(prev => prev + 1);
+      setIsDeletingLoading(false);
+      
+      toast({
+        title: "Réinitialisation terminée",
+        description: "La base de données a été réinitialisée avec succès.",
+      });
     } catch (error) {
       toast({
         variant: "destructive",
