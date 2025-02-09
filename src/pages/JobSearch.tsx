@@ -201,25 +201,29 @@ const JobSearch = () => {
               
               <Carousel
                 opts={{
-                  align: "center",
+                  align: "start",
                   loop: true,
+                  slidesToScroll: 1,
+                  containScroll: false,
                 }}
                 plugins={[
                   Autoplay({
                     delay: 2000,
+                    stopOnInteraction: false,
+                    stopOnMouseEnter: false,
                   }),
                 ]}
-                className="w-full max-w-xs mx-auto"
+                className="w-full"
               >
-                <CarouselContent>
+                <CarouselContent className="-ml-1">
                   {agencies.map((agency, index) => (
-                    <CarouselItem key={index}>
-                      <div className="p-2">
-                        <div className="flex items-center justify-center h-24 bg-white/10 backdrop-blur-sm rounded-lg">
+                    <CarouselItem key={index} className="pl-1 basis-1/3">
+                      <div className="p-1">
+                        <div className="flex items-center justify-center h-16 bg-white/10 backdrop-blur-sm rounded-lg">
                           <img
                             src={agency.img}
                             alt={`${agency.name} logo`}
-                            className="max-h-20 w-auto object-contain mix-blend-luminosity hover:mix-blend-normal transition-all duration-300"
+                            className="max-h-12 w-auto object-contain mix-blend-luminosity hover:mix-blend-normal transition-all duration-300"
                             onError={(e) => {
                               const img = e.target as HTMLImageElement;
                               img.src = '/placeholder.svg';
