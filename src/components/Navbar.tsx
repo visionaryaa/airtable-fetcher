@@ -23,17 +23,6 @@ const Navbar = () => {
     navigate('/');
   };
 
-  const handleMobileNavClick = (path: string) => {
-    // First scroll to top
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: 'instant'
-    });
-    // Then navigate
-    navigate(path);
-  };
-
   const mobileNavItems = [
     { to: "/", label: "Accueil", icon: Home },
     { to: "/job-search", label: "Recherche", icon: Search },
@@ -81,11 +70,11 @@ const Navbar = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[200px]">
               {mobileNavItems.map((item) => (
-                <DropdownMenuItem key={item.to} onClick={() => handleMobileNavClick(item.to)}>
-                  <div className="w-full flex items-center">
+                <DropdownMenuItem key={item.to} asChild>
+                  <Link to={item.to} className="w-full flex items-center">
                     {item.icon && <item.icon className="mr-2 h-4 w-4" />}
                     {item.label}
-                  </div>
+                  </Link>
                 </DropdownMenuItem>
               ))}
               {user && (
@@ -144,4 +133,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
