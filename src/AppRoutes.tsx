@@ -1,6 +1,6 @@
 
 import { Routes, Route, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 import { useIsMobile } from "./hooks/use-mobile";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -11,34 +11,28 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import JobSearch from "./pages/JobSearch";
 
-const AppRoutes = () => {
-  const location = useLocation();
+const ScrollToTop = () => {
   const isMobile = useIsMobile();
-
-  // Scroll to top on route change
-  useEffect(() => {
+  
+  useLayoutEffect(() => {
     if (isMobile) {
-      // Force layout recalculation before scrolling on mobile
-      setTimeout(() => {
-        window.scrollTo({
-          top: 0,
-          left: 0,
-          behavior: 'instant'
-        });
-      }, 0);
-    } else {
-      window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: 'instant'
+      requestAnimationFrame(() => {
+        window.scrollTo(0, 0);
       });
+    } else {
+      window.scrollTo(0, 0);
     }
-  }, [location.pathname, isMobile]);
+  }, [isMobile]);
 
+  return null;
+};
+
+const AppRoutes = () => {
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
       <div className="flex-1">
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/auth" element={<Auth />} />
