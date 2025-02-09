@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/AuthProvider";
@@ -157,11 +158,11 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Dialog open={showLoadingDialog} onOpenChange={setShowLoadingDialog}>
-        <DialogContent className="sm:max-w-md bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-100">
+        <DialogContent className="sm:max-w-md bg-gradient-to-br from-[#0A0F1E] to-[#1A1F2C] border-none">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-blue-900">Recherche en cours</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-white">Recherche en cours</DialogTitle>
             <DialogDescription className="space-y-6">
-              <p className="text-center text-blue-800 text-lg">
+              <p className="text-center text-gray-300 text-lg">
                 Notre algorithme recherche pour vous toutes les offres d'emplois à pourvoir publiés sur les sites de toutes les grandes intérims wallonnes
               </p>
               
@@ -181,11 +182,11 @@ const Index = () => {
                   {agencies.map((agency, index) => (
                     <CarouselItem key={index}>
                       <div className="p-2">
-                        <div className="flex items-center justify-center h-24 bg-white rounded-lg shadow-sm">
+                        <div className="flex items-center justify-center h-24 bg-white/10 backdrop-blur-sm rounded-lg">
                           <img
                             src={agency.img}
                             alt={`${agency.name} logo`}
-                            className="max-h-20 w-auto object-contain"
+                            className="max-h-20 w-auto object-contain mix-blend-luminosity hover:mix-blend-normal transition-all duration-300"
                             onError={(e) => {
                               const img = e.target as HTMLImageElement;
                               img.src = '/placeholder.svg';
@@ -199,7 +200,7 @@ const Index = () => {
               </Carousel>
 
               <div className="flex justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+                <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
               </div>
             </DialogDescription>
           </DialogHeader>
