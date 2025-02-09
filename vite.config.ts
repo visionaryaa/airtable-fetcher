@@ -25,6 +25,11 @@ export default defineConfig(({ mode }) => ({
     sourcemap: true,
     commonjsOptions: {
       include: []
+    },
+    rollupOptions: {
+      output: {
+        manualChunks: undefined
+      }
     }
   }
 }));
