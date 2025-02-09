@@ -1,6 +1,7 @@
 
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Autoplay from "embla-carousel-autoplay";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -59,11 +60,10 @@ const Home = () => {
                       Nous rassemblons automatiquement toutes les offres d'emploi en Belgique
                       provenant de toutes les principales agences d'intérim de Wallonie. Plus besoin de visiter des dizaines de sites différents !
                     </p>
-                    <Button 
-                      onClick={() => navigate('/job-search')} 
-                      className="bg-primary hover:bg-primary/90 text-lg px-8 py-4"
-                    >
-                      Rechercher
+                    <Button asChild className="bg-primary hover:bg-primary/90 text-lg px-8 py-4">
+                      <Link to="/job-search">
+                        Rechercher
+                      </Link>
                     </Button>
                   </div>
                   {!isMobile && (
