@@ -61,6 +61,10 @@ const AGENCY_LOGOS = [
   {
     domain: 'roberthalf.com',
     logo: 'https://i.postimg.cc/13vSMqjT/383209240-608879378108206-6829050048883403071-n.jpg'
+  },
+  {
+    domain: 'brightplus.be',
+    logo: 'https://i.postimg.cc/zBQJt30P/unnamed-1.png'
   }
 
   
