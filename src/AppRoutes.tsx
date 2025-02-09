@@ -1,6 +1,7 @@
 
 import { Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { useIsMobile } from "./hooks/use-mobile";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
@@ -12,11 +13,27 @@ import JobSearch from "./pages/JobSearch";
 
 const AppRoutes = () => {
   const location = useLocation();
+  const isMobile = useIsMobile();
 
   // Scroll to top on route change
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
+    if (isMobile) {
+      // Force layout recalculation before scrolling on mobile
+      setTimeout(() => {
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: 'instant'
+        });
+      }, 0);
+    } else {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'instant'
+      });
+    }
+  }, [location.pathname, isMobile]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -37,4 +54,3 @@ const AppRoutes = () => {
 };
 
 export default AppRoutes;
-
