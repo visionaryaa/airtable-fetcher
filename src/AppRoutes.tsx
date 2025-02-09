@@ -16,14 +16,26 @@ const ScrollToTop = () => {
   const isMobile = useIsMobile();
   
   useLayoutEffect(() => {
-    if (isMobile) {
-      requestAnimationFrame(() => {
+    const scrollToTop = () => {
+      if (isMobile) {
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: 'instant'
+        });
+      } else {
         window.scrollTo(0, 0);
-      });
-    } else {
-      window.scrollTo(0, 0);
-    }
-  }, [location.pathname, isMobile]); // Add location.pathname to dependencies
+      }
+    };
+
+    // Execute scroll immediately
+    scrollToTop();
+    
+    // And also after a short delay to ensure all content is rendered
+    const timeoutId = setTimeout(scrollToTop, 100);
+
+    return () => clearTimeout(timeoutId);
+  }, [location.pathname, isMobile]);
 
   return null;
 };
