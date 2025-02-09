@@ -16,26 +16,22 @@ const ScrollToTop = () => {
   const isMobile = useIsMobile();
   
   useLayoutEffect(() => {
-    const scrollToTop = () => {
-      if (isMobile) {
-        window.scrollTo({
-          top: 0,
-          left: 0,
-          behavior: 'instant'
-        });
-      } else {
-        window.scrollTo(0, 0);
-      }
-    };
-
-    // Execute scroll immediately
-    scrollToTop();
+    // Reset scroll position immediately when route changes
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'instant' // Use instant to prevent any smooth scrolling animation
+    });
     
-    // And also after a short delay to ensure all content is rendered
-    const timeoutId = setTimeout(scrollToTop, 100);
-
-    return () => clearTimeout(timeoutId);
-  }, [location.pathname, isMobile]);
+    // Force the scroll reset again after a frame to ensure it works
+    requestAnimationFrame(() => {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'instant'
+      });
+    });
+  }, [location.pathname]); // Only depend on pathname changes
 
   return null;
 };
