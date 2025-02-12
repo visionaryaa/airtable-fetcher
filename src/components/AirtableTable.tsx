@@ -90,10 +90,21 @@ const getLogoForUrl = (url: string) => {
 const formatDate = (dateString: string | undefined) => {
   if (!dateString) return '';
   try {
-    const date = parseISO(dateString);
+    let date;
+    if (dateString.includes('T')) {
+      date = parseISO(dateString);
+    } else {
+      date = new Date(dateString);
+    }
+    
+    if (isNaN(date.getTime())) {
+      console.error('Invalid date:', dateString);
+      return '';
+    }
+    
     return format(date, "d MMMM yyyy", { locale: fr });
   } catch (error) {
-    console.error('Error formatting date:', error);
+    console.error('Error formatting date:', error, 'for date string:', dateString);
     return '';
   }
 };
