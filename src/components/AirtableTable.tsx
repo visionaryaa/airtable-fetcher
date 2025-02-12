@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { fetchAirtableRecords } from "@/services/airtable";
@@ -79,10 +80,7 @@ const getDomainFromUrl = (url: string) => {
 const getLogoForUrl = (url: string) => {
   try {
     const domain = getDomainFromUrl(url);
-    console.log('Processing URL:', url);
-    console.log('Extracted domain:', domain);
     const agencyInfo = AGENCY_LOGOS.find(agency => domain.includes(agency.domain));
-    console.log('Found agency info:', agencyInfo);
     return agencyInfo?.logo;
   } catch (error) {
     console.error('Error parsing URL:', error);
@@ -285,6 +283,9 @@ const AirtableTable = ({
           <div className="text-sm text-muted-foreground">
             {record.fields.Localisation}
           </div>
+          <div className="text-sm text-muted-foreground">
+            {record.fields["Publication date"]}
+          </div>
           <div className="flex items-center justify-between">
             <a 
               href={record.fields.lien} 
@@ -322,6 +323,7 @@ const AirtableTable = ({
             <th className="p-6 text-left font-medium">POSTE</th>
             <th className="p-6 text-left font-medium">LIEN</th>
             <th className="p-6 text-left font-medium">LOCALISATION</th>
+            <th className="p-6 text-left font-medium">DATE DE PUBLICATION</th>
             <th className="p-6 text-left font-medium">FAVORIS</th>
           </tr>
         </thead>
@@ -357,6 +359,7 @@ const AirtableTable = ({
                 </a>
               </td>
               <td className="p-6 text-muted-foreground">{record.fields.Localisation}</td>
+              <td className="p-6 text-muted-foreground">{record.fields["Publication date"]}</td>
               <td className="p-6">
                 <Button 
                   variant="ghost" 
