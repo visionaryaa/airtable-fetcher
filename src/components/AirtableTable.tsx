@@ -109,6 +109,28 @@ const formatDate = (dateString: string | undefined) => {
   }
 };
 
+const getPublicationDate = (record: any) => {
+  // Try different possible field names for the date
+  const possibleDateFields = [
+    "Publication date",
+    "publication_date",
+    "Date de publication",
+    "date_publication",
+    "Date"
+  ];
+
+  for (const fieldName of possibleDateFields) {
+    if (record.fields[fieldName]) {
+      console.log(`Found date in field: ${fieldName}`, record.fields[fieldName]);
+      return record.fields[fieldName];
+    }
+  }
+
+  // If no date field is found, log the available fields for debugging
+  console.log('Available fields:', Object.keys(record.fields));
+  return undefined;
+};
+
 const AirtableTable = ({ 
   onTotalRecords, 
   sortOrder, 
@@ -303,11 +325,9 @@ const AirtableTable = ({
           <div className="text-sm text-muted-foreground">
             {record.fields.Localisation}
           </div>
-          {record.fields["Publication date"] && (
-            <div className="text-sm text-muted-foreground">
-              Publié le {formatDate(record.fields["Publication date"])}
-            </div>
-          )}
+          <div className="text-sm text-muted-foreground">
+            Publié le {formatDate(getPublicationDate(record))}
+          </div>
           <div className="flex items-center justify-between">
             <a 
               href={record.fields.lien} 
@@ -382,7 +402,7 @@ const AirtableTable = ({
               </td>
               <td className="p-6 text-muted-foreground">{record.fields.Localisation}</td>
               <td className="p-6 text-muted-foreground">
-                {formatDate(record.fields["Publication date"])}
+                {formatDate(getPublicationDate(record))}
               </td>
               <td className="p-6">
                 <Button 
