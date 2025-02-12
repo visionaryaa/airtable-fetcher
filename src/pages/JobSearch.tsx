@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -44,7 +45,6 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import Autoplay from "embla-carousel-autoplay";
-import { AuroraBackground } from "@/components/ui/aurora-background";
 
 const agencies = [
   { name: "Proselect", img: "https://i.postimg.cc/tg2Xq57M/IMG-7594.png" },
@@ -194,7 +194,7 @@ const JobSearch = () => {
   };
 
   return (
-    <AuroraBackground className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <Dialog open={showLoadingDialog} onOpenChange={setShowLoadingDialog}>
         <DialogContent className="sm:max-w-md bg-gradient-to-br from-[#0A0F1E] to-[#1A1F2C] border-none">
           <DialogHeader>
@@ -422,7 +422,7 @@ const JobSearch = () => {
           />
         </div>
       </main>
-    </AuroraBackground>
+    </div>
   );
 };
 
