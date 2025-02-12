@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Search, MapPin, Radio, Loader2 } from "lucide-react";
+import { Search, MapPin, Radio, Loader2, ChevronDown } from "lucide-react";
 import AirtableTable from "@/components/AirtableTable";
 import SearchFilters from "@/components/jobs/SearchFilters";
 import { Badge } from "@/components/ui/badge";
@@ -39,6 +39,11 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import Autoplay from "embla-carousel-autoplay";
 
 const agencies = [
@@ -387,16 +392,26 @@ const JobSearch = () => {
             </div>
           )}
 
-          <SearchFilters
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            sortOrder={sortOrder}
-            setSortOrder={setSortOrder}
-            excludedWords={excludedWords}
-            setExcludedWords={setExcludedWords}
-            newWord={newWord}
-            setNewWord={setNewWord}
-          />
+          <Collapsible>
+            <CollapsibleTrigger asChild>
+              <Button variant="outline" className="w-full flex justify-between items-center">
+                <span>Filtrer les résultats</span>
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-4">
+              <SearchFilters
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                sortOrder={sortOrder}
+                setSortOrder={setSortOrder}
+                excludedWords={excludedWords}
+                setExcludedWords={setExcludedWords}
+                newWord={newWord}
+                setNewWord={setNewWord}
+              />
+            </CollapsibleContent>
+          </Collapsible>
 
           <AirtableTable 
             onTotalRecords={setTotalRecords} 
