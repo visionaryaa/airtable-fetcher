@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { fetchAirtableRecords } from "@/services/airtable";
@@ -9,6 +8,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import { Card, CardContent } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { format, parseISO, parse, subDays } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface AirtableTableProps {
   onTotalRecords?: (total: number) => void;
@@ -63,8 +64,6 @@ const AGENCY_LOGOS = [
     domain: 'roberthalf.com',
     logo: 'https://i.postimg.cc/13vSMqjT/383209240-608879378108206-6829050048883403071-n.jpg'
   }
-
-  
 ];
 
 const getDomainFromUrl = (url: string) => {
@@ -85,6 +84,66 @@ const getLogoForUrl = (url: string) => {
   } catch (error) {
     console.error('Error parsing URL:', error);
     return null;
+  }
+};
+
+const formatPublicationDate = (dateString: string | undefined): string => {
+  if (!dateString) return '';
+
+  try {
+    let date: Date;
+
+    // Case 1: Already in DD/MM/YYYY format
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+      return dateString;
+    }
+
+    // Case 2: ISO format (2025-02-10T09:29:29Z)
+    if (dateString.includes('T')) {
+      date = parseISO(dateString);
+      return format(date, 'dd/MM/yyyy');
+    }
+
+    // Case 3: "il y a X jours"
+    if (dateString.toLowerCase().includes('il y a')) {
+      const daysMatch = dateString.match(/\d+/);
+      if (daysMatch) {
+        const daysAgo = parseInt(daysMatch[0]);
+        date = subDays(new Date(), daysAgo);
+        return format(date, 'dd/MM/yyyy');
+      }
+    }
+
+    // Case 4: French date format (12 Décembre 2024)
+    const frenchMonths = {
+      'janvier': '01', 'février': '02', 'mars': '03', 'avril': '04',
+      'mai': '05', 'juin': '06', 'juillet': '07', 'août': '08',
+      'septembre': '09', 'octobre': '10', 'novembre': '11', 'décembre': '12'
+    };
+
+    const frenchDateRegex = /(\d{1,2})\s*(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)\s*(\d{4})/i;
+    const match = dateString.toLowerCase().match(frenchDateRegex);
+    
+    if (match) {
+      const day = match[1].padStart(2, '0');
+      const month = frenchMonths[match[2] as keyof typeof frenchMonths];
+      const year = match[3];
+      return `${day}/${month}/${year}`;
+    }
+
+    // If none of the above formats match, try parsing as a regular date
+    date = new Date(dateString);
+    if (!isNaN(date.getTime())) {
+      return format(date, 'dd/MM/yyyy');
+    }
+
+    // If we can't parse the date, return the original string
+    console.warn('Unable to parse date:', dateString);
+    return dateString;
+
+  } catch (error) {
+    console.error('Error formatting date:', error, 'for date string:', dateString);
+    return dateString;
   }
 };
 
@@ -284,7 +343,7 @@ const AirtableTable = ({
             {record.fields.Localisation}
           </div>
           <div className="text-sm text-muted-foreground">
-            {record.fields["Publication date"]}
+            {formatPublicationDate(record.fields["Publication date"])}
           </div>
           <div className="flex items-center justify-between">
             <a 
@@ -359,7 +418,9 @@ const AirtableTable = ({
                 </a>
               </td>
               <td className="p-6 text-muted-foreground">{record.fields.Localisation}</td>
-              <td className="p-6 text-muted-foreground">{record.fields["Publication date"]}</td>
+              <td className="p-6 text-muted-foreground">
+                {formatPublicationDate(record.fields["Publication date"])}
+              </td>
               <td className="p-6">
                 <Button 
                   variant="ghost" 
