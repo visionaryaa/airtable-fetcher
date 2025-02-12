@@ -20,7 +20,7 @@ const JobControls = ({
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div className="flex items-center gap-3">
-        <h2 className="text-2xl font-bold">Offres d'emploi disponibles</h2>
+        <h2 className="text-2xl font-bold">Offres Logistiques Liège</h2>
         <span className="px-3 py-1 bg-blue-600 rounded-full text-sm text-white">
           {totalRecords} postes
         </span>
