@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -8,8 +7,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import { Card, CardContent } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 
 interface FavoritesTableProps {
   onTotalRecords?: (total: number) => void;
@@ -170,11 +167,6 @@ const FavoritesTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords 
           <div className="text-sm text-muted-foreground">
             {favorite.job_location}
           </div>
-          {favorite.created_at && (
-            <div className="text-sm text-muted-foreground">
-              Sauvegardé le {format(new Date(favorite.created_at), "d MMMM yyyy", { locale: fr })}
-            </div>
-          )}
           <div className="flex items-center justify-between">
             <a 
               href={favorite.job_link} 
@@ -212,7 +204,6 @@ const FavoritesTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords 
             <th className="p-6 text-left font-medium">SOURCE</th>
             <th className="p-6 text-left font-medium">POSTE</th>
             <th className="p-6 text-left font-medium">LOCALISATION</th>
-            <th className="p-6 text-left font-medium">DATE DE SAUVEGARDE</th>
             <th className="p-6 text-left font-medium">LIEN</th>
             <th className="p-6 text-left font-medium">ACTIONS</th>
           </tr>
@@ -234,11 +225,6 @@ const FavoritesTable = ({ onTotalRecords, sortOrder, searchQuery, excludedWords 
               </td>
               <td className="p-6 font-medium text-foreground">{favorite.job_title}</td>
               <td className="p-6 text-muted-foreground">{favorite.job_location}</td>
-              <td className="p-6 text-muted-foreground">
-                {favorite.created_at && 
-                  format(new Date(favorite.created_at), "d MMMM yyyy", { locale: fr })
-                }
-              </td>
               <td className="p-6">
                 <a 
                   href={favorite.job_link} 

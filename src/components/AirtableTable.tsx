@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import { Card, CardContent } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
 interface AirtableTableProps {
@@ -79,56 +79,15 @@ const getDomainFromUrl = (url: string) => {
 const getLogoForUrl = (url: string) => {
   try {
     const domain = getDomainFromUrl(url);
+    console.log('Processing URL:', url);
+    console.log('Extracted domain:', domain);
     const agencyInfo = AGENCY_LOGOS.find(agency => domain.includes(agency.domain));
+    console.log('Found agency info:', agencyInfo);
     return agencyInfo?.logo;
   } catch (error) {
     console.error('Error parsing URL:', error);
     return null;
   }
-};
-
-const formatDate = (dateString: string | undefined) => {
-  if (!dateString) return '';
-  try {
-    let date;
-    if (dateString.includes('T')) {
-      date = parseISO(dateString);
-    } else {
-      date = new Date(dateString);
-    }
-    
-    if (isNaN(date.getTime())) {
-      console.error('Invalid date:', dateString);
-      return '';
-    }
-    
-    return format(date, "d MMMM yyyy", { locale: fr });
-  } catch (error) {
-    console.error('Error formatting date:', error, 'for date string:', dateString);
-    return '';
-  }
-};
-
-const getPublicationDate = (record: any) => {
-  // Try different possible field names for the date
-  const possibleDateFields = [
-    "Publication date",
-    "publication_date",
-    "Date de publication",
-    "date_publication",
-    "Date"
-  ];
-
-  for (const fieldName of possibleDateFields) {
-    if (record.fields[fieldName]) {
-      console.log(`Found date in field: ${fieldName}`, record.fields[fieldName]);
-      return record.fields[fieldName];
-    }
-  }
-
-  // If no date field is found, log the available fields for debugging
-  console.log('Available fields:', Object.keys(record.fields));
-  return undefined;
 };
 
 const AirtableTable = ({ 
@@ -275,6 +234,7 @@ const AirtableTable = ({
         : domainB.localeCompare(domainA);
     }
     
+    // Sort by job title
     const posteA = a.fields.Poste || '';
     const posteB = b.fields.Poste || '';
     return sortOrder === 'asc' 
@@ -325,9 +285,11 @@ const AirtableTable = ({
           <div className="text-sm text-muted-foreground">
             {record.fields.Localisation}
           </div>
-          <div className="text-sm text-muted-foreground">
-            Publié le {formatDate(getPublicationDate(record))}
-          </div>
+          {record.fields["Publication date"] && (
+            <div className="text-sm text-muted-foreground">
+              Publié le {format(new Date(record.fields["Publication date"]), "d MMMM yyyy", { locale: fr })}
+            </div>
+          )}
           <div className="flex items-center justify-between">
             <a 
               href={record.fields.lien} 
@@ -402,7 +364,9 @@ const AirtableTable = ({
               </td>
               <td className="p-6 text-muted-foreground">{record.fields.Localisation}</td>
               <td className="p-6 text-muted-foreground">
-                {formatDate(getPublicationDate(record))}
+                {record.fields["Publication date"] && 
+                  format(new Date(record.fields["Publication date"]), "d MMMM yyyy", { locale: fr })
+                }
               </td>
               <td className="p-6">
                 <Button 
@@ -443,6 +407,20 @@ const AirtableTable = ({
 
   return (
     <>
+      {/* Job Count Display */}
+      <div className="mb-6 px-4 md:px-6">
+        <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">
+              Offres d'emploi disponibles
+            </h3>
+            <p className="text-green-600 dark:text-green-300">
+              {filteredRecords.length} offre{filteredRecords.length !== 1 ? 's' : ''} trouvée{filteredRecords.length !== 1 ? 's' : ''}
+            </p>
+          </div>
+        </div>
+      </div>
+
       {isMobile ? (
         <div className="px-4">
           {filteredRecords.map(record => renderMobileCard(record))}
