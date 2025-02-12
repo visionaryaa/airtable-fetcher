@@ -8,6 +8,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import { Card, CardContent } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface AirtableTableProps {
   onTotalRecords?: (total: number) => void;
@@ -62,8 +64,6 @@ const AGENCY_LOGOS = [
     domain: 'roberthalf.com',
     logo: 'https://i.postimg.cc/13vSMqjT/383209240-608879378108206-6829050048883403071-n.jpg'
   }
-
-  
 ];
 
 const getDomainFromUrl = (url: string) => {
@@ -285,6 +285,11 @@ const AirtableTable = ({
           <div className="text-sm text-muted-foreground">
             {record.fields.Localisation}
           </div>
+          {record.fields["Publication date"] && (
+            <div className="text-sm text-muted-foreground">
+              Publié le {format(new Date(record.fields["Publication date"]), "d MMMM yyyy", { locale: fr })}
+            </div>
+          )}
           <div className="flex items-center justify-between">
             <a 
               href={record.fields.lien} 
@@ -322,6 +327,7 @@ const AirtableTable = ({
             <th className="p-6 text-left font-medium">POSTE</th>
             <th className="p-6 text-left font-medium">LIEN</th>
             <th className="p-6 text-left font-medium">LOCALISATION</th>
+            <th className="p-6 text-left font-medium">DATE DE PUBLICATION</th>
             <th className="p-6 text-left font-medium">FAVORIS</th>
           </tr>
         </thead>
@@ -357,6 +363,11 @@ const AirtableTable = ({
                 </a>
               </td>
               <td className="p-6 text-muted-foreground">{record.fields.Localisation}</td>
+              <td className="p-6 text-muted-foreground">
+                {record.fields["Publication date"] && 
+                  format(new Date(record.fields["Publication date"]), "d MMMM yyyy", { locale: fr })
+                }
+              </td>
               <td className="p-6">
                 <Button 
                   variant="ghost" 
