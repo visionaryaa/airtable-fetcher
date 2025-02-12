@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { fetchAirtableRecords } from "@/services/airtable";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Heart } from "lucide-react";
+import { Loader2, Heart, MapPin, Calendar } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import { Card, CardContent } from "@/components/ui/card";
@@ -339,10 +339,12 @@ const AirtableTable = ({
             )}
             <h3 className="font-medium text-foreground">{record.fields.Poste}</h3>
           </div>
-          <div className="text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <MapPin className="h-4 w-4" />
             {record.fields.Localisation}
           </div>
-          <div className="text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Calendar className="h-4 w-4" />
             {formatPublicationDate(record.fields["Publication date"])}
           </div>
           <div className="flex items-center justify-between">
