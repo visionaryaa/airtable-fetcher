@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import { Card, CardContent } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
 
 interface AirtableTableProps {
@@ -79,14 +79,22 @@ const getDomainFromUrl = (url: string) => {
 const getLogoForUrl = (url: string) => {
   try {
     const domain = getDomainFromUrl(url);
-    console.log('Processing URL:', url);
-    console.log('Extracted domain:', domain);
     const agencyInfo = AGENCY_LOGOS.find(agency => domain.includes(agency.domain));
-    console.log('Found agency info:', agencyInfo);
     return agencyInfo?.logo;
   } catch (error) {
     console.error('Error parsing URL:', error);
     return null;
+  }
+};
+
+const formatDate = (dateString: string | undefined) => {
+  if (!dateString) return '';
+  try {
+    const date = parseISO(dateString);
+    return format(date, "d MMMM yyyy", { locale: fr });
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return '';
   }
 };
 
@@ -234,7 +242,6 @@ const AirtableTable = ({
         : domainB.localeCompare(domainA);
     }
     
-    // Sort by job title
     const posteA = a.fields.Poste || '';
     const posteB = b.fields.Poste || '';
     return sortOrder === 'asc' 
@@ -287,7 +294,7 @@ const AirtableTable = ({
           </div>
           {record.fields["Publication date"] && (
             <div className="text-sm text-muted-foreground">
-              Publié le {format(new Date(record.fields["Publication date"]), "d MMMM yyyy", { locale: fr })}
+              Publié le {formatDate(record.fields["Publication date"])}
             </div>
           )}
           <div className="flex items-center justify-between">
@@ -364,9 +371,7 @@ const AirtableTable = ({
               </td>
               <td className="p-6 text-muted-foreground">{record.fields.Localisation}</td>
               <td className="p-6 text-muted-foreground">
-                {record.fields["Publication date"] && 
-                  format(new Date(record.fields["Publication date"]), "d MMMM yyyy", { locale: fr })
-                }
+                {formatDate(record.fields["Publication date"])}
               </td>
               <td className="p-6">
                 <Button 
@@ -407,20 +412,6 @@ const AirtableTable = ({
 
   return (
     <>
-      {/* Job Count Display */}
-      <div className="mb-6 px-4 md:px-6">
-        <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">
-              Offres d'emploi disponibles
-            </h3>
-            <p className="text-green-600 dark:text-green-300">
-              {filteredRecords.length} offre{filteredRecords.length !== 1 ? 's' : ''} trouvée{filteredRecords.length !== 1 ? 's' : ''}
-            </p>
-          </div>
-        </div>
-      </div>
-
       {isMobile ? (
         <div className="px-4">
           {filteredRecords.map(record => renderMobileCard(record))}
