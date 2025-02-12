@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -5,7 +6,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Search, Loader2 } from "lucide-react";
+import { Search, MapPin, Radio, Loader2 } from "lucide-react";
 import AirtableTable from "@/components/AirtableTable";
 import SearchFilters from "@/components/jobs/SearchFilters";
 import { Badge } from "@/components/ui/badge";
@@ -258,15 +258,21 @@ const JobSearch = () => {
               onSubmit={form.handleSubmit(onSubmit)}
               className="space-y-6 md:space-y-0 bg-card p-6 rounded-lg shadow-sm"
             >
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
                 <FormField
                   control={form.control}
                   name="nom_du_job"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nom du job</FormLabel>
+                    <FormItem className="col-span-2">
                       <FormControl>
-                        <Input placeholder="Ex: Manutentionnaire" {...field} />
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input 
+                            placeholder="Quel job recherchez-vous?" 
+                            className="pl-9" 
+                            {...field} 
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -278,19 +284,22 @@ const JobSearch = () => {
                   name="code_postale"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Code postal</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Ex: 1000"
-                          maxLength={4}
-                          {...field}
-                          onChange={(e) => {
-                            const value = e.target.value.replace(/[^0-9]/g, "");
-                            if (value.length <= 4) {
-                              field.onChange(value);
-                            }
-                          }}
-                        />
+                        <div className="relative">
+                          <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            placeholder="Code postal"
+                            className="pl-9"
+                            maxLength={4}
+                            {...field}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/[^0-9]/g, "");
+                              if (value.length <= 4) {
+                                field.onChange(value);
+                              }
+                            }}
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -302,15 +311,17 @@ const JobSearch = () => {
                   name="rayon"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Rayon de recherche</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Sélectionnez un rayon" />
-                          </SelectTrigger>
+                          <div className="relative">
+                            <Radio className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                            <SelectTrigger className="pl-9">
+                              <SelectValue placeholder="Rayon" />
+                            </SelectTrigger>
+                          </div>
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="5">5km</SelectItem>
@@ -323,7 +334,7 @@ const JobSearch = () => {
                   )}
                 />
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 md:col-span-4">
                   <Button
                     type="submit"
                     className="flex-1"
