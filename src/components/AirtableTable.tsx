@@ -65,7 +65,7 @@ const AGENCY_LOGOS = [
     logo: 'https://i.postimg.cc/13vSMqjT/383209240-608879378108206-6829050048883403071-n.jpg'
   },
   {
-    domain: 'brightplus',
+    domain: 'brightplus.be',
     logo: 'https://i.postimg.cc/NFXkfc22/bright.png'
   }
 ];
@@ -76,16 +76,16 @@ const getDomainFromUrl = (url: string) => {
     const hostname = urlObject.hostname.replace('www2.', 'www.').replace('www.', '');
     
     // Special case for Brightplus domains
-    if (hostname.includes('brightplus')) {
-      return 'brightplus';
+    if (hostname.includes('brightplus.be')) {
+      return 'brightplus.be';
     }
     
     return hostname;
   } catch (error) {
     console.error('Error parsing URL:', error);
     // Check if the raw URL contains brightplus
-    if (url.toLowerCase().includes('brightplus')) {
-      return 'brightplus';
+    if (url.toLowerCase().includes('brightplus.be')) {
+      return 'brightplus.be';
     }
     return url;
   }
