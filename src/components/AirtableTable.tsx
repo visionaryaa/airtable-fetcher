@@ -66,7 +66,7 @@ const AGENCY_LOGOS = [
   },
   {
     domain: 'brightplus.be',
-    logo: 'https://i.postimg.cc/NFXkfc22/bright.png'
+    logo: 'https://i.postimg.cc/8c6fdhKY/image.png'
   }
 ];
 
