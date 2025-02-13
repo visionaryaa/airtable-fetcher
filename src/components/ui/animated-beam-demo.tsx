@@ -1,27 +1,18 @@
-
 import React, { forwardRef, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { AnimatedBeam } from "@/components/ui/animated-beam";
-
-const Circle = forwardRef<
-  HTMLDivElement,
-  { className?: string; children?: React.ReactNode }
->(({ className, children }, ref) => {
-  return (
-    <div
-      ref={ref}
-      className={cn(
-        "z-10 flex size-12 items-center justify-center rounded-full border-2 bg-white shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)]",
-        className,
-      )}
-    >
+const Circle = forwardRef<HTMLDivElement, {
+  className?: string;
+  children?: React.ReactNode;
+}>(({
+  className,
+  children
+}, ref) => {
+  return <div ref={ref} className={cn("z-10 flex size-12 items-center justify-center rounded-full border-2 bg-white shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)]", className)}>
       {children}
-    </div>
-  );
+    </div>;
 });
-
 Circle.displayName = "Circle";
-
 export function AnimatedBeamDemo() {
   const containerRef = useRef<HTMLDivElement>(null);
   const div1Ref = useRef<HTMLDivElement>(null);
@@ -31,21 +22,26 @@ export function AnimatedBeamDemo() {
   const div5Ref = useRef<HTMLDivElement>(null);
   const div6Ref = useRef<HTMLDivElement>(null);
   const div7Ref = useRef<HTMLDivElement>(null);
-
-  const agencies = [
-    { name: "Proselect", img: "https://i.postimg.cc/tg2Xq57M/IMG-7594.png" },
-    { name: "Tempo-Team", img: "https://i.postimg.cc/kX2ZPLhf/352321179-802641697768990-7499832421124251242-n-1.png" },
-    { name: "Accent Jobs", img: "https://i.postimg.cc/053yKcZg/IMG-7592.png" },
-    { name: "AGO Jobs", img: "https://i.postimg.cc/fL7Dcvyd/347248690-792113835829706-805731174237376164-n.png" },
-    { name: "SD Worx", img: "https://i.postimg.cc/XJ8FtyxC/339105639-183429217812911-8132452130259136190-n.png" },
-    { name: "Robert Half", img: "https://i.postimg.cc/13vSMqjT/383209240-608879378108206-6829050048883403071-n.jpg" }
-  ];
-
-  return (
-    <div
-      className="relative flex h-[400px] w-full items-center justify-center overflow-hidden"
-      ref={containerRef}
-    >
+  const agencies = [{
+    name: "Proselect",
+    img: "https://i.postimg.cc/tg2Xq57M/IMG-7594.png"
+  }, {
+    name: "Tempo-Team",
+    img: "https://i.postimg.cc/kX2ZPLhf/352321179-802641697768990-7499832421124251242-n-1.png"
+  }, {
+    name: "Accent Jobs",
+    img: "https://i.postimg.cc/053yKcZg/IMG-7592.png"
+  }, {
+    name: "AGO Jobs",
+    img: "https://i.postimg.cc/fL7Dcvyd/347248690-792113835829706-805731174237376164-n.png"
+  }, {
+    name: "SD Worx",
+    img: "https://i.postimg.cc/XJ8FtyxC/339105639-183429217812911-8132452130259136190-n.png"
+  }, {
+    name: "Robert Half",
+    img: "https://i.postimg.cc/13vSMqjT/383209240-608879378108206-6829050048883403071-n.jpg"
+  }];
+  return <div ref={containerRef} className="relative flex h-[290px] w-full items-center justify-center overflow-hidden">
       <div className="flex size-full flex-col max-w-lg max-h-[200px] items-stretch justify-between">
         <div className="flex flex-row items-center justify-between">
           <Circle ref={div1Ref}>
@@ -63,8 +59,14 @@ export function AnimatedBeamDemo() {
             <svg width="64" height="64" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" className="fill-current">
               <defs>
                 <linearGradient id="gradBlue" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" style={{ stopColor: "#0073e6", stopOpacity: 1 }} />
-                  <stop offset="100%" style={{ stopColor: "#00c6ff", stopOpacity: 1 }} />
+                  <stop offset="0%" style={{
+                  stopColor: "#0073e6",
+                  stopOpacity: 1
+                }} />
+                  <stop offset="100%" style={{
+                  stopColor: "#00c6ff",
+                  stopOpacity: 1
+                }} />
                 </linearGradient>
               </defs>
               <circle cx="60" cy="60" r="40" fill="url(#gradBlue)" />
@@ -93,48 +95,11 @@ export function AnimatedBeamDemo() {
         </div>
       </div>
 
-      <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={div1Ref}
-        toRef={div4Ref}
-        curvature={-75}
-        endYOffset={-10}
-      />
-      <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={div2Ref}
-        toRef={div4Ref}
-      />
-      <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={div3Ref}
-        toRef={div4Ref}
-        curvature={75}
-        endYOffset={10}
-      />
-      <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={div5Ref}
-        toRef={div4Ref}
-        curvature={-75}
-        endYOffset={-10}
-        reverse
-      />
-      <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={div6Ref}
-        toRef={div4Ref}
-        reverse
-      />
-      <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={div7Ref}
-        toRef={div4Ref}
-        curvature={75}
-        endYOffset={10}
-        reverse
-      />
-    </div>
-  );
+      <AnimatedBeam containerRef={containerRef} fromRef={div1Ref} toRef={div4Ref} curvature={-75} endYOffset={-10} />
+      <AnimatedBeam containerRef={containerRef} fromRef={div2Ref} toRef={div4Ref} />
+      <AnimatedBeam containerRef={containerRef} fromRef={div3Ref} toRef={div4Ref} curvature={75} endYOffset={10} />
+      <AnimatedBeam containerRef={containerRef} fromRef={div5Ref} toRef={div4Ref} curvature={-75} endYOffset={-10} reverse />
+      <AnimatedBeam containerRef={containerRef} fromRef={div6Ref} toRef={div4Ref} reverse />
+      <AnimatedBeam containerRef={containerRef} fromRef={div7Ref} toRef={div4Ref} curvature={75} endYOffset={10} reverse />
+    </div>;
 }
-
