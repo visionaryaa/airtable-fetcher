@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -100,9 +99,10 @@ const JobSearch = () => {
     const interval = setInterval(() => {
       queryClient.invalidateQueries({ queryKey: ['airtable'] });
       count++;
-      if (count >= 6) {  // 6 times * 5 seconds = 30 seconds
+      if (count >= 18) {  // 18 times * 5 seconds = 90 seconds
         clearInterval(interval);
         setIsSubmitting(false);
+        setShowLoadingDialog(false);
         toast({
           title: "Mise à jour terminée",
           description: "La recherche est terminée.",
