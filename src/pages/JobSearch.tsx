@@ -541,7 +541,7 @@ const JobSearch = () => {
                     <table className="w-full border-collapse">
                       <thead>
                         <tr className="bg-gray-50 border-b border-gray-200">
-                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48">
                             Agence
                           </th>
                           <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -550,10 +550,10 @@ const JobSearch = () => {
                           <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Localisation
                           </th>
-                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
                             Date
                           </th>
-                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
                             Actions
                           </th>
                         </tr>
@@ -564,7 +564,15 @@ const JobSearch = () => {
                             const jobTitle = job.job_title?.toLowerCase() || '';
                             const jobLocation = job.job_location?.toLowerCase() || '';
                             const agencyName = a.name.toLowerCase();
-                            return jobTitle.includes(agencyName) || jobLocation.includes(agencyName);
+                            const keywords = [agencyName];
+                            
+                            if (agencyName === "randstad") keywords.push("rand stad");
+                            if (agencyName === "start people") keywords.push("startpeople");
+                            if (agencyName === "ago jobs") keywords.push("ago job");
+                            
+                            return keywords.some(keyword => 
+                              jobTitle.includes(keyword) || jobLocation.includes(keyword)
+                            );
                           });
 
                           const publicationDate = job.publication_date 
@@ -580,21 +588,23 @@ const JobSearch = () => {
                             >
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="flex items-center">
-                                  {agency ? (
-                                    <img
-                                      src={agency.img}
-                                      alt={`${agency.name} logo`}
-                                      className="h-8 w-8 rounded-full object-contain bg-white"
-                                      onError={(e) => {
-                                        const img = e.target as HTMLImageElement;
-                                        img.src = "/placeholder.svg";
-                                      }}
-                                    />
-                                  ) : (
-                                    <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                                      <Box className="h-4 w-4 text-gray-500" />
-                                    </div>
-                                  )}
+                                  <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-white border border-gray-200">
+                                    {agency ? (
+                                      <img
+                                        src={agency.img}
+                                        alt={`${agency.name} logo`}
+                                        className="h-full w-full object-contain"
+                                        onError={(e) => {
+                                          const img = e.target as HTMLImageElement;
+                                          img.src = "/placeholder.svg";
+                                        }}
+                                      />
+                                    ) : (
+                                      <div className="h-full w-full flex items-center justify-center bg-gray-100">
+                                        <Box className="h-5 w-5 text-gray-400" />
+                                      </div>
+                                    )}
+                                  </div>
                                   <div className="ml-4">
                                     <div className="text-sm font-medium text-gray-900">
                                       {agency?.name || "Agence"}
@@ -603,14 +613,14 @@ const JobSearch = () => {
                                 </div>
                               </td>
                               <td className="px-6 py-4">
-                                <div className="text-sm text-gray-900 font-medium">
+                                <div className="text-sm text-gray-900 font-medium line-clamp-2">
                                   {job.job_title}
                                 </div>
                               </td>
                               <td className="px-6 py-4">
                                 <div className="flex items-center text-sm text-gray-500">
                                   <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-                                  {job.job_location || "N/A"}
+                                  <span className="line-clamp-1">{job.job_location || "N/A"}</span>
                                 </div>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -621,7 +631,7 @@ const JobSearch = () => {
                                   href={job.job_link}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                                  className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                                 >
                                   Voir l'offre
                                 </a>
