@@ -114,7 +114,6 @@ const JobSearch = () => {
 
         console.log("Query results:", { jobResults, count });
 
-        // Apply filters to the data in memory
         let filteredData = jobResults || [];
 
         if (searchQuery) {
@@ -133,7 +132,6 @@ const JobSearch = () => {
           );
         }
 
-        // Apply sorting
         if (sortOrder) {
           console.log("Applying sort order:", sortOrder);
           filteredData = [...filteredData].sort((a, b) => {
@@ -263,7 +261,6 @@ const JobSearch = () => {
 
       navigate(`/job-search?searchId=${search_id}`);
       
-      // Start polling after a short delay
       await new Promise(resolve => setTimeout(resolve, 3000));
       queryClient.invalidateQueries({ queryKey: ["supabase-jobs", search_id] });
       
@@ -566,11 +563,22 @@ const JobSearch = () => {
                             );
                           });
 
-                          const publicationDate = job.publication_date 
-                            ? new Date(job.publication_date)
-                            : job.created_at 
-                              ? new Date(job.created_at)
-                              : null;
+                          let formattedDate = 'N/A';
+                          try {
+                            if (job.publication_date) {
+                              const date = new Date(job.publication_date);
+                              if (!isNaN(date.getTime())) {
+                                formattedDate = format(date, 'dd/MM/yyyy');
+                              }
+                            } else if (job.created_at) {
+                              const date = new Date(job.created_at);
+                              if (!isNaN(date.getTime())) {
+                                formattedDate = format(date, 'dd/MM/yyyy');
+                              }
+                            }
+                          } catch (error) {
+                            console.error('Error formatting date:', error);
+                          }
 
                           return (
                             <tr 
@@ -615,7 +623,7 @@ const JobSearch = () => {
                                 </div>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {publicationDate ? format(publicationDate, 'dd/MM/yyyy') : 'N/A'}
+                                {formattedDate}
                               </td>
                               <td className="px-6 py-4 text-sm">
                                 <a
