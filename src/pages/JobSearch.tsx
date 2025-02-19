@@ -123,23 +123,12 @@ const JobSearch = () => {
   }, [showLoadingDialog]);
 
   const periodicRefresh = () => {
-    let count = 0;
-    const interval = setInterval(() => {
+    return setInterval(() => {
       if (currentSearchId) {
+        console.log('Refreshing data for search:', currentSearchId);
         queryClient.invalidateQueries({ queryKey: ['supabase-jobs', currentSearchId] });
       }
-      count++;
-      if (count >= 18) {  // 18 times * 5 seconds = 90 seconds
-        clearInterval(interval);
-        setIsSubmitting(false);
-        setShowLoadingDialog(false);
-        toast({
-          title: "Mise à jour terminée",
-          description: "La recherche est terminée.",
-        });
-      }
-    }, 5000);
-    return interval;
+    }, 5000); // Refresh every 5 seconds
   };
 
   const handleDelete = async () => {
@@ -189,10 +178,10 @@ const JobSearch = () => {
     
     try {
       const search_id = `search_${Date.now()}`;
+      console.log('Starting new search with ID:', search_id);
+      
       setCurrentSearchId(search_id);
       localStorage.setItem('currentSearchId', search_id);
-      
-      console.log('Sending request with search_id:', search_id); // Add logging
       
       const response = await fetch(
         `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(values.nom_du_job)}&code_postale=${encodeURIComponent(values.code_postale)}&rayon=${encodeURIComponent(values.rayon)}&search_id=${encodeURIComponent(search_id)}`,
@@ -205,11 +194,18 @@ const JobSearch = () => {
         throw new Error("Erreur lors de la recherche");
       }
 
+      console.log('Waiting for initial results...');
       await new Promise(resolve => setTimeout(resolve, 10000));
       
+      console.log('Force immediate refresh...');
+      queryClient.invalidateQueries({ queryKey: ['supabase-jobs', search_id] });
+      
+      console.log('Starting periodic refresh...');
       const interval = periodicRefresh();
       
+      console.log('Set timeout to stop refresh after 90 seconds...');
       setTimeout(() => {
+        console.log('Search completed, stopping refresh');
         clearInterval(interval);
         setIsSubmitting(false);
         setShowLoadingDialog(false);
@@ -217,7 +213,7 @@ const JobSearch = () => {
           title: "Mise à jour terminée",
           description: "La recherche est terminée.",
         });
-      }, 90000); // 90 seconds total
+      }, 90000);
 
     } catch (error) {
       console.error("Search error:", error);
@@ -457,7 +453,7 @@ const JobSearch = () => {
               sortOrder={sortOrder}
               searchQuery={searchQuery}
               excludedWords={excludedWords}
-              baseKey="customSearch"
+              baseKey={`search-${Date.now()}`}
               searchId={currentSearchId}
             />
           ) : (
