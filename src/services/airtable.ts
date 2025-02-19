@@ -29,15 +29,16 @@ export const fetchAirtableRecords = async (
   const { baseId, tableId } = AIRTABLE_BASES[baseKey];
   let url = `https://api.airtable.com/v0/${baseId}/${tableId}`;
   
-  // Build the filter formula if we have a searchId
-  if (searchId) {
-    const filterFormula = `SearchID='${searchId}'`;
-    url += `?filterByFormula=${encodeURIComponent(filterFormula)}`;
-    if (offset) {
-      url += `&offset=${offset}`;
-    }
-  } else if (offset) {
-    url += `?offset=${offset}`;
+  // If no searchId is provided, return empty results
+  if (!searchId) {
+    return { records: [] };
+  }
+  
+  // Always filter by searchId when it's provided
+  const filterFormula = `SearchID='${searchId}'`;
+  url += `?filterByFormula=${encodeURIComponent(filterFormula)}`;
+  if (offset) {
+    url += `&offset=${offset}`;
   }
   
   try {

@@ -156,11 +156,30 @@ const JobSearch = () => {
     },
   });
 
+  React.useEffect(() => {
+    const savedSearchId = localStorage.getItem('currentSearchId');
+    if (savedSearchId) {
+      const searchTimestamp = parseInt(savedSearchId.replace('search_', ''));
+      const oneHourAgo = Date.now() - (60 * 60 * 1000);
+      
+      if (searchTimestamp < oneHourAgo) {
+        localStorage.removeItem('currentSearchId');
+        setCurrentSearchId(null);
+      } else {
+        setCurrentSearchId(savedSearchId);
+      }
+    } else {
+      setCurrentSearchId(null);
+    }
+  }, []);
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
     setShowLoadingDialog(true);
     
     try {
+      localStorage.removeItem('currentSearchId');
+      
       const searchId = 'search_' + Date.now();
       setCurrentSearchId(searchId);
       
@@ -417,14 +436,20 @@ const JobSearch = () => {
             </CollapsibleContent>
           </Collapsible>
 
-          <AirtableTable 
-            onTotalRecords={setTotalRecords} 
-            sortOrder={sortOrder}
-            searchQuery={searchQuery}
-            excludedWords={excludedWords}
-            baseKey="customSearch"
-            searchId={currentSearchId}
-          />
+          {currentSearchId ? (
+            <AirtableTable 
+              onTotalRecords={setTotalRecords} 
+              sortOrder={sortOrder}
+              searchQuery={searchQuery}
+              excludedWords={excludedWords}
+              baseKey="customSearch"
+              searchId={currentSearchId}
+            />
+          ) : (
+            <div className="text-center text-muted-foreground mt-8">
+              Utilisez le formulaire ci-dessus pour rechercher des offres d'emploi
+            </div>
+          )}
         </div>
       </main>
     </div>
