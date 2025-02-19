@@ -188,10 +188,11 @@ const JobSearch = () => {
     setShowLoadingDialog(true);
     
     try {
-      // Use underscore format to match database column
       const search_id = `search_${Date.now()}`;
       setCurrentSearchId(search_id);
       localStorage.setItem('currentSearchId', search_id);
+      
+      console.log('Sending request with search_id:', search_id); // Add logging
       
       const response = await fetch(
         `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(values.nom_du_job)}&code_postale=${encodeURIComponent(values.code_postale)}&rayon=${encodeURIComponent(values.rayon)}&search_id=${encodeURIComponent(search_id)}`,
@@ -204,28 +205,19 @@ const JobSearch = () => {
         throw new Error("Erreur lors de la recherche");
       }
 
-      // Wait for initial data to be processed
       await new Promise(resolve => setTimeout(resolve, 10000));
       
-      // Start periodic refresh
-      const interval = setInterval(() => {
-        if (search_id) {
-          queryClient.invalidateQueries({ queryKey: ['supabase-jobs', search_id] });
-        }
-        
-        // Check if we should stop refreshing
-        setTimeout(() => {
-          clearInterval(interval);
-          setIsSubmitting(false);
-          setShowLoadingDialog(false);
-          toast({
-            title: "Mise à jour terminée",
-            description: "La recherche est terminée.",
-          });
-        }, 90000); // 90 seconds total
-      }, 5000);
-
-      return () => clearInterval(interval);
+      const interval = periodicRefresh();
+      
+      setTimeout(() => {
+        clearInterval(interval);
+        setIsSubmitting(false);
+        setShowLoadingDialog(false);
+        toast({
+          title: "Mise à jour terminée",
+          description: "La recherche est terminée.",
+        });
+      }, 90000); // 90 seconds total
 
     } catch (error) {
       console.error("Search error:", error);
