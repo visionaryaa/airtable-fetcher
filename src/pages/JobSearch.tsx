@@ -135,16 +135,19 @@ const JobSearch = () => {
       return { data, count: count || 0 };
     },
     enabled: !!currentSearchId,
+    retry: 3,
+    retryDelay: 1000,
   });
 
   const periodicRefresh = () => {
     let count = 0;
     const interval = setInterval(() => {
       if (currentSearchId) {
+        console.log("Polling for results, attempt:", count + 1);
         queryClient.invalidateQueries({ queryKey: ["supabase-jobs", currentSearchId] });
       }
       count++;
-      if (count >= 18) {
+      if (count >= 30) {
         clearInterval(interval);
         setIsSubmitting(false);
         toast({
@@ -152,7 +155,7 @@ const JobSearch = () => {
           description: "La recherche est terminée.",
         });
       }
-    }, 5000);
+    }, 3000);
     return interval;
   };
 
@@ -222,12 +225,14 @@ const JobSearch = () => {
 
       console.log("Make.com webhook request successful");
 
-      setTimeout(() => {
-        setShowLoadingDialog(false);
-      }, 10000);
+      await new Promise(resolve => setTimeout(resolve, 5000));
 
       await queryClient.invalidateQueries({ queryKey: ['supabase-jobs', search_id] });
       periodicRefresh();
+
+      setTimeout(() => {
+        setShowLoadingDialog(false);
+      }, 15000);
       
     } catch (error) {
       console.error("Search submission error:", error);
