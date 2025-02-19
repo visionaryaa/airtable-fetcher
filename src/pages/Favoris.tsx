@@ -2,12 +2,10 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/AuthProvider";
-import SearchFilters from "@/components/jobs/SearchFilters";
+import SearchFilters, { SortOrder } from "@/components/jobs/SearchFilters";
 import FavoritesTable from "@/components/FavoritesTable";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-
-type SortOrder = 'asc' | 'desc' | 'agency_asc' | 'agency_desc' | 'date_asc' | 'date_desc';
 
 const Favoris = () => {
   const [totalRecords, setTotalRecords] = useState(0);

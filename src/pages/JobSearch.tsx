@@ -21,29 +21,11 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Search, MapPin, Radio, Loader2, ChevronDown } from "lucide-react";
 import SupabaseJobTable from "@/components/SupabaseJobTable";
-import SearchFilters from "@/components/jobs/SearchFilters";
+import SearchFilters, { SortOrder } from "@/components/jobs/SearchFilters";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/AuthProvider";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import Autoplay from "embla-carousel-autoplay";
 
 const agencies = [
   { name: "Proselect", img: "https://i.postimg.cc/tg2Xq57M/IMG-7594.png" },
@@ -65,13 +47,11 @@ const formSchema = z.object({
   rayon: z.string(),
 });
 
-type SortOrder = 'asc' | 'desc' | 'agency_asc' | 'agency_desc' | 'date_asc' | 'date_desc';
-
 const JobSearch = () => {
   const { toast } = useToast();
+  const [totalRecords, setTotalRecords] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeletingLoading, setIsDeletingLoading] = useState(false);
-  const [totalRecords, setTotalRecords] = useState(0);
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [searchQuery, setSearchQuery] = useState("");
   const [excludedWords, setExcludedWords] = useState<string[]>([]);

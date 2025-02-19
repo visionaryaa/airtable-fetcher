@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/AuthProvider";
 import AirtableTable from "@/components/AirtableTable";
-import SearchFilters from "@/components/jobs/SearchFilters";
+import SearchFilters, { SortOrder } from "@/components/jobs/SearchFilters";
 import JobControls from "@/components/jobs/JobControls";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";

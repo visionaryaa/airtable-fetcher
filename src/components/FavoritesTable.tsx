@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -7,10 +8,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import { Card, CardContent } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { SortOrder } from "@/components/jobs/SearchFilters";
 
 interface FavoritesTableProps {
   onTotalRecords?: (total: number) => void;
-  sortOrder?: 'asc' | 'desc' | 'agency_asc' | 'agency_desc';
+  sortOrder?: SortOrder;
   searchQuery?: string;
   excludedWords?: string[];
 }
