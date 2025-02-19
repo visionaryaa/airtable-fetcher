@@ -20,6 +20,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Search, MapPin, Radio, Loader2, ChevronDown } from "lucide-react";
+import AirtableTable from "@/components/AirtableTable";
 import SearchFilters from "@/components/jobs/SearchFilters";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/AuthProvider";
@@ -43,7 +44,6 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import Autoplay from "embla-carousel-autoplay";
-import SupabaseJobTable from "@/components/SupabaseJobTable";
 
 const agencies = [
   { name: "Proselect", img: "https://i.postimg.cc/tg2Xq57M/IMG-7594.png" },
@@ -437,8 +437,12 @@ const JobSearch = () => {
           </Collapsible>
 
           {currentSearchId ? (
-            <SupabaseJobTable 
+            <AirtableTable 
               onTotalRecords={setTotalRecords} 
+              sortOrder={sortOrder}
+              searchQuery={searchQuery}
+              excludedWords={excludedWords}
+              baseKey="customSearch"
               searchId={currentSearchId}
             />
           ) : (
