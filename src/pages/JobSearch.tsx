@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -24,7 +25,7 @@ import SupabaseJobTable from "@/components/SupabaseJobTable";
 import SearchFilters from "@/components/jobs/SearchFilters";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/AuthProvider";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
