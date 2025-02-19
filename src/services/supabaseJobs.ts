@@ -38,17 +38,28 @@ export const parseDateString = (dateString: string | null): Date | null => {
 export const fetchJobResults = async (searchId: string | null, options?: { 
   sortOrder?: 'asc' | 'desc' | 'agency_asc' | 'agency_desc'
 }) => {
-  if (!searchId) return { data: [], count: 0 };
+  if (!searchId) {
+    console.log('No searchId provided');
+    return { data: [], count: 0 };
+  }
 
   try {
     console.log('Fetching jobs with searchId:', searchId);
     
-    let query = supabase
+    // Detailed query logging
+    const { data, error, count } = await supabase
       .from('job_results')
       .select('*', { count: 'exact' })
-      .eq('search_id', searchId); // Filter by search_id
-
-    const { data, error, count } = await query;
+      .eq('search_id', searchId)
+      .then(response => {
+        if (response.error) {
+          console.error('Supabase query error:', response.error);
+        } else {
+          console.log('Raw response:', response);
+          console.log('Data count:', response.data?.length);
+        }
+        return response;
+      });
 
     if (error) {
       console.error('Error fetching job results:', error);

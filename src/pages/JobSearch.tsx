@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -98,25 +99,27 @@ const JobSearch = () => {
   useEffect(() => {
     const savedSearchId = localStorage.getItem('currentSearchId');
     if (savedSearchId) {
-      const searchTimestamp = parseInt(savedSearchId.replace('search_', ''));
+      const searchTimestamp = parseInt(savedSearchId.split('_')[1]);
       const oneHourAgo = Date.now() - (60 * 60 * 1000);
       
       if (searchTimestamp < oneHourAgo) {
+        console.log('Search ID expired, removing');
         localStorage.removeItem('currentSearchId');
         setCurrentSearchId(null);
       } else {
+        console.log('Restoring search ID:', savedSearchId);
         setCurrentSearchId(savedSearchId);
       }
-    } else {
-      setCurrentSearchId(null);
     }
   }, []);
 
   const periodicRefresh = () => {
+    console.log('Starting periodic refresh');
     let count = 0;
     const interval = setInterval(() => {
       if (currentSearchId) {
-        queryClient.invalidateQueries({ queryKey: ['airtable', currentSearchId] });
+        console.log('Refreshing results for searchId:', currentSearchId);
+        queryClient.invalidateQueries({ queryKey: ['supabase-jobs', currentSearchId] });
       }
       count++;
       if (count >= 18) {  // 18 times * 5 seconds = 90 seconds
@@ -146,7 +149,7 @@ const JobSearch = () => {
       await new Promise(resolve => setTimeout(resolve, 3000));
       
       if (currentSearchId) {
-        await queryClient.invalidateQueries({ queryKey: ['airtable', currentSearchId] });
+        await queryClient.invalidateQueries({ queryKey: ['supabase-jobs', currentSearchId] });
       }
       
       toast({
@@ -178,13 +181,18 @@ const JobSearch = () => {
     setShowLoadingDialog(true);
     
     try {
+      // Clear previous search ID
       localStorage.removeItem('currentSearchId');
       
-      const searchId = 'search_' + Date.now();
+      // Generate new search ID
+      const searchId = `search_${Date.now()}`;
+      console.log('Generated new searchId:', searchId);
       setCurrentSearchId(searchId);
       
+      // Store new search ID
       localStorage.setItem('currentSearchId', searchId);
       
+      // Make the search request
       const response = await fetch(
         `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(values.nom_du_job)}&code_postale=${encodeURIComponent(values.code_postale)}&rayon=${encodeURIComponent(values.rayon)}&searchId=${encodeURIComponent(searchId)}`,
         {
@@ -196,12 +204,15 @@ const JobSearch = () => {
         throw new Error("Erreur lors de la recherche");
       }
 
+      // Wait a bit for initial results
       await new Promise(resolve => setTimeout(resolve, 10000));
       
       setShowLoadingDialog(false);
 
-      await queryClient.invalidateQueries({ queryKey: ['airtable', searchId] });
+      // Invalidate queries to fetch new results
+      await queryClient.invalidateQueries({ queryKey: ['supabase-jobs', searchId] });
 
+      // Start periodic refresh
       const interval = periodicRefresh();
       return () => clearInterval(interval);
 
