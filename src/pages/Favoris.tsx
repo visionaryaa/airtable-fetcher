@@ -2,14 +2,14 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/AuthProvider";
-import SearchFilters, { SortOrder } from "@/components/jobs/SearchFilters";
+import SearchFilters from "@/components/jobs/SearchFilters";
 import FavoritesTable from "@/components/FavoritesTable";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
 const Favoris = () => {
   const [totalRecords, setTotalRecords] = useState(0);
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | 'agency_asc' | 'agency_desc'>();
   const [searchQuery, setSearchQuery] = useState("");
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
   const [newWord, setNewWord] = useState("");

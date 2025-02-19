@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -20,9 +19,9 @@ import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Search, MapPin, Radio, Loader2, ChevronDown, Calendar } from "lucide-react";
-import SupabaseJobTable from "@/components/SupabaseJobTable";
-import SearchFilters, { SortOrder } from "@/components/jobs/SearchFilters";
+import { Search, MapPin, Radio, Loader2, ChevronDown } from "lucide-react";
+import AirtableTable from "@/components/AirtableTable";
+import SearchFilters from "@/components/jobs/SearchFilters";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/AuthProvider";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -44,7 +43,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import AutoplayPlugin from "embla-carousel-autoplay";
+import Autoplay from "embla-carousel-autoplay";
 
 const agencies = [
   { name: "Proselect", img: "https://i.postimg.cc/tg2Xq57M/IMG-7594.png" },
@@ -68,10 +67,10 @@ const formSchema = z.object({
 
 const JobSearch = () => {
   const { toast } = useToast();
-  const [totalRecords, setTotalRecords] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeletingLoading, setIsDeletingLoading] = useState(false);
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | 'agency_asc' | 'agency_desc'>();
   const [searchQuery, setSearchQuery] = useState("");
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
   const [newWord, setNewWord] = useState("");
@@ -117,12 +116,13 @@ const JobSearch = () => {
     let count = 0;
     const interval = setInterval(() => {
       if (currentSearchId) {
-        queryClient.invalidateQueries({ queryKey: ['supabase-jobs', currentSearchId] });
+        queryClient.invalidateQueries({ queryKey: ['airtable', currentSearchId] });
       }
       count++;
       if (count >= 18) {  // 18 times * 5 seconds = 90 seconds
         clearInterval(interval);
         setIsSubmitting(false);
+        setShowLoadingDialog(false);
         toast({
           title: "Mise à jour terminée",
           description: "La recherche est terminée.",
@@ -146,7 +146,7 @@ const JobSearch = () => {
       await new Promise(resolve => setTimeout(resolve, 3000));
       
       if (currentSearchId) {
-        await queryClient.invalidateQueries({ queryKey: ['supabase-jobs', currentSearchId] });
+        await queryClient.invalidateQueries({ queryKey: ['airtable', currentSearchId] });
       }
       
       toast({
@@ -199,18 +199,13 @@ const JobSearch = () => {
       await new Promise(resolve => setTimeout(resolve, 10000));
       
       setShowLoadingDialog(false);
-      
-      await queryClient.invalidateQueries({ 
-        queryKey: ['supabase-jobs', searchId]
-      });
 
-      const cleanup = periodicRefresh();
-      return () => {
-        clearInterval(cleanup);
-      };
+      await queryClient.invalidateQueries({ queryKey: ['airtable', searchId] });
+
+      const interval = periodicRefresh();
+      return () => clearInterval(interval);
 
     } catch (error) {
-      console.error('Search error:', error);
       toast({
         variant: "destructive",
         title: "Erreur",
@@ -240,7 +235,7 @@ const JobSearch = () => {
                   containScroll: false,
                 }}
                 plugins={[
-                  AutoplayPlugin({
+                  Autoplay({
                     delay: 2000,
                     stopOnInteraction: false,
                     stopOnMouseEnter: false,
@@ -442,12 +437,13 @@ const JobSearch = () => {
           </Collapsible>
 
           {currentSearchId ? (
-            <SupabaseJobTable 
+            <AirtableTable 
               onTotalRecords={setTotalRecords} 
-              searchId={currentSearchId}
               sortOrder={sortOrder}
               searchQuery={searchQuery}
               excludedWords={excludedWords}
+              baseKey="customSearch"
+              searchId={currentSearchId}
             />
           ) : (
             <div className="text-center text-muted-foreground mt-8">
