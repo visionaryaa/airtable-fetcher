@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -70,7 +71,7 @@ const JobSearch = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeletingLoading, setIsDeletingLoading] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | 'agency_asc' | 'agency_desc'>();
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | 'agency_asc' | 'agency_desc'>('desc');
   const [searchQuery, setSearchQuery] = useState("");
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
   const [newWord, setNewWord] = useState("");
@@ -116,7 +117,7 @@ const JobSearch = () => {
     let count = 0;
     const interval = setInterval(() => {
       if (currentSearchId) {
-        queryClient.invalidateQueries({ queryKey: ['airtable', currentSearchId] });
+        queryClient.invalidateQueries({ queryKey: ['supabase-jobs', currentSearchId] });
       }
       count++;
       if (count >= 18) {  // 18 times * 5 seconds = 90 seconds
@@ -146,7 +147,7 @@ const JobSearch = () => {
       await new Promise(resolve => setTimeout(resolve, 3000));
       
       if (currentSearchId) {
-        await queryClient.invalidateQueries({ queryKey: ['airtable', currentSearchId] });
+        await queryClient.invalidateQueries({ queryKey: ['supabase-jobs', currentSearchId] });
       }
       
       toast({
@@ -178,11 +179,8 @@ const JobSearch = () => {
     setShowLoadingDialog(true);
     
     try {
-      localStorage.removeItem('currentSearchId');
-      
       const searchId = 'search_' + Date.now();
       setCurrentSearchId(searchId);
-      
       localStorage.setItem('currentSearchId', searchId);
       
       const response = await fetch(
@@ -196,16 +194,17 @@ const JobSearch = () => {
         throw new Error("Erreur lors de la recherche");
       }
 
+      // Wait for initial data to be processed
       await new Promise(resolve => setTimeout(resolve, 10000));
       
-      setShowLoadingDialog(false);
-
-      await queryClient.invalidateQueries({ queryKey: ['airtable', searchId] });
-
+      // Start periodic refresh
       const interval = periodicRefresh();
+      
+      // Clean up interval on component unmount
       return () => clearInterval(interval);
 
     } catch (error) {
+      console.error("Search error:", error);
       toast({
         variant: "destructive",
         title: "Erreur",
