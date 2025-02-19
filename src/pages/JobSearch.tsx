@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -21,6 +20,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Search, MapPin, Radio, Loader2, ChevronDown } from "lucide-react";
+import AirtableTable from "@/components/AirtableTable";
 import SearchFilters from "@/components/jobs/SearchFilters";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/AuthProvider";
@@ -44,7 +44,6 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import Autoplay from "embla-carousel-autoplay";
-import SupabaseJobTable from "@/components/SupabaseJobTable";
 
 const agencies = [
   { name: "Proselect", img: "https://i.postimg.cc/tg2Xq57M/IMG-7594.png" },
@@ -99,27 +98,25 @@ const JobSearch = () => {
   useEffect(() => {
     const savedSearchId = localStorage.getItem('currentSearchId');
     if (savedSearchId) {
-      const searchTimestamp = parseInt(savedSearchId.split('_')[1]);
+      const searchTimestamp = parseInt(savedSearchId.replace('search_', ''));
       const oneHourAgo = Date.now() - (60 * 60 * 1000);
       
       if (searchTimestamp < oneHourAgo) {
-        console.log('Search ID expired, removing');
         localStorage.removeItem('currentSearchId');
         setCurrentSearchId(null);
       } else {
-        console.log('Restoring search ID:', savedSearchId);
         setCurrentSearchId(savedSearchId);
       }
+    } else {
+      setCurrentSearchId(null);
     }
   }, []);
 
   const periodicRefresh = () => {
-    console.log('Starting periodic refresh');
     let count = 0;
     const interval = setInterval(() => {
       if (currentSearchId) {
-        console.log('Refreshing results for searchId:', currentSearchId);
-        queryClient.invalidateQueries({ queryKey: ['supabase-jobs', currentSearchId] });
+        queryClient.invalidateQueries({ queryKey: ['airtable', currentSearchId] });
       }
       count++;
       if (count >= 18) {  // 18 times * 5 seconds = 90 seconds
@@ -149,7 +146,7 @@ const JobSearch = () => {
       await new Promise(resolve => setTimeout(resolve, 3000));
       
       if (currentSearchId) {
-        await queryClient.invalidateQueries({ queryKey: ['supabase-jobs', currentSearchId] });
+        await queryClient.invalidateQueries({ queryKey: ['airtable', currentSearchId] });
       }
       
       toast({
@@ -181,18 +178,13 @@ const JobSearch = () => {
     setShowLoadingDialog(true);
     
     try {
-      // Clear previous search ID
       localStorage.removeItem('currentSearchId');
       
-      // Generate new search ID
-      const searchId = `search_${Date.now()}`;
-      console.log('Generated new searchId:', searchId);
+      const searchId = 'search_' + Date.now();
       setCurrentSearchId(searchId);
       
-      // Store new search ID
       localStorage.setItem('currentSearchId', searchId);
       
-      // Make the search request
       const response = await fetch(
         `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(values.nom_du_job)}&code_postale=${encodeURIComponent(values.code_postale)}&rayon=${encodeURIComponent(values.rayon)}&searchId=${encodeURIComponent(searchId)}`,
         {
@@ -204,15 +196,12 @@ const JobSearch = () => {
         throw new Error("Erreur lors de la recherche");
       }
 
-      // Wait a bit for initial results
       await new Promise(resolve => setTimeout(resolve, 10000));
       
       setShowLoadingDialog(false);
 
-      // Invalidate queries to fetch new results
-      await queryClient.invalidateQueries({ queryKey: ['supabase-jobs', searchId] });
+      await queryClient.invalidateQueries({ queryKey: ['airtable', searchId] });
 
-      // Start periodic refresh
       const interval = periodicRefresh();
       return () => clearInterval(interval);
 
@@ -448,12 +437,13 @@ const JobSearch = () => {
           </Collapsible>
 
           {currentSearchId ? (
-            <SupabaseJobTable 
+            <AirtableTable 
               onTotalRecords={setTotalRecords} 
-              searchId={currentSearchId}
               sortOrder={sortOrder}
               searchQuery={searchQuery}
               excludedWords={excludedWords}
+              baseKey="customSearch"
+              searchId={currentSearchId}
             />
           ) : (
             <div className="text-center text-muted-foreground mt-8">
