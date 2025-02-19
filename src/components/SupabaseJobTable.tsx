@@ -33,12 +33,14 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
   const pageSize = 10;
 
   const { data: jobResults, isLoading } = useQuery({
-    queryKey: ['supabase-jobs', searchId, currentPage],
+    queryKey: ['supabase-jobs', searchId, currentPage, pageSize],
     queryFn: async () => {
+      console.log('Fetching jobs for searchId:', searchId);
       const results = await fetchJobResults(searchId, {
         offset: currentPage * pageSize,
         limit: pageSize,
       });
+      console.log('Fetched results:', results);
 
       if (onTotalRecords && results.count !== null) {
         onTotalRecords(results.count);
@@ -47,10 +49,14 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
       return results;
     },
     enabled: !!searchId,
+    refetchInterval: 5000, // Refetch every 5 seconds while results are coming in
   });
 
   const filteredResults = React.useMemo(() => {
-    if (!jobResults?.data) return [];
+    if (!jobResults?.data) {
+      console.log('No job results data available');
+      return [];
+    }
 
     return jobResults.data.filter(job => {
       // Filter by search query
@@ -75,6 +81,7 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
     : 0;
 
   if (!searchId) {
+    console.log('No searchId provided');
     return null;
   }
 
