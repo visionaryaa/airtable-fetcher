@@ -108,11 +108,39 @@ const JobSearch = () => {
         console.log("All data in job_results table:", allData);
         console.log("Total rows in table:", totalCount);
 
-        // Now query with our search ID
-        const { data, error, count } = await supabase
+        // Build the query with search ID and filters
+        let query = supabase
           .from("job_results")
           .select("*", { count: "exact" })
           .eq("search_id", currentSearchId.trim());
+
+        // Apply title search filter if provided
+        if (searchQuery) {
+          console.log("Applying title filter:", searchQuery);
+          query = query.ilike("job_title", `%${searchQuery}%`);
+        }
+
+        // Apply excluded words filters
+        if (excludedWords.length > 0) {
+          console.log("Applying excluded words:", excludedWords);
+          excludedWords.forEach((word) => {
+            query = query.not("job_title", "ilike", `%${word}%`);
+          });
+        }
+
+        // Apply sorting
+        if (sortOrder === "asc") {
+          query = query.order("job_title", { ascending: true });
+        } else if (sortOrder === "desc") {
+          query = query.order("job_title", { ascending: false });
+        } else if (sortOrder === "agency_asc") {
+          query = query.order("job_location", { ascending: true });
+        } else if (sortOrder === "agency_desc") {
+          query = query.order("job_location", { ascending: false });
+        }
+
+        // Execute the query
+        const { data, error, count } = await query;
 
         if (error) {
           console.error("Error querying with search_id:", error);
