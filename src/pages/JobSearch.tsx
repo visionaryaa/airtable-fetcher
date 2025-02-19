@@ -99,7 +99,7 @@ const JobSearch = () => {
     const savedSearchId = localStorage.getItem('currentSearchId');
     if (savedSearchId) {
       const searchTimestamp = parseInt(savedSearchId.replace('search_', ''));
-      const oneHourAgo = Date.now() - (60 * 60 * 1000);
+      const oneHourAgo = Date.now() - (60 * 60 * 1000); // 1 hour ago
       
       if (searchTimestamp < oneHourAgo) {
         localStorage.removeItem('currentSearchId');
