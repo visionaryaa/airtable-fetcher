@@ -122,7 +122,6 @@ const JobSearch = () => {
       if (count >= 18) {  // 18 times * 5 seconds = 90 seconds
         clearInterval(interval);
         setIsSubmitting(false);
-        setShowLoadingDialog(false);
         toast({
           title: "Mise à jour terminée",
           description: "La recherche est terminée.",
@@ -197,6 +196,8 @@ const JobSearch = () => {
       }
 
       await new Promise(resolve => setTimeout(resolve, 10000));
+      
+      setShowLoadingDialog(false);
       
       await queryClient.invalidateQueries({ 
         queryKey: ['supabase-jobs', searchId]
