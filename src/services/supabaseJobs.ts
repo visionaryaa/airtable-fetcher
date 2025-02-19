@@ -11,6 +11,18 @@ export interface JobResult {
   created_at: string;
 }
 
+type Database = {
+  public: {
+    Tables: {
+      job_results: {
+        Row: JobResult;
+        Insert: Omit<JobResult, 'id' | 'created_at'>;
+        Update: Partial<Omit<JobResult, 'id' | 'created_at'>>;
+      };
+    };
+  };
+};
+
 export const fetchJobResults = async (
   searchId: string | null,
   options: {
@@ -23,15 +35,14 @@ export const fetchJobResults = async (
   }
 
   try {
-    // Create base query
-    const query = supabase
+    let query = supabase
       .from('job_results')
       .select('*', { count: 'exact' })
-      .eq('search_id', searchId) as any; // Temporary type assertion until we update the database types
+      .eq('search_id', searchId);
 
     // Add pagination if provided
     if (options.offset !== undefined && options.limit !== undefined) {
-      query.range(options.offset, options.offset + options.limit - 1);
+      query = query.range(options.offset, options.offset + options.limit - 1);
     }
 
     const { data, error, count } = await query;
@@ -56,7 +67,7 @@ export const clearJobResults = async (searchId: string) => {
     const { error } = await supabase
       .from('job_results')
       .delete()
-      .eq('search_id', searchId) as any; // Temporary type assertion until we update the database types
+      .eq('search_id', searchId);
 
     if (error) {
       console.error('Error clearing job results:', error);

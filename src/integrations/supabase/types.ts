@@ -36,6 +36,36 @@ export type Database = {
         }
         Relationships: []
       }
+      job_results: {
+        Row: {
+          created_at: string | null
+          id: string
+          lien: string
+          localisation: string | null
+          poste: string
+          publication_date: string | null
+          search_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          lien: string
+          localisation?: string | null
+          poste: string
+          publication_date?: string | null
+          search_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          lien?: string
+          localisation?: string | null
+          poste?: string
+          publication_date?: string | null
+          search_id?: string
+        }
+        Relationships: []
+      }
       user_filters: {
         Row: {
           created_at: string
