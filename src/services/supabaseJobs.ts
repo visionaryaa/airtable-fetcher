@@ -19,10 +19,13 @@ export const fetchJobResults = async (
   } = {}
 ): Promise<{ data: JobResult[]; count: number | null }> => {
   if (!searchId) {
+    console.log('No searchId provided to fetchJobResults');
     return { data: [], count: 0 };
   }
 
   try {
+    console.log('Starting Supabase query with searchId:', searchId);
+    
     let query = supabase
       .from('job_results')
       .select('*', { count: 'exact' })
@@ -39,6 +42,12 @@ export const fetchJobResults = async (
       console.error('Error fetching job results:', error);
       throw error;
     }
+
+    console.log('Successfully fetched data:', {
+      resultCount: data?.length || 0,
+      totalCount: count,
+      firstResult: data?.[0],
+    });
 
     return {
       data: data as JobResult[],
