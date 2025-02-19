@@ -94,54 +94,60 @@ const JobSearch = () => {
         return { data: [], count: 0 };
       }
 
-      // First, let's query without any filters to see if there's any data at all
-      const basicQuery = await supabase
-        .from("job_results")
-        .select("*", { count: "exact" });
+      try {
+        // First, let's query without any filters to see if there's any data at all
+        const { data: allData, error: basicError, count: totalCount } = await supabase
+          .from("job_results")
+          .select("*", { count: "exact" });
 
-      console.log("All data in job_results table:", basicQuery.data);
-      console.log("Total rows in table:", basicQuery.count);
+        if (basicError) {
+          console.error("Error querying all data:", basicError);
+          throw basicError;
+        }
 
-      // Now query with our search ID
-      let query = supabase
-        .from("job_results")
-        .select("*", { count: "exact" })
-        .eq("search_id", currentSearchId);
+        console.log("All data in job_results table:", allData);
+        console.log("Total rows in table:", totalCount);
 
-      if (searchQuery) {
-        console.log("Applying title filter:", searchQuery);
-        query = query.ilike("job_title", `%${searchQuery}%`);
-      }
+        // Now query with our search ID
+        const { data, error, count } = await supabase
+          .from("job_results")
+          .select("*", { count: "exact" })
+          .eq("search_id", currentSearchId.trim());
 
-      if (excludedWords.length > 0) {
-        console.log("Applying excluded words:", excludedWords);
-        excludedWords.forEach((word) => {
-          query = query.not("job_title", "ilike", `%${word}%`);
-        });
-      }
+        if (error) {
+          console.error("Error querying with search_id:", error);
+          throw error;
+        }
 
-      if (sortOrder === "asc") {
-        query = query.order("job_title", { ascending: true });
-      } else if (sortOrder === "desc") {
-        query = query.order("job_title", { ascending: false });
-      }
+        console.log("Supabase query successful for search_id:", currentSearchId);
+        console.log("Results count:", count);
+        console.log("Full query results:", data);
+        
+        if (!data || data.length === 0) {
+          // Let's try to get the last 5 records to see what's in there
+          const { data: recentData, error: recentError } = await supabase
+            .from("job_results")
+            .select("*")
+            .order("created_at", { ascending: false })
+            .limit(5);
+            
+          if (!recentError && recentData) {
+            console.log("Most recent job_results entries:", recentData);
+            console.log("Recent search_ids:", recentData.map(d => d.search_id));
+          }
+        }
 
-      const { data, error, count } = await query;
+        return { data: data || [], count: count || 0 };
 
-      if (error) {
-        console.error("Supabase query error:", error);
+      } catch (error) {
+        console.error("Supabase query failed:", error);
         toast({
           variant: "destructive",
           title: "Erreur de récupération",
-          description: error.message,
+          description: "Erreur lors de la récupération des données",
         });
         return { data: [], count: 0 };
       }
-
-      console.log("Supabase query successful for search_id:", currentSearchId);
-      console.log("Results count:", count);
-      console.log("Full query results:", data);
-      return { data, count: count || 0 };
     },
     enabled: !!currentSearchId,
     retry: 3,
