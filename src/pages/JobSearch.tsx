@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -20,12 +21,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Search, MapPin, Radio, Loader2, ChevronDown } from "lucide-react";
-import AirtableTable from "@/components/AirtableTable";
 import SearchFilters from "@/components/jobs/SearchFilters";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/AuthProvider";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import SupabaseJobTable from "@/components/SupabaseJobTable";
 import {
   Dialog,
   DialogContent,
@@ -437,12 +438,11 @@ const JobSearch = () => {
           </Collapsible>
 
           {currentSearchId ? (
-            <AirtableTable 
+            <SupabaseJobTable 
               onTotalRecords={setTotalRecords} 
               sortOrder={sortOrder}
               searchQuery={searchQuery}
               excludedWords={excludedWords}
-              baseKey="customSearch"
               searchId={currentSearchId}
             />
           ) : (
