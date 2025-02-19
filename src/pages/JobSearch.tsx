@@ -160,9 +160,11 @@ const JobSearch = () => {
       }
     },
     enabled: !!currentSearchId,
-    refetchInterval: 5000,
-    staleTime: 0,
-    cacheTime: 0,
+    refetchInterval: 5000, // Refetch every 5 seconds while the component is mounted
+    staleTime: 0, // Consider data always stale to ensure fresh data on mount
+    gcTime: 0, // Don't cache the results (formerly cacheTime)
+    retry: 3, // Retry failed requests 3 times
+    retryDelay: 1000, // Wait 1 second between retries
   });
 
   const periodicRefresh = () => {
