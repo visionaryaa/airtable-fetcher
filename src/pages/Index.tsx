@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/AuthProvider";
@@ -37,12 +36,14 @@ const agencies = [
   { name: "Robert Half", img: "https://i.postimg.cc/13vSMqjT/383209240-608879378108206-6829050048883403071-n.jpg" }
 ];
 
+type SortOrder = 'asc' | 'desc' | 'agency_asc' | 'agency_desc' | 'date_asc' | 'date_desc';
+
 const Index = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [isScrapingLoading, setIsScrapingLoading] = useState(false);
   const [isDeletingLoading, setIsDeletingLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | 'agency_asc' | 'agency_desc'>();
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [searchQuery, setSearchQuery] = useState("");
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
   const [newWord, setNewWord] = useState("");

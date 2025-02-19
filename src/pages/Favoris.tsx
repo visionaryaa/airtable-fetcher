@@ -7,9 +7,11 @@ import FavoritesTable from "@/components/FavoritesTable";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
+type SortOrder = 'asc' | 'desc' | 'agency_asc' | 'agency_desc' | 'date_asc' | 'date_desc';
+
 const Favoris = () => {
   const [totalRecords, setTotalRecords] = useState(0);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | 'agency_asc' | 'agency_desc'>();
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [searchQuery, setSearchQuery] = useState("");
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
   const [newWord, setNewWord] = useState("");
