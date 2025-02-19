@@ -4,12 +4,13 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from './ui/button';
-import { Loader2, Heart, MapPin, Calendar } from 'lucide-react';
+import { Loader2, Heart } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/components/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { SortOrder } from '@/components/jobs/SearchFilters';
 
 const AGENCY_LOGOS = [
   { domain: 'proselect.be', logo: 'https://i.postimg.cc/tg2Xq57M/IMG-7594.png' },
@@ -105,9 +106,9 @@ const getLogoForUrl = (url: string) => {
 
 interface SupabaseJobTableProps {
   onTotalRecords?: (total: number) => void;
-  searchId: string | null;
+  searchId?: string | null;
+  sortOrder?: SortOrder;
   searchQuery?: string;
-  sortOrder?: 'asc' | 'desc' | 'agency_asc' | 'agency_desc';
   excludedWords?: string[];
 }
 
