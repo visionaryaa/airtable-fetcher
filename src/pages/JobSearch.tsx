@@ -20,6 +20,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Search, MapPin, Radio, Loader2, ChevronDown } from "lucide-react";
+import AirtableTable from "@/components/AirtableTable";
 import SearchFilters from "@/components/jobs/SearchFilters";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/AuthProvider";
@@ -43,7 +44,6 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import Autoplay from "embla-carousel-autoplay";
-import SupabaseJobTable from "@/components/SupabaseJobTable";
 
 const agencies = [
   { name: "Proselect", img: "https://i.postimg.cc/tg2Xq57M/IMG-7594.png" },
@@ -70,7 +70,7 @@ const JobSearch = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeletingLoading, setIsDeletingLoading] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | 'agency_asc' | 'agency_desc'>('desc');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | 'agency_asc' | 'agency_desc'>();
   const [searchQuery, setSearchQuery] = useState("");
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
   const [newWord, setNewWord] = useState("");
@@ -99,7 +99,7 @@ const JobSearch = () => {
     const savedSearchId = localStorage.getItem('currentSearchId');
     if (savedSearchId) {
       const searchTimestamp = parseInt(savedSearchId.replace('search_', ''));
-      const oneHourAgo = Date.now() - (60 * 60 * 1000); // 1 hour ago
+      const oneHourAgo = Date.now() - (60 * 60 * 1000);
       
       if (searchTimestamp < oneHourAgo) {
         localStorage.removeItem('currentSearchId');
@@ -112,23 +112,24 @@ const JobSearch = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (showLoadingDialog) {
-      const timer = setTimeout(() => {
-        setShowLoadingDialog(false);
-      }, 10000); // 10 seconds
-
-      return () => clearTimeout(timer);
-    }
-  }, [showLoadingDialog]);
-
   const periodicRefresh = () => {
-    return setInterval(() => {
+    let count = 0;
+    const interval = setInterval(() => {
       if (currentSearchId) {
-        console.log('Refreshing data for search:', currentSearchId);
-        queryClient.invalidateQueries({ queryKey: ['supabase-jobs', currentSearchId] });
+        queryClient.invalidateQueries({ queryKey: ['airtable', currentSearchId] });
       }
-    }, 5000); // Refresh every 5 seconds
+      count++;
+      if (count >= 18) {  // 18 times * 5 seconds = 90 seconds
+        clearInterval(interval);
+        setIsSubmitting(false);
+        setShowLoadingDialog(false);
+        toast({
+          title: "Mise à jour terminée",
+          description: "La recherche est terminée.",
+        });
+      }
+    }, 5000);
+    return interval;
   };
 
   const handleDelete = async () => {
@@ -145,7 +146,7 @@ const JobSearch = () => {
       await new Promise(resolve => setTimeout(resolve, 3000));
       
       if (currentSearchId) {
-        await queryClient.invalidateQueries({ queryKey: ['supabase-jobs', currentSearchId] });
+        await queryClient.invalidateQueries({ queryKey: ['airtable', currentSearchId] });
       }
       
       toast({
@@ -177,14 +178,15 @@ const JobSearch = () => {
     setShowLoadingDialog(true);
     
     try {
-      const search_id = `search_${Date.now()}`;
-      console.log('Starting new search with ID:', search_id);
+      localStorage.removeItem('currentSearchId');
       
-      setCurrentSearchId(search_id);
-      localStorage.setItem('currentSearchId', search_id);
+      const searchId = 'search_' + Date.now();
+      setCurrentSearchId(searchId);
+      
+      localStorage.setItem('currentSearchId', searchId);
       
       const response = await fetch(
-        `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(values.nom_du_job)}&code_postale=${encodeURIComponent(values.code_postale)}&rayon=${encodeURIComponent(values.rayon)}&search_id=${encodeURIComponent(search_id)}`,
+        `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(values.nom_du_job)}&code_postale=${encodeURIComponent(values.code_postale)}&rayon=${encodeURIComponent(values.rayon)}&searchId=${encodeURIComponent(searchId)}`,
         {
           method: "GET",
         }
@@ -194,29 +196,16 @@ const JobSearch = () => {
         throw new Error("Erreur lors de la recherche");
       }
 
-      console.log('Waiting for initial results...');
       await new Promise(resolve => setTimeout(resolve, 10000));
       
-      console.log('Force immediate refresh...');
-      queryClient.invalidateQueries({ queryKey: ['supabase-jobs', search_id] });
-      
-      console.log('Starting periodic refresh...');
+      setShowLoadingDialog(false);
+
+      await queryClient.invalidateQueries({ queryKey: ['airtable', searchId] });
+
       const interval = periodicRefresh();
-      
-      console.log('Set timeout to stop refresh after 90 seconds...');
-      setTimeout(() => {
-        console.log('Search completed, stopping refresh');
-        clearInterval(interval);
-        setIsSubmitting(false);
-        setShowLoadingDialog(false);
-        toast({
-          title: "Mise à jour terminée",
-          description: "La recherche est terminée.",
-        });
-      }, 90000);
+      return () => clearInterval(interval);
 
     } catch (error) {
-      console.error("Search error:", error);
       toast({
         variant: "destructive",
         title: "Erreur",
@@ -448,12 +437,12 @@ const JobSearch = () => {
           </Collapsible>
 
           {currentSearchId ? (
-            <SupabaseJobTable 
+            <AirtableTable 
               onTotalRecords={setTotalRecords} 
               sortOrder={sortOrder}
               searchQuery={searchQuery}
               excludedWords={excludedWords}
-              baseKey={`search-${Date.now()}`}
+              baseKey="customSearch"
               searchId={currentSearchId}
             />
           ) : (
