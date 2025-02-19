@@ -10,11 +10,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+export type SortOrder = 'asc' | 'desc' | 'agency_asc' | 'agency_desc' | 'date_asc' | 'date_desc';
+
 interface SearchFiltersProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  sortOrder?: 'asc' | 'desc' | 'agency_asc' | 'agency_desc' | 'date_asc' | 'date_desc';
-  setSortOrder: (order: 'asc' | 'desc' | 'agency_asc' | 'agency_desc' | 'date_asc' | 'date_desc') => void;
+  sortOrder?: SortOrder;
+  setSortOrder: (order: SortOrder) => void;
   excludedWords: string[];
   setExcludedWords: (words: string[]) => void;
   newWord: string;
@@ -58,7 +60,7 @@ const SearchFilters = ({
         </div>
         <Select
           value={sortOrder}
-          onValueChange={(value: any) => setSortOrder(value)}
+          onValueChange={(value: SortOrder) => setSortOrder(value)}
         >
           <SelectTrigger className="w-[200px] bg-background border-input">
             <SelectValue placeholder="Trier par..." />
