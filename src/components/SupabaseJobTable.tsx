@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { JobResult, fetchJobResults } from '@/services/supabaseJobs';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from './ui/button';
 import { Loader2, Heart, MapPin, Calendar } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuth } from '@/components/AuthProvider';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const AGENCY_LOGOS = [
   {
@@ -104,9 +107,45 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
   sortOrder,
   excludedWords = [],
 }) => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [currentPage, setCurrentPage] = useState(0);
   const pageSize = 10;
   const isMobile = useIsMobile();
+
+  const addToFavorites = useMutation({
+    mutationFn: async (job: JobResult) => {
+      if (!user) throw new Error('Must be logged in to add favorites');
+      
+      const { error } = await supabase
+        .from('favorites')
+        .insert({
+          user_id: user.id,
+          job_title: job.job_title,
+          job_link: job.job_link,
+          job_location: job.job_location
+        });
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['favorites'] });
+      toast({
+        title: "Succès",
+        description: "Offre ajoutée aux favoris",
+      });
+    },
+    meta: {
+      onError: () => {
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "Impossible d'ajouter aux favoris",
+        });
+      }
+    }
+  });
 
   const { data: jobResults, isLoading } = useQuery({
     queryKey: ['supabase-jobs', searchId, currentPage, pageSize],
@@ -176,6 +215,21 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
     return null;
   }
 
+  const renderFavoriteButton = (job: JobResult) => {
+    if (!user) return null;
+    
+    return (
+      <Button 
+        variant="ghost" 
+        size="sm"
+        onClick={() => addToFavorites.mutate(job)}
+        className="text-gray-500 hover:text-red-500"
+      >
+        <Heart className="w-5 h-5" />
+      </Button>
+    );
+  };
+
   const renderMobileCard = (record: JobResult) => (
     <Card key={record.id} className="mb-4">
       <CardContent className="pt-6">
@@ -214,6 +268,7 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
                 Voir l'offre
               </Button>
             </a>
+            {renderFavoriteButton(record)}
           </div>
         </div>
       </CardContent>
@@ -230,6 +285,7 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
             <th className="p-6 text-left font-medium">LIEN</th>
             <th className="p-6 text-left font-medium">LOCALISATION</th>
             <th className="p-6 text-left font-medium">DATE DE PUBLICATION</th>
+            <th className="p-6 text-left font-medium">ACTIONS</th>
           </tr>
         </thead>
         <tbody>
@@ -268,6 +324,9 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
                 {job.publication_date
                   ? format(new Date(job.publication_date), 'dd MMMM yyyy', { locale: fr })
                   : 'Non spécifié'}
+              </td>
+              <td className="p-6">
+                {renderFavoriteButton(job)}
               </td>
             </tr>
           ))}
