@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -19,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Search, MapPin, Radio, Loader2, ChevronDown } from "lucide-react";
+import { Search, MapPin, Radio, Loader2, ChevronDown, Calendar } from "lucide-react";
 import SupabaseJobTable from "@/components/SupabaseJobTable";
 import SearchFilters, { SortOrder } from "@/components/jobs/SearchFilters";
 import { Badge } from "@/components/ui/badge";
@@ -43,7 +44,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Autoplay } from "embla-carousel-autoplay";
+import AutoplayPlugin from "embla-carousel-autoplay";
 
 const agencies = [
   { name: "Proselect", img: "https://i.postimg.cc/tg2Xq57M/IMG-7594.png" },
@@ -239,7 +240,7 @@ const JobSearch = () => {
                   containScroll: false,
                 }}
                 plugins={[
-                  Autoplay({
+                  AutoplayPlugin({
                     delay: 2000,
                     stopOnInteraction: false,
                     stopOnMouseEnter: false,
