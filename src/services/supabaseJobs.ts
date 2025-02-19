@@ -46,7 +46,7 @@ export const fetchJobResults = async (searchId: string | null, options?: {
     let query = supabase
       .from('job_results')
       .select('*', { count: 'exact' })
-      .eq('search_id', searchId);
+      .eq('search_id', searchId); // Filter by search_id
 
     const { data, error, count } = await query;
 
