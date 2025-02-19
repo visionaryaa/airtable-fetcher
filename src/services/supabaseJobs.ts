@@ -76,12 +76,13 @@ export const fetchJobResults = async (searchId: string | null, options?: {
   if (!searchId) return { data: [], count: 0 };
 
   try {
+    console.log('Fetching jobs with searchId:', searchId);
+    
     let query = supabase
       .from('job_results')
       .select('*', { count: 'exact' })
       .eq('search_id', searchId);
 
-    // First get all results without sorting
     const { data, error, count } = await query;
 
     if (error) {
@@ -89,9 +90,10 @@ export const fetchJobResults = async (searchId: string | null, options?: {
       throw error;
     }
 
+    console.log('Found jobs:', data?.length || 0);
+
     let sortedData = data ? [...data] : [];
 
-    // Apply sorting
     if (options?.sortOrder && data) {
       switch (options.sortOrder) {
         case 'asc':
@@ -120,7 +122,6 @@ export const fetchJobResults = async (searchId: string | null, options?: {
             return dateB.getTime() - dateA.getTime();
           });
           break;
-        // Agency sorting is handled in memory since we need to parse the URLs
         case 'agency_asc':
         case 'agency_desc':
           sortedData.sort((a, b) => {
@@ -134,7 +135,6 @@ export const fetchJobResults = async (searchId: string | null, options?: {
       }
     }
 
-    // Return a plain object without any non-serializable properties
     return {
       data: sortedData.map(job => ({
         id: job.id,

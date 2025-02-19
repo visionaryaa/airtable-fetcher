@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from './ui/button';
-import { Loader2, Heart } from 'lucide-react';
+import { Loader2, Heart, MapPin, Calendar } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/components/AuthProvider';
@@ -33,7 +33,6 @@ const formatDate = (dateString: string | null) => {
     const now = new Date();
     let date: Date | null = null;
 
-    // Handle "il y a X jours" format
     const daysAgoMatch = dateString.match(/il y a (\d+) jour/i);
     if (daysAgoMatch) {
       const daysAgo = parseInt(daysAgoMatch[1]);
@@ -43,7 +42,6 @@ const formatDate = (dateString: string | null) => {
       return format(date, 'dd MMMM yyyy', { locale: fr });
     }
 
-    // Handle "Aujourd'hui" and "Hier"
     if (dateString.toLowerCase().includes("aujourd'hui")) {
       return format(now, 'dd MMMM yyyy', { locale: fr });
     }
@@ -52,7 +50,6 @@ const formatDate = (dateString: string | null) => {
       return format(yesterday, 'dd MMMM yyyy', { locale: fr });
     }
 
-    // Handle ISO dates (2024-12-11T10:00:00Z format)
     if (dateString.includes('T') && dateString.includes('Z')) {
       date = new Date(dateString);
       if (!isNaN(date.getTime())) {
@@ -60,7 +57,6 @@ const formatDate = (dateString: string | null) => {
       }
     }
 
-    // Handle dd/mm/yyyy format
     const dateRegex = /(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})/;
     const match = dateString.match(dateRegex);
     if (match) {
@@ -72,7 +68,6 @@ const formatDate = (dateString: string | null) => {
       }
     }
 
-    // Handle timestamp formats
     if (!isNaN(Number(dateString))) {
       const timestamp = Number(dateString);
       date = timestamp < 9999999999 
@@ -83,7 +78,6 @@ const formatDate = (dateString: string | null) => {
       }
     }
 
-    // If we can't parse it, return the original string
     return dateString;
   } catch (error) {
     console.error('Error formatting date:', error);
@@ -115,8 +109,8 @@ interface SupabaseJobTableProps {
 const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
   onTotalRecords,
   searchId,
-  searchQuery = '',
   sortOrder,
+  searchQuery = '',
   excludedWords = [],
 }) => {
   const { user } = useAuth();
@@ -127,7 +121,10 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
   const { data: jobResults, isLoading } = useQuery({
     queryKey: ['supabase-jobs', searchId, sortOrder],
     queryFn: async () => {
+      console.log('Fetching jobs for searchId:', searchId);
       const results = await fetchJobResults(searchId, { sortOrder });
+      
+      console.log('Raw results:', results);
       
       if (onTotalRecords) {
         onTotalRecords(results.count);
@@ -149,6 +146,8 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
 
         return matchesSearch && noExcludedWords;
       });
+
+      console.log('Filtered results:', filteredData);
 
       if (sortOrder?.includes('agency')) {
         filteredData.sort((a, b) => {
@@ -198,6 +197,18 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
       }
     }
   });
+
+  if (isLoading || !jobResults) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!jobResults.data.length) {
+    return <div className="text-center py-8">Aucun résultat trouvé.</div>;
+  }
 
   const renderMobileCard = (record: JobResult) => (
     <Card key={record.id} className="mb-4">
@@ -315,18 +326,6 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
       </table>
     </div>
   );
-
-  if (isLoading || !jobResults) {
-    return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
-
-  if (!jobResults.data.length) {
-    return <div className="text-center py-8">Aucun résultat trouvé.</div>;
-  }
 
   return (
     <>
