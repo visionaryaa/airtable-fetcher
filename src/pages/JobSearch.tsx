@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Search, MapPin, Radio, Loader2, ChevronDown } from "lucide-react";
+import { Search, MapPin, Radio, Loader2, ChevronDown, Box } from "lucide-react";
 import SearchFilters from "@/components/jobs/SearchFilters";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/AuthProvider";
@@ -85,7 +85,7 @@ const JobSearch = () => {
   const [searchParams] = useSearchParams();
   const currentSearchId = searchParams.get('searchId');
 
-  const { data: jobs } = useQuery({
+  const { data: jobs, isLoading } = useQuery({
     queryKey: ["supabase-jobs", currentSearchId],
     queryFn: async () => {
       console.log("Running query with searchId:", currentSearchId);
@@ -301,6 +301,17 @@ const JobSearch = () => {
       setShowLoadingDialog(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+          <p className="text-sm text-muted-foreground">Chargement des résultats...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -573,7 +584,7 @@ const JobSearch = () => {
                                 />
                               ) : (
                                 <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                                  <Briefcase className="h-4 w-4 text-gray-500" />
+                                  <Box className="h-4 w-4 text-gray-500" />
                                 </div>
                               )}
                               <div className="ml-4">
@@ -614,7 +625,7 @@ const JobSearch = () => {
           ) : currentSearchId ? (
             <div className="text-center py-12">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-                <Briefcase className="h-8 w-8 text-gray-400" />
+                <Box className="h-8 w-8 text-gray-400" />
               </div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">
                 Aucun résultat trouvé
