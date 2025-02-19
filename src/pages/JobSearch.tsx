@@ -198,12 +198,17 @@ const JobSearch = () => {
 
       await new Promise(resolve => setTimeout(resolve, 10000));
       
-      await queryClient.invalidateQueries({ queryKey: ['supabase-jobs', searchId] });
-      
-      const interval = periodicRefresh();
-      return () => clearInterval(interval);
+      await queryClient.invalidateQueries({ 
+        queryKey: ['supabase-jobs', searchId]
+      });
+
+      const cleanup = periodicRefresh();
+      return () => {
+        clearInterval(cleanup);
+      };
 
     } catch (error) {
+      console.error('Search error:', error);
       toast({
         variant: "destructive",
         title: "Erreur",
