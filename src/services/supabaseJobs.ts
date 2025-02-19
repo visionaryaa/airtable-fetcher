@@ -9,7 +9,7 @@ export interface JobResult {
   job_link: string;
   job_location: string | null;
   publication_date: string | null;
-  search_id: string;  // This matches the database column name exactly
+  search_id: string;
   created_at: string | null;
 }
 
@@ -51,7 +51,7 @@ export const fetchJobResults = async (searchId: string | null, options?: {
     let query = supabase
       .from('job_results')
       .select('*', { count: 'exact' })
-      .eq('search_id', searchId);  // Using search_id column name from database
+      .eq('search_id', searchId);
 
     const { data, error, count } = await query;
 
@@ -62,23 +62,23 @@ export const fetchJobResults = async (searchId: string | null, options?: {
 
     console.log('Found jobs:', data?.length || 0);
 
-    let sortedData = data || [];
+    let sortedData = [...(data || [])];
 
     if (options?.sortOrder) {
       switch (options.sortOrder) {
         case 'asc':
-          sortedData = [...sortedData].sort((a, b) => 
-            a.job_title.localeCompare(b.job_title)
+          sortedData.sort((a, b) => 
+            (a.job_title || '').localeCompare(b.job_title || '')
           );
           break;
         case 'desc':
-          sortedData = [...sortedData].sort((a, b) => 
-            b.job_title.localeCompare(a.job_title)
+          sortedData.sort((a, b) => 
+            (b.job_title || '').localeCompare(a.job_title || '')
           );
           break;
         case 'agency_asc':
         case 'agency_desc':
-          sortedData = [...sortedData].sort((a, b) => {
+          sortedData.sort((a, b) => {
             const domainA = new URL(a.job_link).hostname;
             const domainB = new URL(b.job_link).hostname;
             return options.sortOrder === 'agency_asc'
@@ -89,6 +89,7 @@ export const fetchJobResults = async (searchId: string | null, options?: {
       }
     }
 
+    console.log('Fetched results:', { data: sortedData, count: count || 0 });
     return { data: sortedData, count: count || 0 };
   } catch (error) {
     console.error('Error in fetchJobResults:', error);
