@@ -79,7 +79,9 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
   const { data: jobResults, isLoading } = useQuery({
     queryKey: ['supabase-jobs', searchId, sortOrder, baseKey],
     queryFn: async () => {
+      console.log('Fetching jobs with searchId:', searchId);
       const results = await fetchJobResults(searchId, { sortOrder });
+      console.log('Fetched results:', results);
       
       if (onTotalRecords) {
         onTotalRecords(results.count);
@@ -108,7 +110,7 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
     refetchInterval: 5000,
   });
 
-  if (isLoading) {
+  if (isLoading || !jobResults) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -116,7 +118,7 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
     );
   }
 
-  if (!jobResults?.data.length) {
+  if (!jobResults?.data || jobResults.data.length === 0) {
     return <div className="text-center py-8">Aucun résultat trouvé.</div>;
   }
 
