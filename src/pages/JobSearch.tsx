@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Form,
@@ -95,6 +95,23 @@ const JobSearch = () => {
     enabled: !!user,
   });
 
+  useEffect(() => {
+    const savedSearchId = localStorage.getItem('currentSearchId');
+    if (savedSearchId) {
+      const searchTimestamp = parseInt(savedSearchId.replace('search_', ''));
+      const oneHourAgo = Date.now() - (60 * 60 * 1000);
+      
+      if (searchTimestamp < oneHourAgo) {
+        localStorage.removeItem('currentSearchId');
+        setCurrentSearchId(null);
+      } else {
+        setCurrentSearchId(savedSearchId);
+      }
+    } else {
+      setCurrentSearchId(null);
+    }
+  }, []);
+
   const periodicRefresh = () => {
     let count = 0;
     const interval = setInterval(() => {
@@ -155,23 +172,6 @@ const JobSearch = () => {
       rayon: "25",
     },
   });
-
-  React.useEffect(() => {
-    const savedSearchId = localStorage.getItem('currentSearchId');
-    if (savedSearchId) {
-      const searchTimestamp = parseInt(savedSearchId.replace('search_', ''));
-      const oneHourAgo = Date.now() - (60 * 60 * 1000);
-      
-      if (searchTimestamp < oneHourAgo) {
-        localStorage.removeItem('currentSearchId');
-        setCurrentSearchId(null);
-      } else {
-        setCurrentSearchId(savedSearchId);
-      }
-    } else {
-      setCurrentSearchId(null);
-    }
-  }, []);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
