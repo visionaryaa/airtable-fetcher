@@ -11,7 +11,9 @@ export interface JobResult {
   created_at: string | null;
 }
 
-export const fetchJobResults = async (searchId: string | null, options?: { sortOrder?: 'asc' | 'desc' | 'agency_asc' | 'agency_desc' }) => {
+export const fetchJobResults = async (searchId: string | null, options?: { 
+  sortOrder?: 'asc' | 'desc' | 'agency_asc' | 'agency_desc' | 'date_asc' | 'date_desc' 
+}) => {
   if (!searchId) return { data: [], count: 0 };
 
   try {
@@ -27,6 +29,12 @@ export const fetchJobResults = async (searchId: string | null, options?: { sortO
           break;
         case 'desc':
           query = query.order('job_title', { ascending: false });
+          break;
+        case 'date_asc':
+          query = query.order('publication_date', { ascending: true });
+          break;
+        case 'date_desc':
+          query = query.order('publication_date', { ascending: false });
           break;
         // Agency sorting will be handled in memory since we need to parse the URLs
       }

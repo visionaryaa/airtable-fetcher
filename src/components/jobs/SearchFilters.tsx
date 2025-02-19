@@ -13,8 +13,8 @@ import {
 interface SearchFiltersProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  sortOrder?: 'asc' | 'desc' | 'agency_asc' | 'agency_desc';
-  setSortOrder: (order: 'asc' | 'desc' | 'agency_asc' | 'agency_desc') => void;
+  sortOrder?: 'asc' | 'desc' | 'agency_asc' | 'agency_desc' | 'date_asc' | 'date_desc';
+  setSortOrder: (order: 'asc' | 'desc' | 'agency_asc' | 'agency_desc' | 'date_asc' | 'date_desc') => void;
   excludedWords: string[];
   setExcludedWords: (words: string[]) => void;
   newWord: string;
@@ -58,7 +58,7 @@ const SearchFilters = ({
         </div>
         <Select
           value={sortOrder}
-          onValueChange={(value: 'asc' | 'desc') => setSortOrder(value)}
+          onValueChange={(value: any) => setSortOrder(value)}
         >
           <SelectTrigger className="w-[200px] bg-background border-input">
             <SelectValue placeholder="Trier par..." />
@@ -68,6 +68,8 @@ const SearchFilters = ({
             <SelectItem value="desc">Postes Z-A</SelectItem>
             <SelectItem value="agency_asc">Agences A-Z</SelectItem>
             <SelectItem value="agency_desc">Agences Z-A</SelectItem>
+            <SelectItem value="date_asc">Date (plus ancien)</SelectItem>
+            <SelectItem value="date_desc">Date (plus récent)</SelectItem>
           </SelectContent>
         </Select>
       </div>
