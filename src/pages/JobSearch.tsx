@@ -191,10 +191,11 @@ const JobSearch = () => {
         throw new Error("Erreur lors de la recherche");
       }
 
-      await new Promise(resolve => setTimeout(resolve, 10000));
-      
-      await queryClient.invalidateQueries({ queryKey: ['supabase-jobs', search_id] });
+      setTimeout(() => {
+        setShowLoadingDialog(false);
+      }, 10000);
 
+      await queryClient.invalidateQueries({ queryKey: ['supabase-jobs', search_id] });
       const interval = periodicRefresh();
       
     } catch (error) {
