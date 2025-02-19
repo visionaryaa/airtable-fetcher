@@ -1,8 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -13,9 +25,23 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/AuthProvider";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import Autoplay from "embla-carousel-autoplay";
 
 const agencies = [
@@ -29,12 +55,15 @@ const agencies = [
   { name: "Start People", img: "https://media.licdn.com/dms/image/v2/D4E03AQGzYaEHyR2N_w/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1666681919673?e=2147483647&v=beta&t=oyXA1mGdfaPAMHB0YsV3dUAQEN0Ic0DfVltZaVtSywc" },
   { name: "AGO Jobs", img: "https://i.postimg.cc/fL7Dcvyd/347248690-792113835829706-805731174237376164-n.png" },
   { name: "SD Worx", img: "https://i.postimg.cc/XJ8FtyxC/339105639-183429217812911-8132452130259136190-n.png" },
-  { name: "Robert Half", img: "https://i.postimg.cc/13vSMqjT/383209240-608879378108206-6829050048883403071-n.jpg" }
+  { name: "Robert Half", img: "https://i.postimg.cc/13vSMqjT/383209240-608879378108206-6829050048883403071-n.jpg" },
 ];
 
 const formSchema = z.object({
   nom_du_job: z.string().min(1, "Le nom du job est requis"),
-  code_postale: z.string().length(4, "Le code postal doit contenir 4 chiffres").regex(/^\d+$/, "Le code postal doit contenir uniquement des chiffres"),
+  code_postale: z
+    .string()
+    .length(4, "Le code postal doit contenir 4 chiffres")
+    .regex(/^\d+$/, "Le code postal doit contenir uniquement des chiffres"),
   rayon: z.string(),
 });
 
@@ -42,8 +71,9 @@ const JobSearch = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeletingLoading, setIsDeletingLoading] = useState(false);
-  const [totalRecords, setTotalRecords] = useState(0);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | 'agency_asc' | 'agency_desc'>();
+  const [sortOrder, setSortOrder] = useState<
+    "asc" | "desc" | "agency_asc" | "agency_desc"
+  >();
   const [searchQuery, setSearchQuery] = useState("");
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
   const [newWord, setNewWord] = useState("");
@@ -52,52 +82,63 @@ const JobSearch = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
+  // IMPORTANT: Ensure that your Supabase table has an RLS policy allowing reads for your anon key.
   const { data: jobs } = useQuery({
-    queryKey: ['supabase-jobs', currentSearchId],
+    queryKey: ["supabase-jobs", currentSearchId],
     queryFn: async () => {
       if (!currentSearchId) return { data: [], count: 0 };
-      
-      let query = supabase
-        .from('job_results')
-        .select('*', { count: 'exact' })
-        .eq('search_id', currentSearchId);
 
+      let query = supabase
+        .from("job_results")
+        .select("*", { count: "exact" })
+        .eq("search_id", currentSearchId);
+
+      // If searchQuery is provided, filter on job_title
       if (searchQuery) {
-        query = query.ilike('job_title', `%${searchQuery}%`);
+        query = query.ilike("job_title", `%${searchQuery}%`);
       }
 
+      // Exclude words from job_title if provided
       if (excludedWords.length > 0) {
-        excludedWords.forEach(word => {
-          query = query.not('job_title', 'ilike', `%${word}%`);
+        excludedWords.forEach((word) => {
+          query = query.not("job_title", "ilike", `%${word}%`);
         });
       }
 
-      if (sortOrder === 'asc') {
-        query = query.order('job_title', { ascending: true });
-      } else if (sortOrder === 'desc') {
-        query = query.order('job_title', { ascending: false });
+      // Order results if sortOrder is set
+      if (sortOrder === "asc") {
+        query = query.order("job_title", { ascending: true });
+      } else if (sortOrder === "desc") {
+        query = query.order("job_title", { ascending: false });
       }
 
       const { data, error, count } = await query;
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching jobs:", error);
+        toast({
+          variant: "destructive",
+          title: "Erreur de récupération",
+          description: error.message,
+        });
+        return { data: [], count: 0 };
+      }
 
-      console.log('Found jobs:', count);
-      console.log('Fetched results:', { data, count });
-
+      console.log("Found jobs:", count);
+      console.log("Fetched results:", { data, count });
       return { data, count: count || 0 };
     },
     enabled: !!currentSearchId,
   });
 
+  // On component mount, load currentSearchId from localStorage (if within 1 hour)
   useEffect(() => {
-    const savedSearchId = localStorage.getItem('currentSearchId');
+    const savedSearchId = localStorage.getItem("currentSearchId");
     if (savedSearchId) {
-      const searchTimestamp = parseInt(savedSearchId.replace('search_', ''));
-      const oneHourAgo = Date.now() - (60 * 60 * 1000);
-      
+      const searchTimestamp = parseInt(savedSearchId.replace("search_", ""));
+      const oneHourAgo = Date.now() - 60 * 60 * 1000;
       if (searchTimestamp < oneHourAgo) {
-        localStorage.removeItem('currentSearchId');
+        localStorage.removeItem("currentSearchId");
         setCurrentSearchId(null);
       } else {
         setCurrentSearchId(savedSearchId);
@@ -107,14 +148,15 @@ const JobSearch = () => {
     }
   }, []);
 
+  // Periodically refresh the query every 5 seconds for 90 seconds total
   const periodicRefresh = () => {
     let count = 0;
     const interval = setInterval(() => {
       if (currentSearchId) {
-        queryClient.invalidateQueries({ queryKey: ['supabase-jobs', currentSearchId] });
+        queryClient.invalidateQueries({ queryKey: ["supabase-jobs", currentSearchId] });
       }
       count++;
-      if (count >= 18) {  // 18 times * 5 seconds = 90 seconds
+      if (count >= 18) {
         clearInterval(interval);
         setIsSubmitting(false);
         setShowLoadingDialog(false);
@@ -130,25 +172,25 @@ const JobSearch = () => {
   const handleDelete = async () => {
     setIsDeletingLoading(true);
     try {
-      const response = await fetch('https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=delete');
-      if (!response.ok) throw new Error('Failed to trigger deletion');
-      
+      const response = await fetch("https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=delete");
+      if (!response.ok) throw new Error("Failed to trigger deletion");
+
       toast({
         title: "Réinitialisation en cours",
         description: "La base de données est en cours de réinitialisation...",
       });
 
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
       if (currentSearchId) {
-        await queryClient.invalidateQueries({ queryKey: ['supabase-jobs', currentSearchId] });
+        await queryClient.invalidateQueries({ queryKey: ["supabase-jobs", currentSearchId] });
       }
-      
+
       toast({
         title: "Réinitialisation terminée",
         description: "La base de données a été réinitialisée avec succès.",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Erreur",
@@ -171,33 +213,38 @@ const JobSearch = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
     setShowLoadingDialog(true);
-    
+
     try {
-      localStorage.removeItem('currentSearchId');
-      
-      const search_id = 'search_' + Date.now();
+      // Clear any existing search ID
+      localStorage.removeItem("currentSearchId");
+
+      // Generate a new search_id
+      const search_id = "search_" + Date.now();
       setCurrentSearchId(search_id);
-      
-      localStorage.setItem('currentSearchId', search_id);
-      
+      localStorage.setItem("currentSearchId", search_id);
+
+      // Trigger your Make.com webhook to scrape and insert records (which writes to Supabase)
       const response = await fetch(
-        `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(values.nom_du_job)}&code_postale=${encodeURIComponent(values.code_postale)}&rayon=${encodeURIComponent(values.rayon)}&searchId=${encodeURIComponent(search_id)}`,
-        {
-          method: "GET",
-        }
+        `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(
+          values.nom_du_job
+        )}&code_postale=${encodeURIComponent(
+          values.code_postale
+        )}&rayon=${encodeURIComponent(values.rayon)}&searchId=${encodeURIComponent(search_id)}`,
+        { method: "GET" }
       );
 
       if (!response.ok) {
         throw new Error("Erreur lors de la recherche");
       }
 
+      // Optionally hide the loading dialog after 10 seconds
       setTimeout(() => {
         setShowLoadingDialog(false);
       }, 10000);
 
-      await queryClient.invalidateQueries({ queryKey: ['supabase-jobs', search_id] });
-      const interval = periodicRefresh();
-      
+      // Invalidate the query so it fetches the new records
+      await queryClient.invalidateQueries({ queryKey: ["supabase-jobs", search_id] });
+      periodicRefresh();
     } catch (error) {
       toast({
         variant: "destructive",
@@ -214,12 +261,16 @@ const JobSearch = () => {
       <Dialog open={showLoadingDialog} onOpenChange={setShowLoadingDialog}>
         <DialogContent className="sm:max-w-md bg-gradient-to-br from-[#0A0F1E] to-[#1A1F2C] border-none">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-white">Recherche en cours</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-white">
+              Recherche en cours
+            </DialogTitle>
             <DialogDescription className="space-y-6">
               <p className="text-center text-gray-300 text-lg">
-                Notre algorithme recherche pour vous toutes les offres d'emplois à pourvoir publiés sur les sites de toutes les grandes intérims wallonnes
+                Notre algorithme recherche pour vous toutes les offres d'emplois
+                à pourvoir publiés sur les sites de toutes les grandes intérims
+                wallonnes.
               </p>
-              
+
               <Carousel
                 opts={{
                   align: "start",
@@ -247,7 +298,7 @@ const JobSearch = () => {
                             className="max-h-12 w-auto object-contain mix-blend-luminosity hover:mix-blend-normal transition-all duration-300"
                             onError={(e) => {
                               const img = e.target as HTMLImageElement;
-                              img.src = '/placeholder.svg';
+                              img.src = "/placeholder.svg";
                             }}
                           />
                         </div>
@@ -288,10 +339,10 @@ const JobSearch = () => {
                       <FormControl>
                         <div className="relative">
                           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input 
-                            placeholder="Quel job recherchez-vous?" 
-                            className="pl-9" 
-                            {...field} 
+                          <Input
+                            placeholder="Quel job recherchez-vous?"
+                            className="pl-9"
+                            {...field}
                           />
                         </div>
                       </FormControl>
@@ -356,11 +407,7 @@ const JobSearch = () => {
                 />
 
                 <div className="flex gap-2 md:col-span-4">
-                  <Button
-                    type="submit"
-                    className="flex-1"
-                    disabled={isSubmitting}
-                  >
+                  <Button type="submit" className="flex-1" disabled={isSubmitting}>
                     {isSubmitting ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -387,7 +434,7 @@ const JobSearch = () => {
                         Réinitialisation...
                       </>
                     ) : (
-                      'Réinitialiser'
+                      "Réinitialiser"
                     )}
                   </Button>
                 </div>
@@ -400,14 +447,17 @@ const JobSearch = () => {
           {user && jobs?.count > 0 && (
             <div className="flex items-center gap-2">
               <Badge variant="secondary">
-                {jobs.count} résultat{jobs.count > 1 ? 's' : ''}
+                {jobs.count} résultat{jobs.count > 1 ? "s" : ""}
               </Badge>
             </div>
           )}
 
           <Collapsible>
             <CollapsibleTrigger asChild>
-              <Button variant="outline" className="w-full flex justify-between items-center">
+              <Button
+                variant="outline"
+                className="w-full flex justify-between items-center"
+              >
                 <span>Filtrer les résultats</span>
                 <ChevronDown className="h-4 w-4" />
               </Button>
@@ -432,9 +482,15 @@ const JobSearch = () => {
                 <table className="w-full border-collapse">
                   <thead>
                     <tr className="bg-muted/50">
-                      <th className="px-6 py-4 text-left font-medium">Poste</th>
-                      <th className="px-6 py-4 text-left font-medium">Location</th>
-                      <th className="px-6 py-4 text-left font-medium">Actions</th>
+                      <th className="px-6 py-4 text-left font-medium">
+                        Poste
+                      </th>
+                      <th className="px-6 py-4 text-left font-medium">
+                        Location
+                      </th>
+                      <th className="px-6 py-4 text-left font-medium">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -451,7 +507,7 @@ const JobSearch = () => {
                           </a>
                         </td>
                         <td className="px-6 py-4 text-muted-foreground">
-                          {job.job_location || 'N/A'}
+                          {job.job_location || "N/A"}
                         </td>
                         <td className="px-6 py-4">
                           <a
