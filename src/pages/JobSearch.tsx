@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import {
   Form,
   FormControl,
@@ -78,11 +79,12 @@ const JobSearch = () => {
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
   const [newWord, setNewWord] = useState("");
   const [showLoadingDialog, setShowLoadingDialog] = useState(false);
-  const [currentSearchId, setCurrentSearchId] = useState<string | null>(null);
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const currentSearchId = searchParams.get('searchId');
 
-  // IMPORTANT: Ensure that your Supabase table has an RLS policy allowing reads for your anon key.
   const { data: jobs } = useQuery({
     queryKey: ["supabase-jobs", currentSearchId],
     queryFn: async () => {
@@ -93,19 +95,16 @@ const JobSearch = () => {
         .select("*", { count: "exact" })
         .eq("search_id", currentSearchId);
 
-      // If searchQuery is provided, filter on job_title
       if (searchQuery) {
         query = query.ilike("job_title", `%${searchQuery}%`);
       }
 
-      // Exclude words from job_title if provided
       if (excludedWords.length > 0) {
         excludedWords.forEach((word) => {
           query = query.not("job_title", "ilike", `%${word}%`);
         });
       }
 
-      // Order results if sortOrder is set
       if (sortOrder === "asc") {
         query = query.order("job_title", { ascending: true });
       } else if (sortOrder === "desc") {
@@ -131,24 +130,6 @@ const JobSearch = () => {
     enabled: !!currentSearchId,
   });
 
-  // On component mount, load currentSearchId from localStorage (if within 1 hour)
-  useEffect(() => {
-    const savedSearchId = localStorage.getItem("currentSearchId");
-    if (savedSearchId) {
-      const searchTimestamp = parseInt(savedSearchId.replace("search_", ""));
-      const oneHourAgo = Date.now() - 60 * 60 * 1000;
-      if (searchTimestamp < oneHourAgo) {
-        localStorage.removeItem("currentSearchId");
-        setCurrentSearchId(null);
-      } else {
-        setCurrentSearchId(savedSearchId);
-      }
-    } else {
-      setCurrentSearchId(null);
-    }
-  }, []);
-
-  // Periodically refresh the query every 5 seconds for 90 seconds total
   const periodicRefresh = () => {
     let count = 0;
     const interval = setInterval(() => {
@@ -159,7 +140,6 @@ const JobSearch = () => {
       if (count >= 18) {
         clearInterval(interval);
         setIsSubmitting(false);
-        setShowLoadingDialog(false);
         toast({
           title: "Mise à jour terminée",
           description: "La recherche est terminée.",
@@ -185,6 +165,8 @@ const JobSearch = () => {
       if (currentSearchId) {
         await queryClient.invalidateQueries({ queryKey: ["supabase-jobs", currentSearchId] });
       }
+
+      navigate('/job-search');
 
       toast({
         title: "Réinitialisation terminée",
@@ -213,23 +195,14 @@ const JobSearch = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
     setShowLoadingDialog(true);
-
+    
     try {
-      // Clear any existing search ID
-      localStorage.removeItem("currentSearchId");
-
-      // Generate a new search_id
-      const search_id = "search_" + Date.now();
-      setCurrentSearchId(search_id);
-      localStorage.setItem("currentSearchId", search_id);
-
-      // Trigger your Make.com webhook to scrape and insert records (which writes to Supabase)
+      const search_id = 'search_' + Date.now();
+      
+      navigate(`/job-search?searchId=${search_id}`);
+      
       const response = await fetch(
-        `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(
-          values.nom_du_job
-        )}&code_postale=${encodeURIComponent(
-          values.code_postale
-        )}&rayon=${encodeURIComponent(values.rayon)}&searchId=${encodeURIComponent(search_id)}`,
+        `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(values.nom_du_job)}&code_postale=${encodeURIComponent(values.code_postale)}&rayon=${encodeURIComponent(values.rayon)}&searchId=${encodeURIComponent(search_id)}`,
         { method: "GET" }
       );
 
@@ -237,14 +210,13 @@ const JobSearch = () => {
         throw new Error("Erreur lors de la recherche");
       }
 
-      // Optionally hide the loading dialog after 10 seconds
       setTimeout(() => {
         setShowLoadingDialog(false);
       }, 10000);
 
-      // Invalidate the query so it fetches the new records
-      await queryClient.invalidateQueries({ queryKey: ["supabase-jobs", search_id] });
+      await queryClient.invalidateQueries({ queryKey: ['supabase-jobs', search_id] });
       periodicRefresh();
+      
     } catch (error) {
       toast({
         variant: "destructive",
