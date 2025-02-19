@@ -1,48 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Search, MapPin, Radio, Loader2, ChevronDown } from "lucide-react";
-import AirtableTable from "@/components/AirtableTable";
 import SearchFilters from "@/components/jobs/SearchFilters";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/AuthProvider";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import Autoplay from "embla-carousel-autoplay";
 
 const agencies = [
@@ -79,20 +52,42 @@ const JobSearch = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  const { data: userFilters } = useQuery({
-    queryKey: ['user-filters', user?.id],
+  const { data: jobs } = useQuery({
+    queryKey: ['supabase-jobs', currentSearchId],
     queryFn: async () => {
-      if (!user) return null;
-      const { data, error } = await supabase
-        .from('user_filters')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+      if (!currentSearchId) return { data: [], count: 0 };
       
-      if (error && error.code !== 'PGRST116') throw error;
-      return data;
+      let query = supabase
+        .from('job_results')
+        .select('*', { count: 'exact' })
+        .eq('search_id', currentSearchId);
+
+      if (searchQuery) {
+        query = query.ilike('job_title', `%${searchQuery}%`);
+      }
+
+      if (excludedWords.length > 0) {
+        excludedWords.forEach(word => {
+          query = query.not('job_title', 'ilike', `%${word}%`);
+        });
+      }
+
+      if (sortOrder === 'asc') {
+        query = query.order('job_title', { ascending: true });
+      } else if (sortOrder === 'desc') {
+        query = query.order('job_title', { ascending: false });
+      }
+
+      const { data, error, count } = await query;
+
+      if (error) throw error;
+
+      console.log('Found jobs:', count);
+      console.log('Fetched results:', { data, count });
+
+      return { data, count: count || 0 };
     },
-    enabled: !!user,
+    enabled: !!currentSearchId,
   });
 
   useEffect(() => {
@@ -116,7 +111,7 @@ const JobSearch = () => {
     let count = 0;
     const interval = setInterval(() => {
       if (currentSearchId) {
-        queryClient.invalidateQueries({ queryKey: ['airtable', currentSearchId] });
+        queryClient.invalidateQueries({ queryKey: ['supabase-jobs', currentSearchId] });
       }
       count++;
       if (count >= 18) {  // 18 times * 5 seconds = 90 seconds
@@ -146,7 +141,7 @@ const JobSearch = () => {
       await new Promise(resolve => setTimeout(resolve, 3000));
       
       if (currentSearchId) {
-        await queryClient.invalidateQueries({ queryKey: ['airtable', currentSearchId] });
+        await queryClient.invalidateQueries({ queryKey: ['supabase-jobs', currentSearchId] });
       }
       
       toast({
@@ -180,13 +175,13 @@ const JobSearch = () => {
     try {
       localStorage.removeItem('currentSearchId');
       
-      const searchId = 'search_' + Date.now();
-      setCurrentSearchId(searchId);
+      const search_id = 'search_' + Date.now();
+      setCurrentSearchId(search_id);
       
-      localStorage.setItem('currentSearchId', searchId);
+      localStorage.setItem('currentSearchId', search_id);
       
       const response = await fetch(
-        `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(values.nom_du_job)}&code_postale=${encodeURIComponent(values.code_postale)}&rayon=${encodeURIComponent(values.rayon)}&searchId=${encodeURIComponent(searchId)}`,
+        `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(values.nom_du_job)}&code_postale=${encodeURIComponent(values.code_postale)}&rayon=${encodeURIComponent(values.rayon)}&searchId=${encodeURIComponent(search_id)}`,
         {
           method: "GET",
         }
@@ -198,13 +193,10 @@ const JobSearch = () => {
 
       await new Promise(resolve => setTimeout(resolve, 10000));
       
-      setShowLoadingDialog(false);
-
-      await queryClient.invalidateQueries({ queryKey: ['airtable', searchId] });
+      await queryClient.invalidateQueries({ queryKey: ['supabase-jobs', search_id] });
 
       const interval = periodicRefresh();
-      return () => clearInterval(interval);
-
+      
     } catch (error) {
       toast({
         variant: "destructive",
@@ -404,14 +396,11 @@ const JobSearch = () => {
         </div>
 
         <div className="space-y-6">
-          {user && userFilters?.excluded_words.length > 0 && (
+          {user && jobs?.count > 0 && (
             <div className="flex items-center gap-2">
               <Badge variant="secondary">
-                {userFilters.excluded_words.length} filtre{userFilters.excluded_words.length > 1 ? 's' : ''} pré-appliqué{userFilters.excluded_words.length > 1 ? 's' : ''}
+                {jobs.count} résultat{jobs.count > 1 ? 's' : ''}
               </Badge>
-              <span className="text-sm text-muted-foreground">
-                depuis vos paramètres
-              </span>
             </div>
           )}
 
@@ -436,15 +425,53 @@ const JobSearch = () => {
             </CollapsibleContent>
           </Collapsible>
 
-          {currentSearchId ? (
-            <AirtableTable 
-              onTotalRecords={setTotalRecords} 
-              sortOrder={sortOrder}
-              searchQuery={searchQuery}
-              excludedWords={excludedWords}
-              baseKey="customSearch"
-              searchId={currentSearchId}
-            />
+          {jobs?.data && jobs.data.length > 0 ? (
+            <div className="bg-card rounded-lg shadow overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="bg-muted/50">
+                      <th className="px-6 py-4 text-left font-medium">Poste</th>
+                      <th className="px-6 py-4 text-left font-medium">Location</th>
+                      <th className="px-6 py-4 text-left font-medium">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {jobs.data.map((job) => (
+                      <tr key={job.id} className="border-t border-border">
+                        <td className="px-6 py-4">
+                          <a
+                            href={job.job_link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline"
+                          >
+                            {job.job_title}
+                          </a>
+                        </td>
+                        <td className="px-6 py-4 text-muted-foreground">
+                          {job.job_location || 'N/A'}
+                        </td>
+                        <td className="px-6 py-4">
+                          <a
+                            href={job.job_link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline"
+                          >
+                            Voir l'offre
+                          </a>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : currentSearchId ? (
+            <div className="text-center text-muted-foreground mt-8">
+              Aucun résultat trouvé
+            </div>
           ) : (
             <div className="text-center text-muted-foreground mt-8">
               Utilisez le formulaire ci-dessus pour rechercher des offres d'emploi
