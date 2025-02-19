@@ -95,80 +95,62 @@ const JobSearch = () => {
       }
 
       try {
-        // First, let's query without any filters to see if there's any data at all
-        const { data: allData, error: basicError, count: totalCount } = await supabase
-          .from("job_results")
-          .select("*", { count: "exact" });
-
-        if (basicError) {
-          console.error("Error querying all data:", basicError);
-          throw basicError;
-        }
-
-        console.log("All data in job_results table:", allData);
-        console.log("Total rows in table:", totalCount);
-
-        // Build the query with search ID and filters
-        let query = supabase
+        console.log("Fetching data for searchId:", currentSearchId);
+        const { data, error, count } = await supabase
           .from("job_results")
           .select("*", { count: "exact" })
           .eq("search_id", currentSearchId.trim());
 
-        // Apply title search filter if provided
-        if (searchQuery) {
-          console.log("Applying title filter:", searchQuery);
-          query = query.ilike("job_title", `%${searchQuery}%`);
-        }
-
-        // Apply excluded words filters
-        if (excludedWords.length > 0) {
-          console.log("Applying excluded words:", excludedWords);
-          excludedWords.forEach((word) => {
-            query = query.not("job_title", "ilike", `%${word}%`);
-          });
-        }
-
-        // Apply sorting
-        if (sortOrder === "asc") {
-          query = query.order("job_title", { ascending: true });
-        } else if (sortOrder === "desc") {
-          query = query.order("job_title", { ascending: false });
-        } else if (sortOrder === "agency_asc") {
-          query = query.order("job_location", { ascending: true });
-        } else if (sortOrder === "agency_desc") {
-          query = query.order("job_location", { ascending: false });
-        }
-
-        // Execute the query
-        const { data, error, count } = await query;
-
         if (error) {
-          console.error("Error querying with search_id:", error);
+          console.error("Error fetching data:", error);
           throw error;
         }
 
-        console.log("Supabase query successful for search_id:", currentSearchId);
-        console.log("Results count:", count);
-        console.log("Full query results:", data);
-        
-        if (!data || data.length === 0) {
-          // Let's try to get the last 5 records to see what's in there
-          const { data: recentData, error: recentError } = await supabase
-            .from("job_results")
-            .select("*")
-            .order("created_at", { ascending: false })
-            .limit(5);
-            
-          if (!recentError && recentData) {
-            console.log("Most recent job_results entries:", recentData);
-            console.log("Recent search_ids:", recentData.map(d => d.search_id));
-          }
+        console.log("Query results:", { data, count });
+
+        // Apply filters to the data in memory
+        let filteredData = data || [];
+
+        if (searchQuery) {
+          console.log("Applying search filter:", searchQuery);
+          filteredData = filteredData.filter(job => 
+            job.job_title.toLowerCase().includes(searchQuery.toLowerCase())
+          );
         }
 
-        return { data: data || [], count: count || 0 };
+        if (excludedWords.length > 0) {
+          console.log("Applying excluded words:", excludedWords);
+          filteredData = filteredData.filter(job => 
+            !excludedWords.some(word => 
+              job.job_title.toLowerCase().includes(word.toLowerCase())
+            )
+          );
+        }
+
+        // Apply sorting
+        if (sortOrder) {
+          console.log("Applying sort order:", sortOrder);
+          filteredData = [...filteredData].sort((a, b) => {
+            if (sortOrder === "asc") {
+              return a.job_title.localeCompare(b.job_title);
+            } else if (sortOrder === "desc") {
+              return b.job_title.localeCompare(a.job_title);
+            } else if (sortOrder === "agency_asc") {
+              return (a.job_location || "").localeCompare(b.job_location || "");
+            } else if (sortOrder === "agency_desc") {
+              return (b.job_location || "").localeCompare(a.job_location || "");
+            }
+            return 0;
+          });
+        }
+
+        return { 
+          data: filteredData, 
+          count: filteredData.length 
+        };
 
       } catch (error) {
-        console.error("Supabase query failed:", error);
+        console.error("Query failed:", error);
         toast({
           variant: "destructive",
           title: "Erreur de récupération",
@@ -178,8 +160,9 @@ const JobSearch = () => {
       }
     },
     enabled: !!currentSearchId,
-    retry: 3,
-    retryDelay: 1000,
+    refetchInterval: 5000,
+    staleTime: 0,
+    cacheTime: 0,
   });
 
   const periodicRefresh = () => {
@@ -209,7 +192,7 @@ const JobSearch = () => {
       if (!response.ok) throw new Error("Failed to trigger deletion");
 
       toast({
-        title: "Réinitialisation en cours",
+        title: "R��initialisation en cours",
         description: "La base de données est en cours de réinitialisation...",
       });
 
@@ -501,151 +484,164 @@ const JobSearch = () => {
         </div>
 
         <div className="space-y-6">
-          {user && jobs?.count > 0 && (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary" className="text-sm font-medium">
-                  {jobs.count} offre{jobs.count > 1 ? "s" : ""} d'emploi
-                </Badge>
-                <span className="text-sm text-muted-foreground">
-                  trouvée{jobs.count > 1 ? "s" : ""}
-                </span>
+          {isLoading ? (
+            <div className="min-h-[400px] flex items-center justify-center">
+              <div className="text-center space-y-4">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+                <p className="text-sm text-muted-foreground">
+                  Chargement des résultats...
+                </p>
               </div>
-            </div>
-          )}
-
-          <Collapsible>
-            <CollapsibleTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full flex justify-between items-center"
-              >
-                <span>Filtrer les résultats</span>
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="mt-4">
-              <SearchFilters
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                sortOrder={sortOrder}
-                setSortOrder={setSortOrder}
-                excludedWords={excludedWords}
-                setExcludedWords={setExcludedWords}
-                newWord={newWord}
-                setNewWord={setNewWord}
-              />
-            </CollapsibleContent>
-          </Collapsible>
-
-          {jobs?.data && jobs.data.length > 0 ? (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-gray-50 border-b border-gray-200">
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Agence
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Poste
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Localisation
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {jobs.data.map((job) => {
-                      const agency = agencies.find(a => 
-                        job.job_title?.toLowerCase().includes(a.name.toLowerCase()) ||
-                        job.job_location?.toLowerCase().includes(a.name.toLowerCase())
-                      );
-
-                      return (
-                        <tr 
-                          key={job.id} 
-                          className="hover:bg-gray-50 transition-colors"
-                        >
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center">
-                              {agency ? (
-                                <img
-                                  src={agency.img}
-                                  alt={`${agency.name} logo`}
-                                  className="h-8 w-8 rounded-full object-contain"
-                                  onError={(e) => {
-                                    const img = e.target as HTMLImageElement;
-                                    img.src = "/placeholder.svg";
-                                  }}
-                                />
-                              ) : (
-                                <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                                  <Box className="h-4 w-4 text-gray-500" />
-                                </div>
-                              )}
-                              <div className="ml-4">
-                                <div className="text-sm font-medium text-gray-900">
-                                  {agency?.name || "Agence"}
-                                </div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="text-sm text-gray-900 font-medium">
-                              {job.job_title}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center text-sm text-gray-500">
-                              <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-                              {job.job_location || "N/A"}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 text-sm">
-                            <a
-                              href={job.job_link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                            >
-                              Voir l'offre
-                            </a>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          ) : currentSearchId ? (
-            <div className="text-center py-12">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-                <Box className="h-8 w-8 text-gray-400" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Aucun résultat trouvé
-              </h3>
-              <p className="text-sm text-gray-500">
-                Essayez de modifier vos critères de recherche
-              </p>
             </div>
           ) : (
-            <div className="text-center py-12">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-                <Search className="h-8 w-8 text-gray-400" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Commencez votre recherche
-              </h3>
-              <p className="text-sm text-gray-500">
-                Utilisez le formulaire ci-dessus pour rechercher des offres d'emploi
-              </p>
-            </div>
+            <>
+              {user && jobs?.count > 0 && (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className="text-sm font-medium">
+                      {jobs.count} offre{jobs.count > 1 ? "s" : ""} d'emploi
+                    </Badge>
+                    <span className="text-sm text-muted-foreground">
+                      trouvée{jobs.count > 1 ? "s" : ""}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              <Collapsible>
+                <CollapsibleTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full flex justify-between items-center"
+                  >
+                    <span>Filtrer les résultats</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-4">
+                  <SearchFilters
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                    sortOrder={sortOrder}
+                    setSortOrder={setSortOrder}
+                    excludedWords={excludedWords}
+                    setExcludedWords={setExcludedWords}
+                    newWord={newWord}
+                    setNewWord={setNewWord}
+                  />
+                </CollapsibleContent>
+              </Collapsible>
+
+              {jobs?.data && jobs.data.length > 0 ? (
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-gray-50 border-b border-gray-200">
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Agence
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Poste
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Localisation
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {jobs.data.map((job) => {
+                          const agency = agencies.find(a => 
+                            job.job_title?.toLowerCase().includes(a.name.toLowerCase()) ||
+                            job.job_location?.toLowerCase().includes(a.name.toLowerCase())
+                          );
+
+                          return (
+                            <tr 
+                              key={job.id} 
+                              className="hover:bg-gray-50 transition-colors"
+                            >
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="flex items-center">
+                                  {agency ? (
+                                    <img
+                                      src={agency.img}
+                                      alt={`${agency.name} logo`}
+                                      className="h-8 w-8 rounded-full object-contain"
+                                      onError={(e) => {
+                                        const img = e.target as HTMLImageElement;
+                                        img.src = "/placeholder.svg";
+                                      }}
+                                    />
+                                  ) : (
+                                    <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                      <Box className="h-4 w-4 text-gray-500" />
+                                    </div>
+                                  )}
+                                  <div className="ml-4">
+                                    <div className="text-sm font-medium text-gray-900">
+                                      {agency?.name || "Agence"}
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <div className="text-sm text-gray-900 font-medium">
+                                  {job.job_title}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <div className="flex items-center text-sm text-gray-500">
+                                  <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+                                  {job.job_location || "N/A"}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 text-sm">
+                                <a
+                                  href={job.job_link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                                >
+                                  Voir l'offre
+                                </a>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : currentSearchId ? (
+                <div className="text-center py-12">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+                    <Box className="h-8 w-8 text-gray-400" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    Aucun résultat trouvé
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Essayez de modifier vos critères de recherche
+                  </p>
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+                    <Search className="h-8 w-8 text-gray-400" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    Commencez votre recherche
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Utilisez le formulaire ci-dessus pour rechercher des offres d'emploi
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </div>
       </main>
