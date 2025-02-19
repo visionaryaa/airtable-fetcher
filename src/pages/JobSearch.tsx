@@ -88,7 +88,11 @@ const JobSearch = () => {
   const { data: jobs } = useQuery({
     queryKey: ["supabase-jobs", currentSearchId],
     queryFn: async () => {
-      if (!currentSearchId) return { data: [], count: 0 };
+      console.log("Running query with searchId:", currentSearchId);
+      if (!currentSearchId) {
+        console.log("No searchId provided, returning empty result");
+        return { data: [], count: 0 };
+      }
 
       let query = supabase
         .from("job_results")
@@ -96,10 +100,12 @@ const JobSearch = () => {
         .eq("search_id", currentSearchId);
 
       if (searchQuery) {
+        console.log("Applying title filter:", searchQuery);
         query = query.ilike("job_title", `%${searchQuery}%`);
       }
 
       if (excludedWords.length > 0) {
+        console.log("Applying excluded words:", excludedWords);
         excludedWords.forEach((word) => {
           query = query.not("job_title", "ilike", `%${word}%`);
         });
@@ -114,7 +120,7 @@ const JobSearch = () => {
       const { data, error, count } = await query;
 
       if (error) {
-        console.error("Error fetching jobs:", error);
+        console.error("Supabase query error:", error);
         toast({
           variant: "destructive",
           title: "Erreur de récupération",
@@ -123,8 +129,9 @@ const JobSearch = () => {
         return { data: [], count: 0 };
       }
 
-      console.log("Found jobs:", count);
-      console.log("Fetched results:", { data, count });
+      console.log("Supabase query successful");
+      console.log("Results count:", count);
+      console.log("Sample of data:", data?.slice(0, 2));
       return { data, count: count || 0 };
     },
     enabled: !!currentSearchId,
@@ -198,17 +205,22 @@ const JobSearch = () => {
     
     try {
       const search_id = 'search_' + Date.now();
+      console.log("Generated new search_id:", search_id);
       
       navigate(`/job-search?searchId=${search_id}`);
       
+      console.log("Making request to Make.com webhook...");
       const response = await fetch(
         `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(values.nom_du_job)}&code_postale=${encodeURIComponent(values.code_postale)}&rayon=${encodeURIComponent(values.rayon)}&searchId=${encodeURIComponent(search_id)}`,
         { method: "GET" }
       );
 
       if (!response.ok) {
+        console.error("Make.com webhook error:", response.status);
         throw new Error("Erreur lors de la recherche");
       }
+
+      console.log("Make.com webhook request successful");
 
       setTimeout(() => {
         setShowLoadingDialog(false);
@@ -218,6 +230,7 @@ const JobSearch = () => {
       periodicRefresh();
       
     } catch (error) {
+      console.error("Search submission error:", error);
       toast({
         variant: "destructive",
         title: "Erreur",
