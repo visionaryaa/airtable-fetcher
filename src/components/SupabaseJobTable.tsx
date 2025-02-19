@@ -1,13 +1,12 @@
-
 import React from 'react';
 import { JobResult, fetchJobResults, parseDateString, formatDate } from '@/services/supabaseJobs';
 import { useQuery } from '@tanstack/react-query';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Heart, MapPin, Calendar } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/AuthProvider';
 import { Button } from '@/components/ui/button';
-import { useMediaQuery } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface SupabaseJobTableProps {
   onTotalRecords?: (total: number) => void;
@@ -42,7 +41,7 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
 }) => {
   const { toast } = useToast();
   const { user } = useAuth();
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useIsMobile();
 
   const addToFavorites = async (job: JobResult) => {
     if (!user) {
