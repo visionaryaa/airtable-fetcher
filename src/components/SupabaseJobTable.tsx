@@ -276,7 +276,7 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
     </div>
   );
 
-  if (isLoading && !jobResults?.data?.length) {
+  if (isLoading || !jobResults) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
         <Loader2 className="h-8 w-8 animate-spin" />
