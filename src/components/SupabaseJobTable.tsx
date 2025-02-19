@@ -63,21 +63,40 @@ const formatDate = (dateString: string | null) => {
   if (!dateString) return 'Non spécifié';
   
   try {
+    let date: Date | null = null;
+
+    // First try to parse ISO dates (2024-12-11T10:00:00Z format)
     if (dateString.includes('T') && dateString.includes('Z')) {
-      const date = new Date(dateString);
-      if (!isNaN(date.getTime())) {
-        return format(date, 'dd MMMM yyyy', { locale: fr });
+      const parsedDate = new Date(dateString);
+      if (!isNaN(parsedDate.getTime())) {
+        date = parsedDate;
       }
     }
 
-    if (!isNaN(Number(dateString))) {
+    // Handle timestamp formats
+    if (!date && !isNaN(Number(dateString))) {
       const timestamp = Number(dateString);
-      const date = timestamp < 9999999999 
+      date = timestamp < 9999999999 
         ? new Date(timestamp * 1000) 
         : new Date(timestamp);
+    }
+
+    // If we have a valid date object, check if it's within last 30 days
+    if (date) {
+      const now = new Date();
+      const diffTime = now.getTime() - date.getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays < 30 && diffDays >= 0) {
+        if (diffDays === 0) return "Aujourd'hui";
+        if (diffDays === 1) return "Hier";
+        return `Il y a ${diffDays} jour${diffDays > 1 ? 's' : ''}`;
+      }
+      
       return format(date, 'dd MMMM yyyy', { locale: fr });
     }
 
+    // Handle ordinal dates (1er mars, etc.)
     const ordinalRegex = /(\d+)(er|e|ème|nd|rd|th)?\s+(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)/i;
     const ordinalMatch = dateString.match(ordinalRegex);
     if (ordinalMatch) {
@@ -87,48 +106,68 @@ const formatDate = (dateString: string | null) => {
       };
       const day = parseInt(ordinalMatch[1]);
       const month = monthMap[ordinalMatch[3].toLowerCase()];
-      const date = new Date();
+      date = new Date();
       date.setMonth(month);
       date.setDate(day);
       return format(date, 'dd MMMM yyyy', { locale: fr });
     }
 
+    // Handle "il y a X jours" format - already in the desired format
     if (dateString.toLowerCase().includes('il y a') || dateString.toLowerCase().includes('jour')) {
-      const days = parseInt(dateString.match(/\d+/)?.[0] || '0');
-      const date = new Date();
-      date.setDate(date.getDate() - days);
-      return format(date, 'dd MMMM yyyy', { locale: fr });
+      return dateString;
     }
 
+    // Handle relative dates
     const lowerDateString = dateString.toLowerCase();
     if (lowerDateString.includes('aujourd') || lowerDateString.includes('today')) {
-      return format(new Date(), 'dd MMMM yyyy', { locale: fr });
+      return "Aujourd'hui";
     }
     if (lowerDateString.includes('hier') || lowerDateString.includes('yesterday')) {
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      return format(yesterday, 'dd MMMM yyyy', { locale: fr });
+      return "Hier";
     }
 
+    // Handle dd/mm/yyyy or dd-mm-yyyy formats
     const dateRegex = /(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})/;
     const match = dateString.match(dateRegex);
     if (match) {
       const [_, day, month, year] = match;
       const fullYear = year.length === 2 ? `20${year}` : year;
-      const date = new Date(`${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
+      date = new Date(`${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
       if (!isNaN(date.getTime())) {
+        const now = new Date();
+        const diffTime = now.getTime() - date.getTime();
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays < 30 && diffDays >= 0) {
+          if (diffDays === 0) return "Aujourd'hui";
+          if (diffDays === 1) return "Hier";
+          return `Il y a ${diffDays} jour${diffDays > 1 ? 's' : ''}`;
+        }
+        
         return format(date, 'dd MMMM yyyy', { locale: fr });
       }
     }
 
+    // Handle written month formats (15 mars 2024)
     const writtenMonthRegex = /(\d{1,2})\s+(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)\s+(\d{4})/i;
     const writtenMatch = dateString.match(writtenMonthRegex);
     if (writtenMatch) {
       return dateString; // Already in the correct format
     }
 
-    const date = parseISO(dateString);
+    // Last resort: try parsing as regular date
+    date = new Date(dateString);
     if (!isNaN(date.getTime())) {
+      const now = new Date();
+      const diffTime = now.getTime() - date.getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays < 30 && diffDays >= 0) {
+        if (diffDays === 0) return "Aujourd'hui";
+        if (diffDays === 1) return "Hier";
+        return `Il y a ${diffDays} jour${diffDays > 1 ? 's' : ''}`;
+      }
+      
       return format(date, 'dd MMMM yyyy', { locale: fr });
     }
 
