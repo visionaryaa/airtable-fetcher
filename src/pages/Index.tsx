@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/AuthProvider";
@@ -7,6 +8,16 @@ import JobControls from "@/components/jobs/JobControls";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
+
+interface JobResult {
+  id: string;
+  job_title: string;
+  job_link: string;
+  job_location: string | null;
+  publication_date: string | null;
+  search_id: string;
+  created_at: string | null;
+}
 
 const Index = () => {
   const [totalRecords, setTotalRecords] = useState(0);
@@ -21,21 +32,17 @@ const Index = () => {
   const { toast } = useToast();
   const { user } = useAuth();
 
-  const { data: jobs, isLoading, refetch } = useQuery({
+  const { data: jobResults, isLoading, refetch } = useQuery({
     queryKey: ['jobs', refreshKey, sortOrder, searchQuery, excludedWords],
     queryFn: async () => {
       let query = supabase
-        .from('jobs')
+        .from('job_results') // Changed from 'jobs' to 'job_results'
         .select('*', { count: 'exact' });
 
       if (sortOrder === 'asc') {
         query = query.order('job_title', { ascending: true });
       } else if (sortOrder === 'desc') {
         query = query.order('job_title', { ascending: false });
-      } else if (sortOrder === 'agency_asc') {
-        query = query.order('agency', { ascending: true });
-      } else if (sortOrder === 'agency_desc') {
-        query = query.order('agency', { ascending: false });
       }
 
       if (searchQuery) {
@@ -55,15 +62,9 @@ const Index = () => {
       }
 
       setTotalRecords(count || 0);
-      return data;
+      return data as JobResult[];
     },
   });
-
-  useEffect(() => {
-    if (jobs && onTotalRecords) {
-      onTotalRecords(jobs.length);
-    }
-  }, [jobs, onTotalRecords]);
 
   const handleScrape = async () => {
     setIsScrapingLoading(true);
@@ -116,17 +117,6 @@ const Index = () => {
     refetch();
   };
 
-  const handleAddWord = (word: string) => {
-    if (word && !excludedWords.includes(word)) {
-      setExcludedWords([...excludedWords, word]);
-      setNewWord("");
-    }
-  };
-
-  const handleRemoveWord = (wordToRemove: string) => {
-    setExcludedWords(excludedWords.filter(word => word !== wordToRemove));
-  };
-
   return (
     <div className="min-h-screen bg-background text-foreground">
       <main className="container mx-auto py-8 px-4">
@@ -151,17 +141,17 @@ const Index = () => {
           />
 
           <JobControls
-            isScrapingLoading={isScrapingLoading}
-            isDeletingLoading={isDeletingLoading}
-            handleScrape={handleScrape}
-            handleDelete={handleDelete}
-            handleRefresh={handleRefresh}
+            isLoading={isScrapingLoading} // Updated to match JobControlsProps
+            isDeleting={isDeletingLoading} // Updated to match JobControlsProps
+            onScrape={handleScrape} // Updated to match JobControlsProps
+            onDelete={handleDelete} // Updated to match JobControlsProps
+            onRefresh={handleRefresh} // Updated to match JobControlsProps
           />
 
           <AirtableTable
-            jobs={jobs || []}
+            data={jobResults || []} // Updated to match AirtableTableProps
             isLoading={isLoading}
-            totalRecords={totalRecords}
+            count={totalRecords}
           />
         </div>
       </main>
