@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
@@ -97,7 +97,7 @@ const JobSearch = () => {
 
       try {
         console.log("Fetching data for searchId:", currentSearchId);
-        const { data, error, count } = await supabase
+        const { data: jobResults, error, count } = await supabase
           .from("job_results")
           .select("*", { count: "exact" })
           .eq("search_id", currentSearchId.trim());
@@ -107,10 +107,15 @@ const JobSearch = () => {
           throw error;
         }
 
-        console.log("Query results:", { data, count });
+        if (!jobResults || jobResults.length === 0) {
+          console.log("No results found for searchId:", currentSearchId);
+          return { data: [], count: 0 };
+        }
+
+        console.log("Query results:", { jobResults, count });
 
         // Apply filters to the data in memory
-        let filteredData = data || [];
+        let filteredData = jobResults || [];
 
         if (searchQuery) {
           console.log("Applying search filter:", searchQuery);
@@ -168,6 +173,13 @@ const JobSearch = () => {
     retryDelay: 1000,
   });
 
+  useEffect(() => {
+    if (currentSearchId && isSubmitting) {
+      const interval = periodicRefresh();
+      return () => clearInterval(interval);
+    }
+  }, [currentSearchId, isSubmitting]);
+
   const periodicRefresh = () => {
     let count = 0;
     const interval = setInterval(() => {
@@ -179,6 +191,7 @@ const JobSearch = () => {
       if (count >= 30) {
         clearInterval(interval);
         setIsSubmitting(false);
+        setShowLoadingDialog(false);
         toast({
           title: "Mise à jour terminée",
           description: "La recherche est terminée.",
@@ -195,7 +208,7 @@ const JobSearch = () => {
       if (!response.ok) throw new Error("Failed to trigger deletion");
 
       toast({
-        title: "R��initialisation en cours",
+        title: "Réinitialisation en cours",
         description: "La base de données est en cours de réinitialisation...",
       });
 
@@ -238,46 +251,24 @@ const JobSearch = () => {
     try {
       const search_id = 'search_' + Date.now();
       console.log("Generated new search_id:", search_id);
-      console.log("Full search parameters:", {
-        job: values.nom_du_job,
-        postal: values.code_postale,
-        radius: values.rayon,
-        searchId: search_id
-      });
       
-      navigate(`/job-search?searchId=${search_id}`);
-      
-      console.log("Making request to Make.com webhook...");
       const webhookUrl = `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(values.nom_du_job)}&code_postale=${encodeURIComponent(values.code_postale)}&rayon=${encodeURIComponent(values.rayon)}&searchId=${encodeURIComponent(search_id)}`;
       
-      console.log("Webhook URL:", webhookUrl);
-      const response = await fetch(webhookUrl, { method: "GET" });
+      console.log("Making request to webhook:", webhookUrl);
+      const response = await fetch(webhookUrl);
 
-      console.log("Webhook response status:", response.status);
       if (!response.ok) {
-        console.error("Make.com webhook error:", response.status);
-        const responseText = await response.text();
-        console.error("Webhook error response:", responseText);
-        throw new Error("Erreur lors de la recherche");
+        throw new Error(`Webhook error: ${response.status}`);
       }
 
-      console.log("Make.com webhook request successful");
-      console.log("Waiting 5 seconds before starting polling...");
-
-      await new Promise(resolve => setTimeout(resolve, 5000));
-
-      // Let's verify the search ID is still correct
-      console.log("Starting polling with search_id:", search_id);
-      await queryClient.invalidateQueries({ queryKey: ['supabase-jobs', search_id] });
-      periodicRefresh();
-
-      setTimeout(() => {
-        setShowLoadingDialog(false);
-      }, 15000);
+      navigate(`/job-search?searchId=${search_id}`);
+      
+      // Start polling after a short delay
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      queryClient.invalidateQueries({ queryKey: ["supabase-jobs", search_id] });
       
     } catch (error) {
       console.error("Search submission error:", error);
-      console.error("Full error object:", error);
       toast({
         variant: "destructive",
         title: "Erreur",
