@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -53,7 +54,7 @@ const agencies = [
   { name: "Synergie", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMXkqv_r78fpVwVE9xDY6rd0GfS3bMlK1sWA&s" },
   { name: "Randstad", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5L2880dU-fMT-PjiSxVWWbwI6Vb8l3Vw6Q&s" },
   { name: "Accent Jobs", img: "https://i.postimg.cc/053yKcZg/IMG-7592.png" },
-  { name: "Start People", img: "https://media.licdn.com/dms/image/v2/D4E03AQGzYaEHyR2N_w/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1666681919673?e=2147483647&v=beta&t=oyXA1mGdfaPAMHB0YsV3dUAQEN0Ic0DfVltZaVtSywc" },
+  { name: "Start People", img: "https://media.licdn.com/dms/image/D4E03AQHgFtkR3XiGeg/profile-displayphoto-shrink_800_800/0/1691396279584?e=2147483647&v=beta&t=oyXA1mGdfaPAMHB0YsV3dUAQEN0Ic0DfVltZaVtSywc" },
   { name: "AGO Jobs", img: "https://i.postimg.cc/fL7Dcvyd/347248690-792113835829706-805731174237376164-n.png" },
   { name: "SD Worx", img: "https://i.postimg.cc/XJ8FtyxC/339105639-183429217812911-8132452130259136190-n.png" },
   { name: "Robert Half", img: "https://i.postimg.cc/13vSMqjT/383209240-608879378108206-6829050048883403071-n.jpg" }
@@ -116,7 +117,7 @@ const JobSearch = () => {
     let count = 0;
     const interval = setInterval(() => {
       if (currentSearchId) {
-        queryClient.invalidateQueries({ queryKey: ['airtable', currentSearchId] });
+        queryClient.invalidateQueries({ queryKey: ['supabase-jobs', currentSearchId] });
       }
       count++;
       if (count >= 18) {  // 18 times * 5 seconds = 90 seconds
@@ -146,7 +147,7 @@ const JobSearch = () => {
       await new Promise(resolve => setTimeout(resolve, 3000));
       
       if (currentSearchId) {
-        await queryClient.invalidateQueries({ queryKey: ['airtable', currentSearchId] });
+        await queryClient.invalidateQueries({ queryKey: ['supabase-jobs', currentSearchId] });
       }
       
       toast({
@@ -198,11 +199,8 @@ const JobSearch = () => {
 
       await new Promise(resolve => setTimeout(resolve, 10000));
       
-      setShowLoadingDialog(false);
-
-      await queryClient.invalidateQueries({ queryKey: ['airtable', searchId] });
-
       const interval = periodicRefresh();
+
       return () => clearInterval(interval);
 
     } catch (error) {
