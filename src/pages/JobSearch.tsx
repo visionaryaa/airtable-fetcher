@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -112,6 +111,16 @@ const JobSearch = () => {
       setCurrentSearchId(null);
     }
   }, []);
+
+  useEffect(() => {
+    if (showLoadingDialog) {
+      const timer = setTimeout(() => {
+        setShowLoadingDialog(false);
+      }, 10000); // 10 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [showLoadingDialog]);
 
   const periodicRefresh = () => {
     let count = 0;
