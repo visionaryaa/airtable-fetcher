@@ -75,6 +75,7 @@ const JobSearch = () => {
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
   const [newWord, setNewWord] = useState("");
   const [showLoadingDialog, setShowLoadingDialog] = useState(false);
+  const [currentSearchId, setCurrentSearchId] = useState<string | null>(null);
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -97,7 +98,9 @@ const JobSearch = () => {
   const periodicRefresh = () => {
     let count = 0;
     const interval = setInterval(() => {
-      queryClient.invalidateQueries({ queryKey: ['airtable'] });
+      if (currentSearchId) {
+        queryClient.invalidateQueries({ queryKey: ['airtable', currentSearchId] });
+      }
       count++;
       if (count >= 18) {  // 18 times * 5 seconds = 90 seconds
         clearInterval(interval);
@@ -123,11 +126,11 @@ const JobSearch = () => {
         description: "La base de données est en cours de réinitialisation...",
       });
 
-      // Wait for 3 seconds
       await new Promise(resolve => setTimeout(resolve, 3000));
       
-      // Refresh the table data
-      await queryClient.invalidateQueries({ queryKey: ['airtable'] });
+      if (currentSearchId) {
+        await queryClient.invalidateQueries({ queryKey: ['airtable', currentSearchId] });
+      }
       
       toast({
         title: "Réinitialisation terminée",
@@ -158,8 +161,13 @@ const JobSearch = () => {
     setShowLoadingDialog(true);
     
     try {
+      const searchId = 'search_' + Date.now();
+      setCurrentSearchId(searchId);
+      
+      localStorage.setItem('currentSearchId', searchId);
+      
       const response = await fetch(
-        `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(values.nom_du_job)}&code_postale=${encodeURIComponent(values.code_postale)}&rayon=${encodeURIComponent(values.rayon)}`,
+        `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(values.nom_du_job)}&code_postale=${encodeURIComponent(values.code_postale)}&rayon=${encodeURIComponent(values.rayon)}&searchId=${encodeURIComponent(searchId)}`,
         {
           method: "GET",
         }
@@ -169,16 +177,12 @@ const JobSearch = () => {
         throw new Error("Erreur lors de la recherche");
       }
 
-      // Wait for 10 seconds with the dialog open
       await new Promise(resolve => setTimeout(resolve, 10000));
       
-      // Close the dialog after 10 seconds
       setShowLoadingDialog(false);
 
-      // Refresh data initially after dialog closes
-      await queryClient.invalidateQueries({ queryKey: ['airtable'] });
+      await queryClient.invalidateQueries({ queryKey: ['airtable', searchId] });
 
-      // Start periodic refresh
       const interval = periodicRefresh();
       return () => clearInterval(interval);
 
@@ -419,6 +423,7 @@ const JobSearch = () => {
             searchQuery={searchQuery}
             excludedWords={excludedWords}
             baseKey="customSearch"
+            searchId={currentSearchId}
           />
         </div>
       </main>

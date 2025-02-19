@@ -1,3 +1,4 @@
+
 const AIRTABLE_API_KEY = 'patq4JIuuLh5xgo34.4456c0e7774bd235c10f6e2fc2a251c8014b76b3a2b76a6e6c56859bc88ee8b1';
 
 const AIRTABLE_BASES = {
@@ -20,10 +21,24 @@ export interface AirtableResponse {
   offset?: string;
 }
 
-export const fetchAirtableRecords = async (offset?: string, baseKey: keyof typeof AIRTABLE_BASES = 'logisticsLiege'): Promise<AirtableResponse> => {
-  console.log("Fetching records with offset:", offset); // Debug log
+export const fetchAirtableRecords = async (
+  offset?: string, 
+  baseKey: keyof typeof AIRTABLE_BASES = 'logisticsLiege',
+  searchId?: string | null
+): Promise<AirtableResponse> => {
   const { baseId, tableId } = AIRTABLE_BASES[baseKey];
-  const url = `https://api.airtable.com/v0/${baseId}/${tableId}${offset ? `?offset=${offset}` : ''}`;
+  let url = `https://api.airtable.com/v0/${baseId}/${tableId}`;
+  
+  // Build the filter formula if we have a searchId
+  if (searchId) {
+    const filterFormula = `SearchID='${searchId}'`;
+    url += `?filterByFormula=${encodeURIComponent(filterFormula)}`;
+    if (offset) {
+      url += `&offset=${offset}`;
+    }
+  } else if (offset) {
+    url += `?offset=${offset}`;
+  }
   
   try {
     const response = await fetch(url, {
@@ -38,7 +53,7 @@ export const fetchAirtableRecords = async (offset?: string, baseKey: keyof typeo
     }
 
     const data = await response.json();
-    console.log("Airtable response:", data); // Debug log
+    console.log("Airtable response:", data);
     return data;
   } catch (error) {
     console.error("Error fetching from Airtable:", error);
