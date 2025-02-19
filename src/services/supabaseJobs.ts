@@ -24,15 +24,14 @@ export const fetchJobResults = async (
 
   try {
     // Create base query
-    let query = supabase
+    const query = supabase
       .from('job_results')
       .select('*', { count: 'exact' })
-      .eq('search_id', searchId);
+      .eq('search_id', searchId) as any; // Temporary type assertion until we update the database types
 
     // Add pagination if provided
     if (options.offset !== undefined && options.limit !== undefined) {
-      query = query
-        .range(options.offset, options.offset + options.limit - 1);
+      query.range(options.offset, options.offset + options.limit - 1);
     }
 
     const { data, error, count } = await query;
@@ -57,7 +56,7 @@ export const clearJobResults = async (searchId: string) => {
     const { error } = await supabase
       .from('job_results')
       .delete()
-      .eq('search_id', searchId);
+      .eq('search_id', searchId) as any; // Temporary type assertion until we update the database types
 
     if (error) {
       console.error('Error clearing job results:', error);
