@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -117,7 +116,7 @@ const JobSearch = () => {
     let count = 0;
     const interval = setInterval(() => {
       if (currentSearchId) {
-        queryClient.invalidateQueries({ queryKey: ['airtable', currentSearchId] });
+        queryClient.invalidateQueries({ queryKey: ['supabase-jobs', currentSearchId] });
       }
       count++;
       if (count >= 18) {  // 18 times * 5 seconds = 90 seconds
@@ -147,7 +146,7 @@ const JobSearch = () => {
       await new Promise(resolve => setTimeout(resolve, 3000));
       
       if (currentSearchId) {
-        await queryClient.invalidateQueries({ queryKey: ['airtable', currentSearchId] });
+        await queryClient.invalidateQueries({ queryKey: ['supabase-jobs', currentSearchId] });
       }
       
       toast({
@@ -199,10 +198,8 @@ const JobSearch = () => {
 
       await new Promise(resolve => setTimeout(resolve, 10000));
       
-      setShowLoadingDialog(false);
-
-      await queryClient.invalidateQueries({ queryKey: ['airtable', searchId] });
-
+      await queryClient.invalidateQueries({ queryKey: ['supabase-jobs', searchId] });
+      
       const interval = periodicRefresh();
       return () => clearInterval(interval);
 
