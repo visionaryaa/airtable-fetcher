@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { JobResult, fetchJobResults, parseDateString, formatDate } from '@/services/supabaseJobs';
 import { useQuery } from '@tanstack/react-query';
@@ -12,6 +13,16 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+
+// Define the interface for the component props
+interface SupabaseJobTableProps {
+  onTotalRecords?: (total: number) => void;
+  searchId?: string | null;
+  sortOrder?: 'asc' | 'desc' | 'agency_asc' | 'agency_desc';
+  searchQuery?: string;
+  excludedWords?: string[];
+  baseKey?: string;
+}
 
 const agencyLogos: { [key: string]: string } = {
   'proselect.be': 'https://i.postimg.cc/tg2Xq57M/IMG-7594.png',
