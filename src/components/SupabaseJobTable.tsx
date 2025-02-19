@@ -93,6 +93,7 @@ interface SupabaseJobTableProps {
   onTotalRecords?: (total: number) => void;
   searchId: string | null;
   searchQuery?: string;
+  sortOrder?: 'asc' | 'desc' | 'agency_asc' | 'agency_desc';
   excludedWords?: string[];
 }
 
@@ -100,6 +101,7 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
   onTotalRecords,
   searchId,
   searchQuery = '',
+  sortOrder,
   excludedWords = [],
 }) => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -132,7 +134,7 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
       return [];
     }
 
-    return jobResults.data.filter(job => {
+    let filtered = jobResults.data.filter(job => {
       if (searchQuery && !job.job_title.toLowerCase().includes(searchQuery.toLowerCase())) {
         return false;
       }
@@ -146,7 +148,26 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
 
       return true;
     });
-  }, [jobResults?.data, searchQuery, excludedWords]);
+
+    if (sortOrder) {
+      filtered = [...filtered].sort((a, b) => {
+        switch (sortOrder) {
+          case 'asc':
+            return a.job_title.localeCompare(b.job_title);
+          case 'desc':
+            return b.job_title.localeCompare(a.job_title);
+          case 'agency_asc':
+            return (a.job_link || '').localeCompare(b.job_link || '');
+          case 'agency_desc':
+            return (b.job_link || '').localeCompare(a.job_link || '');
+          default:
+            return 0;
+        }
+      });
+    }
+
+    return filtered;
+  }, [jobResults?.data, searchQuery, excludedWords, sortOrder]);
 
   const totalPages = Math.ceil((jobResults?.count ?? 0) / pageSize);
 
@@ -269,7 +290,6 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
 
   return (
     <>
-      {/* Job Count Display */}
       <div className="mb-6 px-4 md:px-6">
         <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 flex items-center justify-between">
           <div>
