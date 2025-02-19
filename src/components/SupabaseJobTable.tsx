@@ -20,7 +20,7 @@ const AGENCY_LOGOS = {
   'www.synergie.be': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMXkqv_r78fpVwVE9xDY6rd0GfS3bMlK1sWA&s',
   'www.randstad.be': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5L2880dU-fMT-PjiSxVWWbwI6Vb8l3Vw6Q&s',
   'www.accentjobs.be': 'https://i.postimg.cc/053yKcZg/IMG-7592.png',
-  'www.startpeople.be': 'https://media.licdn.com/dms/image/D4E03AQHgFtkR3XiGeg/profile-displayphoto-shrink_800_800/0/1691396279584?e=2147483647&v=beta&t=c6kRhs0M6W04lWO8geW9A6KX_y3LJuOZ4xOl7oEYOh8',
+  'www.startpeople.be': 'https://media.licdn.com/dms/image/D4E03AQHgFtkR3XiGeg/profile-displayphoto-shrink_800_800/0/1691396279584?e=2147483647&v=beta&t=oyXA1mGdfaPAMHB0YsV3dUAQEN0Ic0DfVltZaVtSywc',
   'www.agojobs.be': 'https://i.postimg.cc/fL7Dcvyd/347248690-792113835829706-805731174237376164-n.png',
   'be.sdworx.com': 'https://i.postimg.cc/XJ8FtyxC/339105639-183429217812911-8132452130259136190-n.png',
   'www.roberthalf.be': 'https://i.postimg.cc/13vSMqjT/383209240-608879378108206-6829050048883403071-n.jpg'
