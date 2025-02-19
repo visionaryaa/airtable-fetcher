@@ -437,12 +437,8 @@ const JobSearch = () => {
           </Collapsible>
 
           {currentSearchId ? (
-            <AirtableTable 
+            <SupabaseJobTable 
               onTotalRecords={setTotalRecords} 
-              sortOrder={sortOrder}
-              searchQuery={searchQuery}
-              excludedWords={excludedWords}
-              baseKey="customSearch"
               searchId={currentSearchId}
             />
           ) : (
