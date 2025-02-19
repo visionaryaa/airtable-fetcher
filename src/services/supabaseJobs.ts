@@ -39,7 +39,19 @@ export const fetchJobResults = async (searchId: string | null, options?: { sortO
       throw error;
     }
 
-    return { data: data || [], count: count || 0 };
+    // Return a plain object without any non-serializable properties
+    return {
+      data: data ? data.map(job => ({
+        id: job.id,
+        job_title: job.job_title,
+        job_link: job.job_link,
+        job_location: job.job_location,
+        publication_date: job.publication_date,
+        search_id: job.search_id,
+        created_at: job.created_at
+      })) : [],
+      count: count || 0
+    };
   } catch (error) {
     console.error('Error in fetchJobResults:', error);
     throw error;
