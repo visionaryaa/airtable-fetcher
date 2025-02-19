@@ -9,6 +9,87 @@ import { Loader2, Heart, MapPin, Calendar } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { useIsMobile } from '@/hooks/use-mobile';
 
+const AGENCY_LOGOS = [
+  {
+    domain: 'proselect.be',
+    logo: 'https://i.postimg.cc/tg2Xq57M/IMG-7594.png'
+  },
+  {
+    domain: 'tempo-team.be',
+    logo: 'https://i.postimg.cc/kX2ZPLhf/352321179-802641697768990-7499832421124251242-n-1.png'
+  },
+  {
+    domain: 'adecco.be',
+    logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpHiI1ANEpe5BlJpLQDI_4M8jl1AnJciaqaw&s'
+  },
+  {
+    domain: 'asap.be',
+    logo: 'https://a.storyblok.com/f/118264/240x240/c475b21edc/asap-logo-2.png'
+  },
+  {
+    domain: 'synergiejobs.be',
+    logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMXkqv_r78fpVwVE9xDY6rd0GfS3bMlK1sWA&s'
+  },
+  {
+    domain: 'randstad.be',
+    logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5L2880dU-fMT-PjiSxVWWbwI6Vb8l3Vw6Q&s'
+  },
+  {
+    domain: 'accentjobs.be',
+    logo: 'https://i.postimg.cc/053yKcZg/IMG-7592.png'
+  },
+  {
+    domain: 'startpeople.be',
+    logo: 'https://media.licdn.com/dms/image/v2/D4E03AQGzYaEHyR2N_w/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1666681919673?e=2147483647&v=beta&t=oyXA1mGdfaPAMHB0YsV3dUAQEN0Ic0DfVltZaVtSywc'
+  },
+  {
+    domain: 'dajobs.be',
+    logo: 'https://i.postimg.cc/fL7Dcvyd/347248690-792113835829706-805731174237376164-n.png'
+  },
+  {
+    domain: 'sdworx.jobs',
+    logo: 'https://i.postimg.cc/XJ8FtyxC/339105639-183429217812911-8132452130259136190-n.png'
+  },
+  {
+    domain: 'roberthalf.com',
+    logo: 'https://i.postimg.cc/13vSMqjT/383209240-608879378108206-6829050048883403071-n.jpg'
+  },
+  {
+    domain: 'brightplus.be',
+    logo: 'https://i.postimg.cc/8c6fdhKY/image.png'
+  }
+];
+
+const getDomainFromUrl = (url: string) => {
+  try {
+    const urlObject = new URL(url);
+    const hostname = urlObject.hostname.replace('www2.', 'www.').replace('www.', '');
+    
+    if (hostname.includes('brightplus.be')) {
+      return 'brightplus.be';
+    }
+    
+    return hostname;
+  } catch (error) {
+    console.error('Error parsing URL:', error);
+    if (url.toLowerCase().includes('brightplus.be')) {
+      return 'brightplus.be';
+    }
+    return url;
+  }
+};
+
+const getLogoForUrl = (url: string) => {
+  try {
+    const domain = getDomainFromUrl(url);
+    const agencyInfo = AGENCY_LOGOS.find(agency => domain.includes(agency.domain));
+    return agencyInfo?.logo;
+  } catch (error) {
+    console.error('Error parsing URL:', error);
+    return null;
+  }
+};
+
 interface SupabaseJobTableProps {
   onTotalRecords?: (total: number) => void;
   searchId: string | null;
@@ -82,7 +163,16 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
     <Card key={record.id} className="mb-4">
       <CardContent className="pt-6">
         <div className="space-y-4">
-          <h3 className="font-medium text-foreground">{record.job_title}</h3>
+          <div className="flex items-center gap-3">
+            {record.job_link && (
+              <img
+                src={getLogoForUrl(record.job_link)}
+                alt="Agency logo"
+                className="w-8 h-8 rounded-full object-cover"
+              />
+            )}
+            <h3 className="font-medium text-foreground">{record.job_title}</h3>
+          </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <MapPin className="h-4 w-4" />
             {record.job_location || 'Non spécifié'}
@@ -118,6 +208,7 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
       <table className="w-full border-collapse min-w-[800px] bg-background">
         <thead>
           <tr className="bg-secondary text-foreground">
+            <th className="p-6 text-left font-medium">SOURCE</th>
             <th className="p-6 text-left font-medium">POSTE</th>
             <th className="p-6 text-left font-medium">LIEN</th>
             <th className="p-6 text-left font-medium">LOCALISATION</th>
@@ -130,6 +221,15 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
               key={job.id}
               className="border-b border-border hover:bg-secondary/50 transition-colors"
             >
+              <td className="p-6">
+                {job.job_link && (
+                  <img
+                    src={getLogoForUrl(job.job_link)}
+                    alt="Agency logo"
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                )}
+              </td>
               <td className="p-6 font-medium text-foreground">{job.job_title}</td>
               <td className="p-6">
                 <a 
@@ -196,7 +296,7 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
       )}
 
       {totalPages > 1 && (
-        <div className="flex justify-center gap-2 mt-4">
+        <div className="flex justify-center items-center gap-2 mt-4">
           <Button
             variant="outline"
             onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
@@ -204,6 +304,9 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
           >
             Précédent
           </Button>
+          <span className="text-sm text-muted-foreground">
+            Page {currentPage + 1} sur {totalPages}
+          </span>
           <Button
             variant="outline"
             onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))}
