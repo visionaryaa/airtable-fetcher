@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { JobResult, fetchJobResults } from '@/services/supabaseJobs';
 import { format } from 'date-fns';
@@ -94,7 +93,6 @@ interface SupabaseJobTableProps {
   onTotalRecords?: (total: number) => void;
   searchId: string | null;
   searchQuery?: string;
-  sortOrder?: 'asc' | 'desc' | 'agency_asc' | 'agency_desc';
   excludedWords?: string[];
 }
 
@@ -150,9 +148,7 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
     });
   }, [jobResults?.data, searchQuery, excludedWords]);
 
-  const totalPages = jobResults?.count 
-    ? Math.ceil(jobResults.count / pageSize) 
-    : 0;
+  const totalPages = Math.ceil((jobResults?.count ?? 0) / pageSize);
 
   if (!searchId) {
     console.log('No searchId provided');
