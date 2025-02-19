@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -54,13 +54,13 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
 
     return jobResults.data.filter(job => {
       // Filter by search query
-      if (searchQuery && !job.poste.toLowerCase().includes(searchQuery.toLowerCase())) {
+      if (searchQuery && !job.job_title.toLowerCase().includes(searchQuery.toLowerCase())) {
         return false;
       }
 
       // Filter out jobs with excluded words
       if (excludedWords.length > 0) {
-        const jobTextLower = `${job.poste} ${job.localisation || ''}`.toLowerCase();
+        const jobTextLower = `${job.job_title} ${job.job_location || ''}`.toLowerCase();
         if (excludedWords.some(word => jobTextLower.includes(word.toLowerCase()))) {
           return false;
         }
@@ -108,8 +108,8 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
             ) : (
               filteredResults.map((job) => (
                 <TableRow key={job.id}>
-                  <TableCell>{job.poste}</TableCell>
-                  <TableCell>{job.localisation || 'Non spécifié'}</TableCell>
+                  <TableCell>{job.job_title}</TableCell>
+                  <TableCell>{job.job_location || 'Non spécifié'}</TableCell>
                   <TableCell>
                     {job.publication_date
                       ? format(new Date(job.publication_date), 'dd MMMM yyyy', { locale: fr })
@@ -117,7 +117,7 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
                   </TableCell>
                   <TableCell>
                     <a
-                      href={job.lien}
+                      href={job.job_link}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-500 hover:text-blue-700"

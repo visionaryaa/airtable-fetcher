@@ -40,27 +40,27 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
-          lien: string
-          localisation: string | null
-          poste: string
+          job_link: string
+          job_location: string | null
+          job_title: string
           publication_date: string | null
           search_id: string
         }
         Insert: {
           created_at?: string | null
           id?: string
-          lien: string
-          localisation?: string | null
-          poste: string
+          job_link: string
+          job_location?: string | null
+          job_title: string
           publication_date?: string | null
           search_id: string
         }
         Update: {
           created_at?: string | null
           id?: string
-          lien?: string
-          localisation?: string | null
-          poste?: string
+          job_link?: string
+          job_location?: string | null
+          job_title?: string
           publication_date?: string | null
           search_id?: string
         }

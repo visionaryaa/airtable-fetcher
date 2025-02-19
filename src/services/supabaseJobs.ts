@@ -3,25 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 
 export interface JobResult {
   id: string;
-  poste: string;
-  lien: string;
-  localisation: string | null;
+  job_title: string;
+  job_link: string;
+  job_location: string | null;
   publication_date: string | null;
   search_id: string;
   created_at: string;
 }
-
-type Database = {
-  public: {
-    Tables: {
-      job_results: {
-        Row: JobResult;
-        Insert: Omit<JobResult, 'id' | 'created_at'>;
-        Update: Partial<Omit<JobResult, 'id' | 'created_at'>>;
-      };
-    };
-  };
-};
 
 export const fetchJobResults = async (
   searchId: string | null,
