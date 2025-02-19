@@ -491,10 +491,15 @@ const JobSearch = () => {
 
         <div className="space-y-6">
           {user && jobs?.count > 0 && (
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary">
-                {jobs.count} résultat{jobs.count > 1 ? "s" : ""}
-              </Badge>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="text-sm font-medium">
+                  {jobs.count} offre{jobs.count > 1 ? "s" : ""} d'emploi
+                </Badge>
+                <span className="text-sm text-muted-foreground">
+                  trouvée{jobs.count > 1 ? "s" : ""}
+                </span>
+              </div>
             </div>
           )}
 
@@ -523,61 +528,112 @@ const JobSearch = () => {
           </Collapsible>
 
           {jobs?.data && jobs.data.length > 0 ? (
-            <div className="bg-card rounded-lg shadow overflow-hidden">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse">
                   <thead>
-                    <tr className="bg-muted/50">
-                      <th className="px-6 py-4 text-left font-medium">
+                    <tr className="bg-gray-50 border-b border-gray-200">
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Agence
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Poste
                       </th>
-                      <th className="px-6 py-4 text-left font-medium">
-                        Location
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Localisation
                       </th>
-                      <th className="px-6 py-4 text-left font-medium">
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {jobs.data.map((job) => (
-                      <tr key={job.id} className="border-t border-border">
-                        <td className="px-6 py-4">
-                          <a
-                            href={job.job_link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary hover:underline"
-                          >
-                            {job.job_title}
-                          </a>
-                        </td>
-                        <td className="px-6 py-4 text-muted-foreground">
-                          {job.job_location || "N/A"}
-                        </td>
-                        <td className="px-6 py-4">
-                          <a
-                            href={job.job_link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary hover:underline"
-                          >
-                            Voir l'offre
-                          </a>
-                        </td>
-                      </tr>
-                    ))}
+                  <tbody className="divide-y divide-gray-200">
+                    {jobs.data.map((job) => {
+                      const agency = agencies.find(a => 
+                        job.job_title?.toLowerCase().includes(a.name.toLowerCase()) ||
+                        job.job_location?.toLowerCase().includes(a.name.toLowerCase())
+                      );
+
+                      return (
+                        <tr 
+                          key={job.id} 
+                          className="hover:bg-gray-50 transition-colors"
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              {agency ? (
+                                <img
+                                  src={agency.img}
+                                  alt={`${agency.name} logo`}
+                                  className="h-8 w-8 rounded-full object-contain"
+                                  onError={(e) => {
+                                    const img = e.target as HTMLImageElement;
+                                    img.src = "/placeholder.svg";
+                                  }}
+                                />
+                              ) : (
+                                <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                  <Briefcase className="h-4 w-4 text-gray-500" />
+                                </div>
+                              )}
+                              <div className="ml-4">
+                                <div className="text-sm font-medium text-gray-900">
+                                  {agency?.name || "Agence"}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm text-gray-900 font-medium">
+                              {job.job_title}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center text-sm text-gray-500">
+                              <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+                              {job.job_location || "N/A"}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            <a
+                              href={job.job_link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                            >
+                              Voir l'offre
+                            </a>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
             </div>
           ) : currentSearchId ? (
-            <div className="text-center text-muted-foreground mt-8">
-              Aucun résultat trouvé
+            <div className="text-center py-12">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+                <Briefcase className="h-8 w-8 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                Aucun résultat trouvé
+              </h3>
+              <p className="text-sm text-gray-500">
+                Essayez de modifier vos critères de recherche
+              </p>
             </div>
           ) : (
-            <div className="text-center text-muted-foreground mt-8">
-              Utilisez le formulaire ci-dessus pour rechercher des offres d'emploi
+            <div className="text-center py-12">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+                <Search className="h-8 w-8 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                Commencez votre recherche
+              </h3>
+              <p className="text-sm text-gray-500">
+                Utilisez le formulaire ci-dessus pour rechercher des offres d'emploi
+              </p>
             </div>
           )}
         </div>
