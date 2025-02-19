@@ -9,7 +9,7 @@ export interface JobResult {
   job_link: string;
   job_location: string | null;
   publication_date: string | null;
-  search_id: string;
+  search_id: string;  // This matches the database column name exactly
   created_at: string | null;
 }
 
@@ -51,7 +51,7 @@ export const fetchJobResults = async (searchId: string | null, options?: {
     let query = supabase
       .from('job_results')
       .select('*', { count: 'exact' })
-      .eq('search_id', searchId);
+      .eq('search_id', searchId);  // Using search_id column name from database
 
     const { data, error, count } = await query;
 
