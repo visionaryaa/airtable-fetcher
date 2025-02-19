@@ -65,26 +65,39 @@ const formatDate = (dateString: string | null) => {
   try {
     if (!isNaN(Number(dateString))) {
       const timestamp = Number(dateString);
-      if (timestamp < 9999999999) {
-        const date = new Date(timestamp * 1000);
-        return format(date, 'dd MMMM yyyy', { locale: fr });
-      }
-      const date = new Date(timestamp);
+      const date = timestamp < 9999999999 
+        ? new Date(timestamp * 1000) 
+        : new Date(timestamp);
       return format(date, 'dd MMMM yyyy', { locale: fr });
     }
 
-    if (dateString.toLowerCase().includes('jour')) {
+    const ordinalRegex = /(\d+)(er|e|ème|nd|rd|th)?\s+(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)/i;
+    const ordinalMatch = dateString.match(ordinalRegex);
+    if (ordinalMatch) {
+      const monthMap: { [key: string]: number } = {
+        'janvier': 0, 'février': 1, 'mars': 2, 'avril': 3, 'mai': 4, 'juin': 5,
+        'juillet': 6, 'août': 7, 'septembre': 8, 'octobre': 9, 'novembre': 10, 'décembre': 11
+      };
+      const day = parseInt(ordinalMatch[1]);
+      const month = monthMap[ordinalMatch[3].toLowerCase()];
+      const date = new Date();
+      date.setMonth(month);
+      date.setDate(day);
+      return format(date, 'dd MMMM yyyy', { locale: fr });
+    }
+
+    if (dateString.toLowerCase().includes('il y a') || dateString.toLowerCase().includes('jour')) {
       const days = parseInt(dateString.match(/\d+/)?.[0] || '0');
       const date = new Date();
       date.setDate(date.getDate() - days);
       return format(date, 'dd MMMM yyyy', { locale: fr });
     }
 
-    if (dateString.toLowerCase().includes('aujourd') || dateString.toLowerCase().includes('today')) {
+    const lowerDateString = dateString.toLowerCase();
+    if (lowerDateString.includes('aujourd') || lowerDateString.includes('today')) {
       return format(new Date(), 'dd MMMM yyyy', { locale: fr });
     }
-
-    if (dateString.toLowerCase().includes('hier') || dateString.toLowerCase().includes('yesterday')) {
+    if (lowerDateString.includes('hier') || lowerDateString.includes('yesterday')) {
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
       return format(yesterday, 'dd MMMM yyyy', { locale: fr });
@@ -99,6 +112,12 @@ const formatDate = (dateString: string | null) => {
       if (!isNaN(date.getTime())) {
         return format(date, 'dd MMMM yyyy', { locale: fr });
       }
+    }
+
+    const writtenMonthRegex = /(\d{1,2})\s+(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)\s+(\d{4})/i;
+    const writtenMatch = dateString.match(writtenMonthRegex);
+    if (writtenMatch) {
+      return dateString; // Already in the correct format
     }
 
     const date = parseISO(dateString);
