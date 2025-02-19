@@ -1,21 +1,17 @@
 import React from 'react';
 import { JobResult, fetchJobResults, parseDateString, formatDate } from '@/services/supabaseJobs';
 import { useQuery } from '@tanstack/react-query';
-import { Loader2, Heart, MapPin, Calendar } from 'lucide-react';
+import { Loader2, Heart, MapPin, Calendar, Table } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/AuthProvider';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
-
-interface SupabaseJobTableProps {
-  onTotalRecords?: (total: number) => void;
-  searchId?: string | null;
-  sortOrder?: 'asc' | 'desc' | 'agency_asc' | 'agency_desc';
-  searchQuery?: string;
-  excludedWords?: string[];
-  baseKey?: string;
-}
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 const agencyLogos: { [key: string]: string } = {
   'proselect.be': 'https://i.postimg.cc/tg2Xq57M/IMG-7594.png',
@@ -130,42 +126,64 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
   if (isMobile) {
     return (
       <div className="space-y-4">
+        <div className="flex items-center justify-between mb-4 bg-muted/50 p-3 rounded-lg">
+          <div className="flex items-center gap-2">
+            <Table className="h-4 w-4" />
+            <span className="font-medium">{jobResults.data.length} résultat{jobResults.data.length > 1 ? 's' : ''}</span>
+          </div>
+        </div>
         {jobResults.data.map((job) => (
-          <div key={job.id} className="bg-card rounded-lg shadow-sm p-4 space-y-3">
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="font-semibold">{job.job_title}</h3>
-                <p className="text-sm text-muted-foreground">{job.job_location || 'Non spécifié'}</p>
+          <div key={job.id} className="bg-card rounded-lg shadow-sm p-4 space-y-3 border">
+            <div className="flex gap-4">
+              <HoverCard>
+                <HoverCardTrigger>
+                  <img
+                    src={getAgencyLogo(job.job_link)}
+                    alt="Agency logo"
+                    className="w-12 h-12 object-contain rounded-md"
+                    onError={(e) => {
+                      const img = e.target as HTMLImageElement;
+                      img.src = '/placeholder.svg';
+                    }}
+                  />
+                </HoverCardTrigger>
+                <HoverCardContent>
+                  {new URL(job.job_link).hostname.replace('www.', '')}
+                </HoverCardContent>
+              </HoverCard>
+              <div className="flex-1 space-y-1">
+                <h3 className="font-semibold text-base">{job.job_title}</h3>
+                <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                  <MapPin className="h-3 w-3" />
+                  <span>{job.job_location || 'Non spécifié'}</span>
+                </div>
+                <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                  <Calendar className="h-3 w-3" />
+                  <span>{formatDate(parseDateString(job.publication_date))}</span>
+                </div>
               </div>
-              <img
-                src={getAgencyLogo(job.job_link)}
-                alt="Agency logo"
-                className="w-12 h-12 object-contain"
-                onError={(e) => {
-                  const img = e.target as HTMLImageElement;
-                  img.src = '/placeholder.svg';
-                }}
-              />
             </div>
-            <div className="text-sm text-muted-foreground">
-              {formatDate(parseDateString(job.publication_date))}
-            </div>
-            <div className="flex justify-between items-center pt-2">
-              <a
-                href={job.job_link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline text-sm"
+            <div className="flex items-center justify-end gap-2 pt-2 border-t">
+              <Button
+                variant="default"
+                size="sm"
+                asChild
               >
-                Voir l'offre
-              </a>
+                <a
+                  href={job.job_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Voir l'offre
+                </a>
+              </Button>
               {user && (
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={() => addToFavorites(job)}
                 >
-                  Ajouter aux favoris
+                  <Heart className="h-4 w-4" />
                 </Button>
               )}
             </div>
@@ -176,65 +194,92 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
   }
 
   return (
-    <div className="rounded-md border">
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-muted/50">
-            <tr>
-              <th className="py-3 px-4 text-left font-medium">Poste</th>
-              <th className="py-3 px-4 text-left font-medium">Localisation</th>
-              <th className="py-3 px-4 text-left font-medium">Date</th>
-              <th className="py-3 px-4 text-left font-medium">Agence</th>
-              <th className="py-3 px-4 text-center font-medium">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {jobResults.data.map((job) => (
-              <tr key={job.id} className="border-t">
-                <td className="py-3 px-4">{job.job_title}</td>
-                <td className="py-3 px-4">{job.job_location || 'Non spécifié'}</td>
-                <td className="py-3 px-4">
-                  {formatDate(parseDateString(job.publication_date))}
-                </td>
-                <td className="py-3 px-4">
-                  <div className="flex items-center gap-2">
-                    <img
-                      src={getAgencyLogo(job.job_link)}
-                      alt="Agency logo"
-                      className="w-8 h-8 object-contain"
-                      onError={(e) => {
-                        const img = e.target as HTMLImageElement;
-                        img.src = '/placeholder.svg';
-                      }}
-                    />
-                    {new URL(job.job_link).hostname.replace('www.', '')}
-                  </div>
-                </td>
-                <td className="py-3 px-4">
-                  <div className="flex justify-center gap-2">
-                    <a
-                      href={job.job_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline"
-                    >
-                      Voir l'offre
-                    </a>
-                    {user && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => addToFavorites(job)}
-                      >
-                        Ajouter aux favoris
-                      </Button>
-                    )}
-                  </div>
-                </td>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between bg-muted/50 p-3 rounded-lg">
+        <div className="flex items-center gap-2">
+          <Table className="h-4 w-4" />
+          <span className="font-medium">{jobResults.data.length} résultat{jobResults.data.length > 1 ? 's' : ''}</span>
+        </div>
+      </div>
+      <div className="rounded-md border">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-muted/50">
+              <tr>
+                <th className="py-3 px-4 text-left font-medium">Agence</th>
+                <th className="py-3 px-4 text-left font-medium">Poste</th>
+                <th className="py-3 px-4 text-left font-medium">Localisation</th>
+                <th className="py-3 px-4 text-left font-medium">Date</th>
+                <th className="py-3 px-4 text-center font-medium">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y">
+              {jobResults.data.map((job) => (
+                <tr key={job.id} className="bg-card hover:bg-muted/50 transition-colors">
+                  <td className="py-3 px-4 align-middle w-[100px]">
+                    <HoverCard>
+                      <HoverCardTrigger>
+                        <img
+                          src={getAgencyLogo(job.job_link)}
+                          alt="Agency logo"
+                          className="w-8 h-8 object-contain rounded-md"
+                          onError={(e) => {
+                            const img = e.target as HTMLImageElement;
+                            img.src = '/placeholder.svg';
+                          }}
+                        />
+                      </HoverCardTrigger>
+                      <HoverCardContent>
+                        {new URL(job.job_link).hostname.replace('www.', '')}
+                      </HoverCardContent>
+                    </HoverCard>
+                  </td>
+                  <td className="py-3 px-4 align-middle">
+                    <span className="font-medium">{job.job_title}</span>
+                  </td>
+                  <td className="py-3 px-4 align-middle">
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <MapPin className="h-3 w-3" />
+                      <span>{job.job_location || 'Non spécifié'}</span>
+                    </div>
+                  </td>
+                  <td className="py-3 px-4 align-middle">
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Calendar className="h-3 w-3" />
+                      <span>{formatDate(parseDateString(job.publication_date))}</span>
+                    </div>
+                  </td>
+                  <td className="py-3 px-4 align-middle">
+                    <div className="flex items-center justify-center gap-2">
+                      <Button
+                        variant="default"
+                        size="sm"
+                        asChild
+                      >
+                        <a
+                          href={job.job_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Voir l'offre
+                        </a>
+                      </Button>
+                      {user && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => addToFavorites(job)}
+                        >
+                          <Heart className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
