@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { format } from "date-fns";
 import {
   Form,
   FormControl,
@@ -46,17 +47,17 @@ import {
 import Autoplay from "embla-carousel-autoplay";
 
 const agencies = [
-  { name: "Proselect", img: "https://i.postimg.cc/tg2Xq57M/IMG-7594.png" },
-  { name: "Tempo-Team", img: "https://i.postimg.cc/kX2ZPLhf/352321179-802641697768990-7499832421124251242-n-1.png" },
-  { name: "Adecco", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpHiI1ANEpe5BlJpLQDI_4M8jl1AnJciaqaw&s" },
-  { name: "ASAP", img: "https://a.storyblok.com/f/118264/240x240/c475b21edc/asap-logo-2.png" },
-  { name: "Synergie", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMXkqv_r78fpVwVE9xDY6rd0GfS3bMlK1sWA&s" },
-  { name: "Randstad", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5L2880dU-fMT-PjiSxVWWbwI6Vb8l3Vw6Q&s" },
-  { name: "Accent Jobs", img: "https://i.postimg.cc/053yKcZg/IMG-7592.png" },
-  { name: "Start People", img: "https://media.licdn.com/dms/image/v2/D4E03AQGzYaEHyR2N_w/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1666681919673?e=2147483647&v=beta&t=oyXA1mGdfaPAMHB0YsV3dUAQEN0Ic0DfVltZaVtSywc" },
-  { name: "AGO Jobs", img: "https://i.postimg.cc/fL7Dcvyd/347248690-792113835829706-805731174237376164-n.png" },
-  { name: "SD Worx", img: "https://i.postimg.cc/XJ8FtyxC/339105639-183429217812911-8132452130259136190-n.png" },
-  { name: "Robert Half", img: "https://i.postimg.cc/13vSMqjT/383209240-608879378108206-6829050048883403071-n.jpg" },
+  { name: "Proselect", id: 1, img: "https://i.postimg.cc/tg2Xq57M/IMG-7594.png" },
+  { name: "Tempo-Team", id: 2, img: "https://i.postimg.cc/kX2ZPLhf/352321179-802641697768990-7499832421124251242-n-1.png" },
+  { name: "Adecco", id: 3, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpHiI1ANEpe5BlJpLQDI_4M8jl1AnJciaqaw&s" },
+  { name: "ASAP", id: 4, img: "https://a.storyblok.com/f/118264/240x240/c475b21edc/asap-logo-2.png" },
+  { name: "Synergie", id: 5, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMXkqv_r78fpVwVE9xDY6rd0GfS3bMlK1sWA&s" },
+  { name: "Randstad", id: 6, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5L2880dU-fMT-PjiSxVWWbwI6Vb8l3Vw6Q&s" },
+  { name: "Accent Jobs", id: 7, img: "https://i.postimg.cc/053yKcZg/IMG-7592.png" },
+  { name: "Start People", id: 8, img: "https://media.licdn.com/dms/image/v2/D4E03AQGzYaEHyR2N_w/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1666681919673?e=2147483647&v=beta&t=oyXA1mGdfaPAMHB0YsV3dUAQEN0Ic0DfVltZaVtSywc" },
+  { name: "AGO Jobs", id: 9, img: "https://i.postimg.cc/fL7Dcvyd/347248690-792113835829706-805731174237376164-n.png" },
+  { name: "SD Worx", id: 10, img: "https://i.postimg.cc/XJ8FtyxC/339105639-183429217812911-8132452130259136190-n.png" },
+  { name: "Robert Half", id: 11, img: "https://i.postimg.cc/13vSMqjT/383209240-608879378108206-6829050048883403071-n.jpg" }
 ];
 
 const formSchema = z.object({
@@ -550,16 +551,27 @@ const JobSearch = () => {
                             Localisation
                           </th>
                           <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Date
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Actions
                           </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200">
                         {jobs.data.map((job) => {
-                          const agency = agencies.find(a => 
-                            job.job_title?.toLowerCase().includes(a.name.toLowerCase()) ||
-                            job.job_location?.toLowerCase().includes(a.name.toLowerCase())
-                          );
+                          const agency = agencies.find(a => {
+                            const jobTitle = job.job_title?.toLowerCase() || '';
+                            const jobLocation = job.job_location?.toLowerCase() || '';
+                            const agencyName = a.name.toLowerCase();
+                            return jobTitle.includes(agencyName) || jobLocation.includes(agencyName);
+                          });
+
+                          const publicationDate = job.publication_date 
+                            ? new Date(job.publication_date)
+                            : job.created_at 
+                              ? new Date(job.created_at)
+                              : null;
 
                           return (
                             <tr 
@@ -572,7 +584,7 @@ const JobSearch = () => {
                                     <img
                                       src={agency.img}
                                       alt={`${agency.name} logo`}
-                                      className="h-8 w-8 rounded-full object-contain"
+                                      className="h-8 w-8 rounded-full object-contain bg-white"
                                       onError={(e) => {
                                         const img = e.target as HTMLImageElement;
                                         img.src = "/placeholder.svg";
@@ -600,6 +612,9 @@ const JobSearch = () => {
                                   <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
                                   {job.job_location || "N/A"}
                                 </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {publicationDate ? format(publicationDate, 'dd/MM/yyyy') : 'N/A'}
                               </td>
                               <td className="px-6 py-4 text-sm">
                                 <a
