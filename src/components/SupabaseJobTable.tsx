@@ -64,14 +64,50 @@ const formatDate = (dateString: string | null) => {
   
   try {
     if (!isNaN(Number(dateString))) {
-      return format(new Date(Number(dateString)), 'dd MMMM yyyy', { locale: fr });
+      const timestamp = Number(dateString);
+      if (timestamp < 9999999999) {
+        const date = new Date(timestamp * 1000);
+        return format(date, 'dd MMMM yyyy', { locale: fr });
+      }
+      const date = new Date(timestamp);
+      return format(date, 'dd MMMM yyyy', { locale: fr });
     }
-    
+
+    if (dateString.toLowerCase().includes('jour')) {
+      const days = parseInt(dateString.match(/\d+/)?.[0] || '0');
+      const date = new Date();
+      date.setDate(date.getDate() - days);
+      return format(date, 'dd MMMM yyyy', { locale: fr });
+    }
+
+    if (dateString.toLowerCase().includes('aujourd') || dateString.toLowerCase().includes('today')) {
+      return format(new Date(), 'dd MMMM yyyy', { locale: fr });
+    }
+
+    if (dateString.toLowerCase().includes('hier') || dateString.toLowerCase().includes('yesterday')) {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      return format(yesterday, 'dd MMMM yyyy', { locale: fr });
+    }
+
+    const dateRegex = /(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})/;
+    const match = dateString.match(dateRegex);
+    if (match) {
+      const [_, day, month, year] = match;
+      const fullYear = year.length === 2 ? `20${year}` : year;
+      const date = new Date(`${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
+      if (!isNaN(date.getTime())) {
+        return format(date, 'dd MMMM yyyy', { locale: fr });
+      }
+    }
+
     const date = parseISO(dateString);
-    if (isNaN(date.getTime())) {
-      return dateString;
+    if (!isNaN(date.getTime())) {
+      return format(date, 'dd MMMM yyyy', { locale: fr });
     }
-    return format(date, 'dd MMMM yyyy', { locale: fr });
+
+    console.warn('Could not parse date:', dateString);
+    return dateString;
   } catch (error) {
     console.error('Error formatting date:', error);
     return dateString;
