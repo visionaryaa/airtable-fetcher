@@ -63,6 +63,13 @@ const formatDate = (dateString: string | null) => {
   if (!dateString) return 'Non spécifié';
   
   try {
+    if (dateString.includes('T') && dateString.includes('Z')) {
+      const date = new Date(dateString);
+      if (!isNaN(date.getTime())) {
+        return format(date, 'dd MMMM yyyy', { locale: fr });
+      }
+    }
+
     if (!isNaN(Number(dateString))) {
       const timestamp = Number(dateString);
       const date = timestamp < 9999999999 
