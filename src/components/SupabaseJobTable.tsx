@@ -1,0 +1,242 @@
+
+import React from 'react';
+import { JobResult, fetchJobResults, parseDateString, formatDate } from '@/services/supabaseJobs';
+import { useQuery } from '@tanstack/react-query';
+import { Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/components/AuthProvider';
+import { Button } from '@/components/ui/button';
+import { useMediaQuery } from '@/hooks/use-mobile';
+
+interface SupabaseJobTableProps {
+  onTotalRecords?: (total: number) => void;
+  searchId?: string | null;
+  sortOrder?: 'asc' | 'desc' | 'agency_asc' | 'agency_desc';
+  searchQuery?: string;
+  excludedWords?: string[];
+  baseKey?: string;
+}
+
+const agencyLogos: { [key: string]: string } = {
+  'proselect.be': 'https://i.postimg.cc/tg2Xq57M/IMG-7594.png',
+  'tempo-team.be': 'https://i.postimg.cc/kX2ZPLhf/352321179-802641697768990-7499832421124251242-n-1.png',
+  'adecco.be': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpHiI1ANEpe5BlJpLQDI_4M8jl1AnJciaqaw&s',
+  'asap.be': 'https://a.storyblok.com/f/118264/240x240/c475b21edc/asap-logo-2.png',
+  'synergie.be': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMXkqv_r78fpVwVE9xDY6rd0GfS3bMlK1sWA&s',
+  'randstad.be': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5L2880dU-fMT-PjiSxVWWbwI6Vb8l3Vw6Q&s',
+  'accentjobs.be': 'https://i.postimg.cc/053yKcZg/IMG-7592.png',
+  'startpeople.be': 'https://media.licdn.com/dms/image/v2/D4E03AQGzYaEHyR2N_w/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1666681919673?e=2147483647&v=beta&t=oyXA1mGdfaPAMHB0YsV3dUAQEN0Ic0DfVltZaVtSywc',
+  'ago.jobs': 'https://i.postimg.cc/fL7Dcvyd/347248690-792113835829706-805731174237376164-n.png',
+  'sdworx.be': 'https://i.postimg.cc/XJ8FtyxC/339105639-183429217812911-8132452130259136190-n.png',
+  'roberthalf.be': 'https://i.postimg.cc/13vSMqjT/383209240-608879378108206-6829050048883403071-n.jpg'
+};
+
+const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
+  onTotalRecords,
+  searchId,
+  sortOrder = 'desc',
+  searchQuery = '',
+  excludedWords = [],
+  baseKey = 'default'
+}) => {
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const isMobile = useMediaQuery('(max-width: 768px)');
+
+  const addToFavorites = async (job: JobResult) => {
+    if (!user) {
+      toast({
+        title: "Connexion requise",
+        description: "Vous devez être connecté pour ajouter des favoris.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase.from('favorites').insert({
+        user_id: user.id,
+        job_title: job.job_title,
+        job_link: job.job_link,
+        job_location: job.job_location
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Ajouté aux favoris",
+        description: "L'offre a été ajoutée à vos favoris.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible d'ajouter aux favoris.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const { data: jobResults, isLoading } = useQuery({
+    queryKey: ['supabase-jobs', searchId, sortOrder, baseKey],
+    queryFn: async () => {
+      const results = await fetchJobResults(searchId, { sortOrder });
+      
+      if (onTotalRecords) {
+        onTotalRecords(results.count);
+      }
+
+      let filteredData = results.data.filter(job => {
+        const title = job.job_title?.toLowerCase() || '';
+        const location = job.job_location?.toLowerCase() || '';
+        const searchTerm = searchQuery.toLowerCase();
+        
+        const matchesSearch = !searchQuery || 
+          title.includes(searchTerm) || 
+          location.includes(searchTerm);
+
+        const noExcludedWords = !excludedWords.some(word => 
+          title.includes(word.toLowerCase()) || 
+          location.includes(word.toLowerCase())
+        );
+
+        return matchesSearch && noExcludedWords;
+      });
+
+      return { ...results, data: filteredData };
+    },
+    enabled: !!searchId,
+    refetchInterval: 5000,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!jobResults?.data.length) {
+    return <div className="text-center py-8">Aucun résultat trouvé.</div>;
+  }
+
+  const getAgencyLogo = (url: string) => {
+    const hostname = new URL(url).hostname.replace('www.', '');
+    return agencyLogos[hostname] || '/placeholder.svg';
+  };
+
+  if (isMobile) {
+    return (
+      <div className="space-y-4">
+        {jobResults.data.map((job) => (
+          <div key={job.id} className="bg-card rounded-lg shadow-sm p-4 space-y-3">
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="font-semibold">{job.job_title}</h3>
+                <p className="text-sm text-muted-foreground">{job.job_location || 'Non spécifié'}</p>
+              </div>
+              <img
+                src={getAgencyLogo(job.job_link)}
+                alt="Agency logo"
+                className="w-12 h-12 object-contain"
+                onError={(e) => {
+                  const img = e.target as HTMLImageElement;
+                  img.src = '/placeholder.svg';
+                }}
+              />
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {formatDate(parseDateString(job.publication_date))}
+            </div>
+            <div className="flex justify-between items-center pt-2">
+              <a
+                href={job.job_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline text-sm"
+              >
+                Voir l'offre
+              </a>
+              {user && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => addToFavorites(job)}
+                >
+                  Ajouter aux favoris
+                </Button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-md border">
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-muted/50">
+            <tr>
+              <th className="py-3 px-4 text-left font-medium">Poste</th>
+              <th className="py-3 px-4 text-left font-medium">Localisation</th>
+              <th className="py-3 px-4 text-left font-medium">Date</th>
+              <th className="py-3 px-4 text-left font-medium">Agence</th>
+              <th className="py-3 px-4 text-center font-medium">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {jobResults.data.map((job) => (
+              <tr key={job.id} className="border-t">
+                <td className="py-3 px-4">{job.job_title}</td>
+                <td className="py-3 px-4">{job.job_location || 'Non spécifié'}</td>
+                <td className="py-3 px-4">
+                  {formatDate(parseDateString(job.publication_date))}
+                </td>
+                <td className="py-3 px-4">
+                  <div className="flex items-center gap-2">
+                    <img
+                      src={getAgencyLogo(job.job_link)}
+                      alt="Agency logo"
+                      className="w-8 h-8 object-contain"
+                      onError={(e) => {
+                        const img = e.target as HTMLImageElement;
+                        img.src = '/placeholder.svg';
+                      }}
+                    />
+                    {new URL(job.job_link).hostname.replace('www.', '')}
+                  </div>
+                </td>
+                <td className="py-3 px-4">
+                  <div className="flex justify-center gap-2">
+                    <a
+                      href={job.job_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      Voir l'offre
+                    </a>
+                    {user && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => addToFavorites(job)}
+                      >
+                        Ajouter aux favoris
+                      </Button>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default SupabaseJobTable;
