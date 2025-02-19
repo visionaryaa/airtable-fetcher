@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { JobResult, fetchJobResults } from '@/services/supabaseJobs';
 import { format, parseISO } from 'date-fns';
@@ -36,6 +35,14 @@ const AGENCY_LOGOS = [
   {
     domain: 'randstad.be',
     logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5L2880dU-fMT-PjiSxVWWbwI6Vb8l3Vw6Q&s'
+  },
+  {
+    domain: 'roberthalf.be',
+    logo: 'https://i.postimg.cc/13vSMqjT/383209240-608879378108206-6829050048883403071-n.jpg'
+  },
+  {
+    domain: 'accentjobs.be',
+    logo: 'https://i.postimg.cc/053yKcZg/IMG-7592.png'
   }
 ];
 
@@ -43,6 +50,7 @@ const getLogoForUrl = (url: string) => {
   try {
     const urlObject = new URL(url);
     const domain = urlObject.hostname.replace('www2.', 'www.').replace('www.', '');
+    console.log('Checking domain:', domain);
     const agencyInfo = AGENCY_LOGOS.find(agency => domain.includes(agency.domain));
     return agencyInfo?.logo;
   } catch (error) {
@@ -55,15 +63,12 @@ const formatDate = (dateString: string | null) => {
   if (!dateString) return 'Non spécifié';
   
   try {
-    // Handle numeric timestamps
     if (!isNaN(Number(dateString))) {
       return format(new Date(Number(dateString)), 'dd MMMM yyyy', { locale: fr });
     }
     
-    // Try parsing as ISO date
     const date = parseISO(dateString);
     if (isNaN(date.getTime())) {
-      // If not a valid ISO date, return the original string
       return dateString;
     }
     return format(date, 'dd MMMM yyyy', { locale: fr });
@@ -119,7 +124,6 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
         return matchesSearch && noExcludedWords;
       });
 
-      // Handle agency sorting in memory
       if (sortOrder?.includes('agency')) {
         filteredData.sort((a, b) => {
           const domainA = new URL(a.job_link).hostname;
@@ -133,7 +137,7 @@ const SupabaseJobTable: React.FC<SupabaseJobTableProps> = ({
       return { ...results, data: filteredData };
     },
     enabled: !!searchId,
-    refetchInterval: 5000, // Refresh every 5 seconds like before
+    refetchInterval: 5000,
   });
 
   const addToFavorites = useMutation({
