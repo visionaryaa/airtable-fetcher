@@ -94,6 +94,15 @@ const JobSearch = () => {
         return { data: [], count: 0 };
       }
 
+      // First, let's query without any filters to see if there's any data at all
+      const basicQuery = await supabase
+        .from("job_results")
+        .select("*", { count: "exact" });
+
+      console.log("All data in job_results table:", basicQuery.data);
+      console.log("Total rows in table:", basicQuery.count);
+
+      // Now query with our search ID
       let query = supabase
         .from("job_results")
         .select("*", { count: "exact" })
@@ -129,9 +138,9 @@ const JobSearch = () => {
         return { data: [], count: 0 };
       }
 
-      console.log("Supabase query successful");
+      console.log("Supabase query successful for search_id:", currentSearchId);
       console.log("Results count:", count);
-      console.log("Sample of data:", data?.slice(0, 2));
+      console.log("Full query results:", data);
       return { data, count: count || 0 };
     },
     enabled: !!currentSearchId,
@@ -209,24 +218,36 @@ const JobSearch = () => {
     try {
       const search_id = 'search_' + Date.now();
       console.log("Generated new search_id:", search_id);
+      console.log("Full search parameters:", {
+        job: values.nom_du_job,
+        postal: values.code_postale,
+        radius: values.rayon,
+        searchId: search_id
+      });
       
       navigate(`/job-search?searchId=${search_id}`);
       
       console.log("Making request to Make.com webhook...");
-      const response = await fetch(
-        `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(values.nom_du_job)}&code_postale=${encodeURIComponent(values.code_postale)}&rayon=${encodeURIComponent(values.rayon)}&searchId=${encodeURIComponent(search_id)}`,
-        { method: "GET" }
-      );
+      const webhookUrl = `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(values.nom_du_job)}&code_postale=${encodeURIComponent(values.code_postale)}&rayon=${encodeURIComponent(values.rayon)}&searchId=${encodeURIComponent(search_id)}`;
+      
+      console.log("Webhook URL:", webhookUrl);
+      const response = await fetch(webhookUrl, { method: "GET" });
 
+      console.log("Webhook response status:", response.status);
       if (!response.ok) {
         console.error("Make.com webhook error:", response.status);
+        const responseText = await response.text();
+        console.error("Webhook error response:", responseText);
         throw new Error("Erreur lors de la recherche");
       }
 
       console.log("Make.com webhook request successful");
+      console.log("Waiting 5 seconds before starting polling...");
 
       await new Promise(resolve => setTimeout(resolve, 5000));
 
+      // Let's verify the search ID is still correct
+      console.log("Starting polling with search_id:", search_id);
       await queryClient.invalidateQueries({ queryKey: ['supabase-jobs', search_id] });
       periodicRefresh();
 
@@ -236,6 +257,7 @@ const JobSearch = () => {
       
     } catch (error) {
       console.error("Search submission error:", error);
+      console.error("Full error object:", error);
       toast({
         variant: "destructive",
         title: "Erreur",
