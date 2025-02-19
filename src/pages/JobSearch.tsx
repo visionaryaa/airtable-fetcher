@@ -21,7 +21,6 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Search, MapPin, Radio, Loader2, ChevronDown } from "lucide-react";
 import AirtableTable from "@/components/AirtableTable";
-import SupabaseJobTable from "@/components/SupabaseJobTable";
 import SearchFilters from "@/components/jobs/SearchFilters";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/AuthProvider";
@@ -77,7 +76,6 @@ const JobSearch = () => {
   const [newWord, setNewWord] = useState("");
   const [showLoadingDialog, setShowLoadingDialog] = useState(false);
   const [currentSearchId, setCurrentSearchId] = useState<string | null>(null);
-  const [dataSource, setDataSource] = useState<'airtable' | 'supabase'>('airtable');
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -283,21 +281,6 @@ const JobSearch = () => {
             </p>
           </div>
 
-          <div className="flex justify-end mb-4">
-            <Select
-              value={dataSource}
-              onValueChange={(value: 'airtable' | 'supabase') => setDataSource(value)}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select data source" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="airtable">Airtable</SelectItem>
-                <SelectItem value="supabase">Supabase</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
@@ -454,24 +437,14 @@ const JobSearch = () => {
           </Collapsible>
 
           {currentSearchId ? (
-            dataSource === 'airtable' ? (
-              <AirtableTable 
-                onTotalRecords={setTotalRecords} 
-                sortOrder={sortOrder}
-                searchQuery={searchQuery}
-                excludedWords={excludedWords}
-                baseKey="customSearch"
-                searchId={currentSearchId}
-              />
-            ) : (
-              <SupabaseJobTable 
-                onTotalRecords={setTotalRecords} 
-                sortOrder={sortOrder}
-                searchQuery={searchQuery}
-                excludedWords={excludedWords}
-                searchId={currentSearchId}
-              />
-            )
+            <AirtableTable 
+              onTotalRecords={setTotalRecords} 
+              sortOrder={sortOrder}
+              searchQuery={searchQuery}
+              excludedWords={excludedWords}
+              baseKey="customSearch"
+              searchId={currentSearchId}
+            />
           ) : (
             <div className="text-center text-muted-foreground mt-8">
               Utilisez le formulaire ci-dessus pour rechercher des offres d'emploi
