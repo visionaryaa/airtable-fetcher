@@ -44,19 +44,20 @@ export const fetchJobResults = async (searchId: string | null, options?: {
   }
 
   try {
-    console.log('Fetching jobs with searchId:', searchId);
+    console.log('Fetching jobs with search_id:', searchId);
     
     // Detailed query logging
     const { data, error, count } = await supabase
       .from('job_results')
       .select('*', { count: 'exact' })
-      .eq('search_id', searchId)
+      .eq('search_id', searchId)  // This matches the column name in Supabase
       .then(response => {
         if (response.error) {
           console.error('Supabase query error:', response.error);
         } else {
           console.log('Raw response:', response);
           console.log('Data count:', response.data?.length);
+          console.log('First result:', response.data?.[0]);
         }
         return response;
       });
