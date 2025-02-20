@@ -795,24 +795,26 @@ const JobSearch = () => {
           ) : (
             <>
               {user && jobs?.count > 0 && (
-                <div className="flex items-center justify-between mb-6">
-                  <div className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm">
-                    <span className="font-medium">
-                      {jobs.count} offre{jobs.count > 1 ? "s" : ""} d'emploi trouvée{jobs.count > 1 ? "s" : ""}
-                    </span>
+                <div className="space-y-4 mb-6">
+                  <div className="flex items-center justify-between">
+                    <div className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm">
+                      <span className="font-medium">
+                        {jobs.count} offre{jobs.count > 1 ? "s" : ""} d'emploi trouvée{jobs.count > 1 ? "s" : ""}
+                      </span>
+                    </div>
+                    <Tabs value={viewMode} onValueChange={handleViewChange} className="w-auto">
+                      <TabsList className="grid w-[200px] grid-cols-2">
+                        <TabsTrigger value="table" className="flex items-center gap-2">
+                          <Table2 className="h-4 w-4" />
+                          <span className="hidden sm:inline">Tableau</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="card" className="flex items-center gap-2">
+                          <LayoutGrid className="h-4 w-4" />
+                          <span className="hidden sm:inline">Cartes</span>
+                        </TabsTrigger>
+                      </TabsList>
+                    </Tabs>
                   </div>
-                  <Tabs defaultValue={viewMode} onValueChange={handleViewChange}>
-                    <TabsList className="grid w-[200px] grid-cols-2">
-                      <TabsTrigger value="table" className="flex items-center gap-2">
-                        <Table2 className="h-4 w-4" />
-                        <span>Tableau</span>
-                      </TabsTrigger>
-                      <TabsTrigger value="card" className="flex items-center gap-2">
-                        <LayoutGrid className="h-4 w-4" />
-                        <span>Cartes</span>
-                      </TabsTrigger>
-                    </TabsList>
-                  </Tabs>
                 </div>
               )}
 
