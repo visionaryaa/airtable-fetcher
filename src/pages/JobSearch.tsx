@@ -695,16 +695,6 @@ const JobSearch = () => {
     </div>
   );
 
-  useEffect(() => {
-    if (showLoadingDialog) {
-      const timer = setTimeout(() => {
-        setShowLoadingDialog(false);
-      }, 10000); // 10 seconds
-
-      return () => clearTimeout(timer);
-    }
-  }, [showLoadingDialog]);
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -818,4 +808,12 @@ const JobSearch = () => {
                     <FormItem>
                       <FormControl>
                         <div className="relative">
-                          <MapPin className="absolute left-3 top-
+                          <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            placeholder="Code postal"
+                            className="pl-9"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
