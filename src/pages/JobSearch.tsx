@@ -622,13 +622,19 @@ const JobSearch = () => {
                       <tbody className="divide-y divide-gray-200">
                         {jobs.data.map((job) => {
                           const agency = agencies.find(a => {
+                            if (!job.job_link) return false;
+                            
+                            return a.domain.toLowerCase() === job.job_link
+                              .toLowerCase()
+                              .replace('https://', '')
+                              .replace('www.', '')
+                              .split('/')[0];
+                          }) || agencies.find(a => {
                             const jobTitle = job.job_title?.toLowerCase() || '';
                             const jobLocation = job.job_location?.toLowerCase() || '';
-                            const agencyName = a.name.toLowerCase();
-                            const keywords = a.keywords;
-                            
-                            return keywords.some(keyword => 
-                              jobTitle.includes(keyword) || jobLocation.includes(keyword)
+                            return a.keywords.some(keyword => 
+                              jobTitle.includes(keyword.toLowerCase()) || 
+                              jobLocation.includes(keyword.toLowerCase())
                             );
                           });
 
@@ -663,7 +669,7 @@ const JobSearch = () => {
                                         alt={`${agency.name} logo`}
                                         className="h-full w-full object-contain p-1"
                                         onError={(e) => {
-                                          console.log(`Failed to load image for ${agency.name}`);
+                                          console.log(`Failed to load image for ${agency.name}`, agency);
                                           const img = e.target as HTMLImageElement;
                                           img.src = "/placeholder.svg";
                                         }}
