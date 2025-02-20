@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchParams, useNavigate } from "react-router-dom";
@@ -22,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Search, MapPin, Radio, Loader2, ChevronDown, Box, Calendar } from "lucide-react";
+import { Search, MapPin, Radio, Loader2, ChevronDown, Box, Calendar, LayoutGrid, Table2 } from "lucide-react";
 import SearchFilters from "@/components/jobs/SearchFilters";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/AuthProvider";
@@ -52,6 +51,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const agencies = [
   { 
@@ -150,6 +150,7 @@ const formSchema = z.object({
 });
 
 const JobSearch = () => {
+  const [viewMode, setViewMode] = useState<"table" | "card">("card");
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeletingLoading, setIsDeletingLoading] = useState(false);
@@ -165,6 +166,13 @@ const JobSearch = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const currentSearchId = searchParams.get('searchId');
+
+  useEffect(() => {
+    const urlViewMode = searchParams.get('view') as "table" | "card";
+    if (urlViewMode) {
+      setViewMode(urlViewMode);
+    }
+  }, []);
 
   const { data: jobs, isLoading } = useQuery({
     queryKey: ["supabase-jobs", currentSearchId],
@@ -355,6 +363,232 @@ const JobSearch = () => {
       setShowLoadingDialog(false);
     }
   };
+
+  const handleViewChange = (value: string) => {
+    setViewMode(value as "table" | "card");
+    searchParams.set('view', value);
+    setSearchParams(searchParams);
+  };
+
+  const renderTableView = () => (
+    <div className="overflow-x-auto">
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Agence
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Titre
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Location
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Date
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Action
+            </th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {jobs?.data.map((job) => {
+            const agency = agencies.find(a => {
+              if (!job.job_link) return false;
+              return a.domain.toLowerCase() === job.job_link
+                .toLowerCase()
+                .replace('https://', '')
+                .replace('www.', '')
+                .split('/')[0];
+            }) || agencies.find(a => {
+              const jobTitle = job.job_title?.toLowerCase() || '';
+              const jobLocation = job.job_location?.toLowerCase() || '';
+              return a.keywords.some(keyword => 
+                jobTitle.includes(keyword.toLowerCase()) || 
+                jobLocation.includes(keyword.toLowerCase())
+              );
+            });
+
+            let formattedDate = 'N/A';
+            try {
+              if (job.publication_date) {
+                const date = new Date(job.publication_date);
+                if (!isNaN(date.getTime())) {
+                  formattedDate = format(date, 'dd/MM/yyyy');
+                }
+              } else if (job.created_at) {
+                const date = new Date(job.created_at);
+                if (!isNaN(date.getTime())) {
+                  formattedDate = format(date, 'dd/MM/yyyy');
+                }
+              }
+            } catch (error) {
+              console.error('Error formatting date:', error);
+            }
+
+            return (
+              <tr key={job.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center">
+                    <div className="h-10 w-10 flex-shrink-0">
+                      {agency ? (
+                        <img
+                          src={agency.img}
+                          alt={`${agency.name} logo`}
+                          className="h-10 w-10 rounded-full object-contain"
+                          onError={(e) => {
+                            const img = e.target as HTMLImageElement;
+                            img.src = "/placeholder.svg";
+                          }}
+                        />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center">
+                          <Box className="h-5 w-5 text-gray-400" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="ml-4">
+                      <div className="text-sm font-medium text-gray-900">
+                        {agency?.name || "Agence"}
+                      </div>
+                      {agency?.domain && (
+                        <div className="text-xs text-gray-500">
+                          {agency.domain}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="text-sm text-gray-900">{job.job_title}</div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="text-sm text-gray-500">{job.job_location}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-500">{formattedDate}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <a
+                    href={job.job_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    Voir l'offre
+                  </a>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+
+  const renderCardView = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {jobs?.data.map((job) => {
+        const agency = agencies.find(a => {
+          if (!job.job_link) return false;
+          return a.domain.toLowerCase() === job.job_link
+            .toLowerCase()
+            .replace('https://', '')
+            .replace('www.', '')
+            .split('/')[0];
+        }) || agencies.find(a => {
+          const jobTitle = job.job_title?.toLowerCase() || '';
+          const jobLocation = job.job_location?.toLowerCase() || '';
+          return a.keywords.some(keyword => 
+            jobTitle.includes(keyword.toLowerCase()) || 
+            jobLocation.includes(keyword.toLowerCase())
+          );
+        });
+
+        let formattedDate = 'N/A';
+        try {
+          if (job.publication_date) {
+            const date = new Date(job.publication_date);
+            if (!isNaN(date.getTime())) {
+              formattedDate = format(date, 'dd/MM/yyyy');
+            }
+          } else if (job.created_at) {
+            const date = new Date(job.created_at);
+            if (!isNaN(date.getTime())) {
+              formattedDate = format(date, 'dd/MM/yyyy');
+            }
+          }
+        } catch (error) {
+          console.error('Error formatting date:', error);
+        }
+
+        return (
+          <Card key={job.id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden bg-white">
+            <CardHeader className="space-y-4 p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="h-12 w-12 rounded-full overflow-hidden bg-white border border-gray-100 p-2 shadow-sm">
+                    {agency ? (
+                      <img
+                        src={agency.img}
+                        alt={`${agency.name} logo`}
+                        className="h-full w-full object-contain"
+                        onError={(e) => {
+                          console.log(`Failed to load image for ${agency.name}`, agency);
+                          const img = e.target as HTMLImageElement;
+                          img.src = "/placeholder.svg";
+                        }}
+                      />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center bg-gray-50">
+                        <Box className="h-6 w-6 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900">
+                      {agency?.name || "Agence"}
+                    </h3>
+                    {agency?.domain && (
+                      <p className="text-sm text-gray-500">
+                        {agency.domain}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900 line-clamp-2 min-h-[3.5rem]">
+                  {job.job_title}
+                </h2>
+              </div>
+            </CardHeader>
+            <CardContent className="p-6 pt-0 space-y-4">
+              <div className="flex items-center text-gray-500">
+                <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
+                <span className="text-sm">{job.job_location || "Location non spécifiée"}</span>
+              </div>
+              <div className="flex items-center text-gray-500">
+                <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
+                <span className="text-sm">{formattedDate}</span>
+              </div>
+            </CardContent>
+            <CardFooter className="p-6 pt-0">
+              <a
+                href={job.job_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 font-medium text-sm transition-colors duration-200"
+              >
+                Voir l'offre
+              </a>
+            </CardFooter>
+          </Card>
+        );
+      })}
+    </div>
+  );
 
   if (isLoading) {
     return (
@@ -567,7 +801,7 @@ const JobSearch = () => {
           ) : (
             <>
               {user && jobs?.count > 0 && (
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-2">
                     <Badge variant="secondary" className="text-sm font-medium">
                       {jobs.count} offre{jobs.count > 1 ? "s" : ""} d'emploi
@@ -576,6 +810,18 @@ const JobSearch = () => {
                       trouvée{jobs.count > 1 ? "s" : ""}
                     </span>
                   </div>
+                  <Tabs value={viewMode} onValueChange={handleViewChange} className="w-auto">
+                    <TabsList className="grid w-auto grid-cols-2 h-9 items-stretch">
+                      <TabsTrigger value="table" className="flex items-center gap-2 px-3">
+                        <Table2 className="h-4 w-4" />
+                        <span className="hidden sm:inline">Tableau</span>
+                      </TabsTrigger>
+                      <TabsTrigger value="card" className="flex items-center gap-2 px-3">
+                        <LayoutGrid className="h-4 w-4" />
+                        <span className="hidden sm:inline">Cartes</span>
+                      </TabsTrigger>
+                    </TabsList>
+                  </Tabs>
                 </div>
               )}
 
@@ -604,107 +850,7 @@ const JobSearch = () => {
               </Collapsible>
 
               {jobs?.data && jobs.data.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {jobs.data.map((job) => {
-                    const agency = agencies.find(a => {
-                      if (!job.job_link) return false;
-                      
-                      return a.domain.toLowerCase() === job.job_link
-                        .toLowerCase()
-                        .replace('https://', '')
-                        .replace('www.', '')
-                        .split('/')[0];
-                    }) || agencies.find(a => {
-                      const jobTitle = job.job_title?.toLowerCase() || '';
-                      const jobLocation = job.job_location?.toLowerCase() || '';
-                      return a.keywords.some(keyword => 
-                        jobTitle.includes(keyword.toLowerCase()) || 
-                        jobLocation.includes(keyword.toLowerCase())
-                      );
-                    });
-
-                    let formattedDate = 'N/A';
-                    try {
-                      if (job.publication_date) {
-                        const date = new Date(job.publication_date);
-                        if (!isNaN(date.getTime())) {
-                          formattedDate = format(date, 'dd/MM/yyyy');
-                        }
-                      } else if (job.created_at) {
-                        const date = new Date(job.created_at);
-                        if (!isNaN(date.getTime())) {
-                          formattedDate = format(date, 'dd/MM/yyyy');
-                        }
-                      }
-                    } catch (error) {
-                      console.error('Error formatting date:', error);
-                    }
-
-                    return (
-                      <Card key={job.id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden bg-white">
-                        <CardHeader className="space-y-4 p-6">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-4">
-                              <div className="h-12 w-12 rounded-full overflow-hidden bg-white border border-gray-100 p-2 shadow-sm">
-                                {agency ? (
-                                  <img
-                                    src={agency.img}
-                                    alt={`${agency.name} logo`}
-                                    className="h-full w-full object-contain"
-                                    onError={(e) => {
-                                      console.log(`Failed to load image for ${agency.name}`, agency);
-                                      const img = e.target as HTMLImageElement;
-                                      img.src = "/placeholder.svg";
-                                    }}
-                                  />
-                                ) : (
-                                  <div className="h-full w-full flex items-center justify-center bg-gray-50">
-                                    <Box className="h-6 w-6 text-gray-400" />
-                                  </div>
-                                )}
-                              </div>
-                              <div>
-                                <h3 className="font-medium text-gray-900">
-                                  {agency?.name || "Agence"}
-                                </h3>
-                                {agency?.domain && (
-                                  <p className="text-sm text-gray-500">
-                                    {agency.domain}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          <div>
-                            <h2 className="text-xl font-semibold text-gray-900 line-clamp-2 min-h-[3.5rem]">
-                              {job.job_title}
-                            </h2>
-                          </div>
-                        </CardHeader>
-                        <CardContent className="p-6 pt-0 space-y-4">
-                          <div className="flex items-center text-gray-500">
-                            <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
-                            <span className="text-sm">{job.job_location || "Location non spécifiée"}</span>
-                          </div>
-                          <div className="flex items-center text-gray-500">
-                            <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
-                            <span className="text-sm">{formattedDate}</span>
-                          </div>
-                        </CardContent>
-                        <CardFooter className="p-6 pt-0">
-                          <a
-                            href={job.job_link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 font-medium text-sm transition-colors duration-200"
-                          >
-                            Voir l'offre
-                          </a>
-                        </CardFooter>
-                      </Card>
-                    );
-                  })}
-                </div>
+                viewMode === "table" ? renderTableView() : renderCardView()
               ) : currentSearchId ? (
                 <div className="text-center py-12">
                   <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
