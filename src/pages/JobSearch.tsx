@@ -794,11 +794,36 @@ const JobSearch = () => {
             <>
               {jobs?.data && (
                 <div className="space-y-4 mb-6">
-                  <div className="flex items-center justify-between">
-                    <div className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm">
-                      <span className="font-medium">
-                        {jobs.count} offre{jobs.count > 1 ? "s" : ""} d'emploi trouvée{jobs.count > 1 ? "s" : ""}
-                      </span>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                    <div className="flex items-center gap-4 flex-1">
+                      <div className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm">
+                        <span className="font-medium">
+                          {jobs.count} offre{jobs.count > 1 ? "s" : ""} d'emploi trouvée{jobs.count > 1 ? "s" : ""}
+                        </span>
+                      </div>
+                      <Collapsible className="flex-1">
+                        <CollapsibleTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="w-full sm:w-auto flex items-center gap-2"
+                          >
+                            <span>Filtrer les résultats</span>
+                            <ChevronDown className="h-4 w-4" />
+                          </Button>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="absolute z-10 mt-2 w-full sm:w-[600px] bg-white rounded-lg shadow-lg border p-4">
+                          <SearchFilters
+                            searchQuery={searchQuery}
+                            setSearchQuery={setSearchQuery}
+                            sortOrder={sortOrder}
+                            setSortOrder={setSortOrder}
+                            excludedWords={excludedWords}
+                            setExcludedWords={setExcludedWords}
+                            newWord={newWord}
+                            setNewWord={setNewWord}
+                          />
+                        </CollapsibleContent>
+                      </Collapsible>
                     </div>
                     <Tabs value={viewMode} onValueChange={handleViewChange} className="w-auto">
                       <TabsList className="grid w-[200px] grid-cols-2">
@@ -815,30 +840,6 @@ const JobSearch = () => {
                   </div>
                 </div>
               )}
-
-              <Collapsible>
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full flex justify-between items-center"
-                  >
-                    <span>Filtrer les résultats</span>
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="mt-4">
-                  <SearchFilters
-                    searchQuery={searchQuery}
-                    setSearchQuery={setSearchQuery}
-                    sortOrder={sortOrder}
-                    setSortOrder={setSortOrder}
-                    excludedWords={excludedWords}
-                    setExcludedWords={setExcludedWords}
-                    newWord={newWord}
-                    setNewWord={setNewWord}
-                  />
-                </CollapsibleContent>
-              </Collapsible>
 
               {jobs?.data && jobs.data.length > 0 ? (
                 viewMode === "table" ? renderTableView() : renderCardView()
