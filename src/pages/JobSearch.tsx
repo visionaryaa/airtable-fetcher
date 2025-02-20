@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchParams, useNavigate } from "react-router-dom";
@@ -21,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Search, MapPin, Radio, Loader2, ChevronDown, Box } from "lucide-react";
+import { Search, MapPin, Radio, Loader2, ChevronDown, Box, Calendar } from "lucide-react";
 import SearchFilters from "@/components/jobs/SearchFilters";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/AuthProvider";
