@@ -21,11 +21,11 @@ import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Search, MapPin, Radio, Loader2, ChevronDown, Box, Calendar, LayoutGrid, Table2 } from "lucide-react";
+import { Search, MapPin, Radio, Loader2, ChevronDown, Box, Calendar, LayoutGrid, Table2, Heart } from "lucide-react";
 import SearchFilters from "@/components/jobs/SearchFilters";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/AuthProvider";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
@@ -154,6 +154,8 @@ const JobSearch = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const addToFavorites = useMutation({
     mutationFn: async (job: any) => {
@@ -254,7 +256,6 @@ const JobSearch = () => {
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
   const [newWord, setNewWord] = useState("");
   const [showLoadingDialog, setShowLoadingDialog] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
   const currentSearchId = searchParams.get('searchId');
 
   useEffect(() => {
@@ -817,173 +818,4 @@ const JobSearch = () => {
                     <FormItem>
                       <FormControl>
                         <div className="relative">
-                          <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            placeholder="Code postal"
-                            className="pl-9"
-                            maxLength={4}
-                            {...field}
-                            onChange={(e) => {
-                              const value = e.target.value.replace(/[^0-9]/g, "");
-                              if (value.length <= 4) {
-                                field.onChange(value);
-                              }
-                            }}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="rayon"
-                  render={({ field }) => (
-                    <FormItem>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <div className="relative">
-                            <Radio className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                            <SelectTrigger className="pl-9">
-                              <SelectValue placeholder="Rayon" />
-                            </SelectTrigger>
-                          </div>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="5">5km</SelectItem>
-                          <SelectItem value="25">25km</SelectItem>
-                          <SelectItem value="40">40km</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="flex gap-2 md:col-span-4">
-                  <Button type="submit" className="flex-1" disabled={isSubmitting}>
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Recherche...
-                      </>
-                    ) : (
-                      <>
-                        <Search className="mr-2 h-4 w-4" />
-                        Rechercher
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </form>
-          </Form>
-        </div>
-
-        <div className="space-y-6">
-          {isLoading ? (
-            <div className="min-h-[400px] flex items-center justify-center">
-              <div className="text-center space-y-4">
-                <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
-                <p className="text-sm text-muted-foreground">
-                  Chargement des résultats...
-                </p>
-              </div>
-            </div>
-          ) : (
-            <>
-              {jobs?.data && (
-                <div className="mb-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-4">
-                      <div className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm">
-                        <span className="font-medium">
-                          {jobs.count} offre{jobs.count > 1 ? "s" : ""} d'emploi trouvée{jobs.count > 1 ? "s" : ""}
-                        </span>
-                      </div>
-                      <div className="relative">
-                        <Collapsible>
-                          <CollapsibleTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="default"
-                              className="flex items-center gap-2"
-                            >
-                              <span>Filtrer les résultats</span>
-                              <ChevronDown className="h-4 w-4" />
-                            </Button>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent className="absolute z-10 left-0 mt-2 w-[400px] bg-white rounded-lg shadow-lg border">
-                            <div className="p-4">
-                              <SearchFilters
-                                searchQuery={searchQuery}
-                                setSearchQuery={setSearchQuery}
-                                sortOrder={sortOrder}
-                                setSortOrder={setSortOrder}
-                                excludedWords={excludedWords}
-                                setExcludedWords={setExcludedWords}
-                                newWord={newWord}
-                                setNewWord={setNewWord}
-                              />
-                            </div>
-                          </CollapsibleContent>
-                        </Collapsible>
-                      </div>
-                    </div>
-                    <Tabs value={viewMode} onValueChange={handleViewChange} className="w-auto">
-                      <TabsList className="grid w-[200px] grid-cols-2">
-                        <TabsTrigger value="table" className="flex items-center gap-2">
-                          <Table2 className="h-4 w-4" />
-                          <span className="hidden sm:inline">Tableau</span>
-                        </TabsTrigger>
-                        <TabsTrigger value="card" className="flex items-center gap-2">
-                          <LayoutGrid className="h-4 w-4" />
-                          <span className="hidden sm:inline">Cartes</span>
-                        </TabsTrigger>
-                      </TabsList>
-                    </Tabs>
-                  </div>
-                </div>
-              )}
-
-              {jobs?.data && jobs.data.length > 0 ? (
-                viewMode === "table" ? renderTableView() : renderCardView()
-              ) : currentSearchId ? (
-                <div className="text-center py-12">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-                    <Box className="h-8 w-8 text-gray-400" />
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Aucun résultat trouvé
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    Essayez de modifier vos critères de recherche
-                  </p>
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-                    <Search className="h-8 w-8 text-gray-400" />
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Commencez votre recherche
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    Utilisez le formulaire ci-dessus pour rechercher des offres d'emploi
-                  </p>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      </main>
-    </div>
-  );
-};
-
-export default JobSearch;
+                          <MapPin className="absolute left-3 top-
