@@ -111,11 +111,11 @@ const agencies = [
     keywords: ["start people", "startpeople"]
   },
   { 
-    name: "AGO Jobs", 
+    name: "Daoust",
     id: 9, 
     img: "https://i.postimg.cc/fL7Dcvyd/347248690-792113835829706-805731174237376164-n.png",
     domain: "dajobs.be",
-    keywords: ["ago jobs", "ago job", "agojobs", "dajobs"]
+    keywords: ["ago jobs", "ago job", "agojobs", "dajobs", "daoust"]
   },
   { 
     name: "SD Worx", 
@@ -641,7 +641,7 @@ const JobSearch = () => {
                           <img
                             src={agency.img}
                             alt={`${agency.name} logo`}
-                            className="max-h-12 w-auto object-contain mix-blend-luminosity hover:mix-blend-normal transition-all duration-300"
+                            className="h-full w-full object-contain"
                             onError={(e) => {
                               const img = e.target as HTMLImageElement;
                               img.src = "/placeholder.svg";
@@ -802,27 +802,26 @@ const JobSearch = () => {
           ) : (
             <>
               {user && jobs?.count > 0 && (
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="secondary" className="text-sm font-medium">
-                      {jobs.count} offre{jobs.count > 1 ? "s" : ""} d'emploi
-                    </Badge>
-                    <span className="text-sm text-muted-foreground">
-                      trouvée{jobs.count > 1 ? "s" : ""}
-                    </span>
+                <div className="space-y-4 mb-6">
+                  <div className="flex items-center justify-between">
+                    <div className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm">
+                      <span className="font-medium">
+                        {jobs.count} offre{jobs.count > 1 ? "s" : ""} d'emploi trouvée{jobs.count > 1 ? "s" : ""}
+                      </span>
+                    </div>
+                    <Tabs value={viewMode} onValueChange={handleViewChange} className="w-auto">
+                      <TabsList className="grid w-[200px] grid-cols-2">
+                        <TabsTrigger value="table" className="flex items-center gap-2">
+                          <Table2 className="h-4 w-4" />
+                          <span className="hidden sm:inline">Tableau</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="card" className="flex items-center gap-2">
+                          <LayoutGrid className="h-4 w-4" />
+                          <span className="hidden sm:inline">Cartes</span>
+                        </TabsTrigger>
+                      </TabsList>
+                    </Tabs>
                   </div>
-                  <Tabs value={viewMode} onValueChange={handleViewChange} className="w-auto">
-                    <TabsList className="grid w-auto grid-cols-2 h-9 items-stretch">
-                      <TabsTrigger value="table" className="flex items-center gap-2 px-3">
-                        <Table2 className="h-4 w-4" />
-                        <span className="hidden sm:inline">Tableau</span>
-                      </TabsTrigger>
-                      <TabsTrigger value="card" className="flex items-center gap-2 px-3">
-                        <LayoutGrid className="h-4 w-4" />
-                        <span className="hidden sm:inline">Cartes</span>
-                      </TabsTrigger>
-                    </TabsList>
-                  </Tabs>
                 </div>
               )}
 
