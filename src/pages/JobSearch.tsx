@@ -793,37 +793,42 @@ const JobSearch = () => {
           ) : (
             <>
               {jobs?.data && (
-                <div className="space-y-4 mb-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                    <div className="flex items-center gap-4 flex-1">
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-4">
                       <div className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm">
                         <span className="font-medium">
                           {jobs.count} offre{jobs.count > 1 ? "s" : ""} d'emploi trouvée{jobs.count > 1 ? "s" : ""}
                         </span>
                       </div>
-                      <Collapsible className="flex-1">
-                        <CollapsibleTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="w-full sm:w-auto flex items-center gap-2"
-                          >
-                            <span>Filtrer les résultats</span>
-                            <ChevronDown className="h-4 w-4" />
-                          </Button>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent className="absolute z-10 mt-2 w-full sm:w-[600px] bg-white rounded-lg shadow-lg border p-4">
-                          <SearchFilters
-                            searchQuery={searchQuery}
-                            setSearchQuery={setSearchQuery}
-                            sortOrder={sortOrder}
-                            setSortOrder={setSortOrder}
-                            excludedWords={excludedWords}
-                            setExcludedWords={setExcludedWords}
-                            newWord={newWord}
-                            setNewWord={setNewWord}
-                          />
-                        </CollapsibleContent>
-                      </Collapsible>
+                      <div className="relative">
+                        <Collapsible>
+                          <CollapsibleTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="default"
+                              className="flex items-center gap-2"
+                            >
+                              <span>Filtrer les résultats</span>
+                              <ChevronDown className="h-4 w-4" />
+                            </Button>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent className="absolute z-10 left-0 mt-2 w-[400px] bg-white rounded-lg shadow-lg border">
+                            <div className="p-4">
+                              <SearchFilters
+                                searchQuery={searchQuery}
+                                setSearchQuery={setSearchQuery}
+                                sortOrder={sortOrder}
+                                setSortOrder={setSortOrder}
+                                excludedWords={excludedWords}
+                                setExcludedWords={setExcludedWords}
+                                newWord={newWord}
+                                setNewWord={setNewWord}
+                              />
+                            </div>
+                          </CollapsibleContent>
+                        </Collapsible>
+                      </div>
                     </div>
                     <Tabs value={viewMode} onValueChange={handleViewChange} className="w-auto">
                       <TabsList className="grid w-[200px] grid-cols-2">
