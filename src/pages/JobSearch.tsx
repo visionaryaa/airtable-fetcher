@@ -115,7 +115,7 @@ const agencies = [
     id: 9, 
     img: "https://i.postimg.cc/fL7Dcvyd/347248690-792113835829706-805731174237376164-n.png",
     domain: "dajobs.be",
-    keywords: ["ago jobs", "ago job", "agojobs", "dajobs", "daoust"]
+    keywords: ["ago jobs", "ago job", "agojobs", "dajobs", "daoust", "ago", "AGO Jobs"]
   },
   { 
     name: "SD Worx", 
@@ -371,6 +371,29 @@ const JobSearch = () => {
     setSearchParams(newParams);
   };
 
+  const findAgency = (job: any) => {
+    return agencies.find(a => {
+      if (!job.job_link) return false;
+      // First try matching by domain
+      if (a.domain.toLowerCase() === job.job_link
+        .toLowerCase()
+        .replace('https://', '')
+        .replace('www.', '')
+        .split('/')[0]) {
+        return true;
+      }
+      // Then try matching by keywords in job title or location
+      const jobTitle = job.job_title?.toLowerCase() || '';
+      const jobLocation = job.job_location?.toLowerCase() || '';
+      const companyName = job.company_name?.toLowerCase() || '';
+      return a.keywords.some(keyword => 
+        jobTitle.includes(keyword.toLowerCase()) || 
+        jobLocation.includes(keyword.toLowerCase()) ||
+        companyName.includes(keyword.toLowerCase())
+      );
+    });
+  };
+
   const renderTableView = () => (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
@@ -395,22 +418,7 @@ const JobSearch = () => {
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {jobs?.data.map((job) => {
-            const agency = agencies.find(a => {
-              if (!job.job_link) return false;
-              return a.domain.toLowerCase() === job.job_link
-                .toLowerCase()
-                .replace('https://', '')
-                .replace('www.', '')
-                .split('/')[0];
-            }) || agencies.find(a => {
-              const jobTitle = job.job_title?.toLowerCase() || '';
-              const jobLocation = job.job_location?.toLowerCase() || '';
-              return a.keywords.some(keyword => 
-                jobTitle.includes(keyword.toLowerCase()) || 
-                jobLocation.includes(keyword.toLowerCase())
-              );
-            });
-
+            const agency = findAgency(job);
             let formattedDate = 'N/A';
             try {
               if (job.publication_date) {
@@ -491,22 +499,7 @@ const JobSearch = () => {
   const renderCardView = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {jobs?.data.map((job) => {
-        const agency = agencies.find(a => {
-          if (!job.job_link) return false;
-          return a.domain.toLowerCase() === job.job_link
-            .toLowerCase()
-            .replace('https://', '')
-            .replace('www.', '')
-            .split('/')[0];
-        }) || agencies.find(a => {
-          const jobTitle = job.job_title?.toLowerCase() || '';
-          const jobLocation = job.job_location?.toLowerCase() || '';
-          return a.keywords.some(keyword => 
-            jobTitle.includes(keyword.toLowerCase()) || 
-            jobLocation.includes(keyword.toLowerCase())
-          );
-        });
-
+        const agency = findAgency(job);
         let formattedDate = 'N/A';
         try {
           if (job.publication_date) {
