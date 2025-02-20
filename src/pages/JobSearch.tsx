@@ -21,7 +21,18 @@ import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Search, MapPin, Radio, Loader2, ChevronDown, Box, Calendar, LayoutGrid, Table2, Heart } from "lucide-react";
+import {
+  Search,
+  MapPin,
+  Radio,
+  Loader2,
+  ChevronDown,
+  Box,
+  Calendar,
+  LayoutGrid,
+  Table2,
+  Heart,
+} from "lucide-react";
 import SearchFilters from "@/components/jobs/SearchFilters";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/AuthProvider";
@@ -54,90 +65,98 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const agencies = [
-  { 
-    name: "Proselect", 
-    id: 1, 
+  {
+    name: "Proselect",
+    id: 1,
     img: "https://i.postimg.cc/tg2Xq57M/IMG-7594.png",
     domain: "proselect.be",
-    keywords: ["proselect"]
+    keywords: ["proselect"],
   },
-  { 
-    name: "Tempo-Team", 
-    id: 2, 
+  {
+    name: "Tempo-Team",
+    id: 2,
     img: "https://i.postimg.cc/kX2ZPLhf/352321179-802641697768990-7499832421124251242-n-1.png",
     domain: "tempo-team.be",
-    keywords: ["tempo-team", "tempo team", "tempoteam"]
+    keywords: ["tempo-team", "tempo team", "tempoteam"],
   },
-  { 
-    name: "Adecco", 
-    id: 3, 
+  {
+    name: "Adecco",
+    id: 3,
     img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpHiI1ANEpe5BlJpLQDI_4M8jl1AnJciaqaw&s",
     domain: "adecco.be",
-    keywords: ["adecco"]
+    keywords: ["adecco"],
   },
-  { 
-    name: "ASAP", 
-    id: 4, 
+  {
+    name: "ASAP",
+    id: 4,
     img: "https://a.storyblok.com/f/118264/240x240/c475b21edc/asap-logo-2.png",
     domain: "asap.be",
-    keywords: ["asap"]
+    keywords: ["asap"],
   },
-  { 
-    name: "Synergie", 
-    id: 5, 
+  {
+    name: "Synergie",
+    id: 5,
     img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMXkqv_r78fpVwVE9xDY6rd0GfS3bMlK1sWA&s",
     domain: "synergiejobs.be",
-    keywords: ["synergie"]
+    keywords: ["synergie"],
   },
-  { 
-    name: "Randstad", 
-    id: 6, 
+  {
+    name: "Randstad",
+    id: 6,
     img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5L2880dU-fMT-PjiSxVWWbwI6Vb8l3Vw6Q&s",
     domain: "randstad.be",
-    keywords: ["randstad", "rand stad"]
+    keywords: ["randstad", "rand stad"],
   },
-  { 
-    name: "Accent Jobs", 
-    id: 7, 
+  {
+    name: "Accent Jobs",
+    id: 7,
     img: "https://i.postimg.cc/053yKcZg/IMG-7592.png",
     domain: "accentjobs.be",
-    keywords: ["accent", "accent jobs"]
+    keywords: ["accent", "accent jobs"],
   },
-  { 
-    name: "Start People", 
-    id: 8, 
+  {
+    name: "Start People",
+    id: 8,
     img: "https://media.licdn.com/dms/image/v2/D4E03AQGzYaEHyR2N_w/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1666681919673?e=2147483647&v=beta&t=oyXA1mGdfaPAMHB0YsV3dUAQEN0Ic0DfVltZaVtSywc",
     domain: "startpeople.be",
-    keywords: ["start people", "startpeople"]
+    keywords: ["start people", "startpeople"],
   },
-  { 
+  {
     name: "Daoust",
-    id: 9, 
+    id: 9,
     img: "https://i.postimg.cc/fL7Dcvyd/347248690-792113835829706-805731174237376164-n.png",
     domain: "dajobs.be",
-    keywords: ["ago jobs", "ago job", "agojobs", "dajobs", "daoust", "ago", "AGO Jobs"]
+    keywords: [
+      "ago jobs",
+      "ago job",
+      "agojobs",
+      "dajobs",
+      "daoust",
+      "ago",
+      "AGO Jobs",
+    ],
   },
-  { 
-    name: "SD Worx", 
-    id: 10, 
+  {
+    name: "SD Worx",
+    id: 10,
     img: "https://i.postimg.cc/XJ8FtyxC/339105639-183429217812911-8132452130259136190-n.png",
     domain: "sdworx.jobs",
-    keywords: ["sd worx", "sdworx"]
+    keywords: ["sd worx", "sdworx"],
   },
-  { 
-    name: "Robert Half", 
-    id: 11, 
+  {
+    name: "Robert Half",
+    id: 11,
     img: "https://i.postimg.cc/13vSMqjT/383209240-608879378108206-6829050048883403071-n.jpg",
     domain: "roberthalf.com",
-    keywords: ["robert half"]
+    keywords: ["robert half"],
   },
   {
     name: "Bright Plus",
     id: 12,
     img: "https://i.postimg.cc/8c6fdhKY/image.png",
     domain: "brightplus.be",
-    keywords: ["bright plus", "brightplus"]
-  }
+    keywords: ["bright plus", "brightplus"],
+  },
 ];
 
 const formSchema = z.object({
@@ -156,109 +175,75 @@ const JobSearch = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDeletingLoading, setIsDeletingLoading] = useState(false);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | "agency_asc" | "agency_desc">();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [excludedWords, setExcludedWords] = useState<string[]>([]);
-  const [newWord, setNewWord] = useState("");
-  const [showLoadingDialog, setShowLoadingDialog] = useState(false);
-  const currentSearchId = searchParams.get('searchId');
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      nom_du_job: "",
-      code_postale: "",
-      rayon: "25",
-    },
-  });
-
+  // Updated mutation: onError moved to top level
   const addToFavorites = useMutation({
     mutationFn: async (job: any) => {
-      if (!user) throw new Error('Must be logged in to add favorites');
-      const { error } = await supabase
-        .from('favorites')
-        .insert([{
+      if (!user) throw new Error("Must be logged in to add favorites");
+      const { error } = await supabase.from("favorites").insert([
+        {
           user_id: user.id,
           job_title: job.job_title,
           job_link: job.job_link,
-          job_location: job.job_location
-        }]);
+          job_location: job.job_location,
+        },
+      ]);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['favorites'] });
+      queryClient.invalidateQueries({ queryKey: ["favorites"] });
       toast({
         title: "Ajouté aux favoris",
         description: "L'offre a été ajoutée à vos favoris",
       });
     },
-    meta: {
-      onError: () => {
-        toast({
-          variant: "destructive",
-          title: "Erreur",
-          description: "Impossible d'ajouter aux favoris",
-        });
-      }
-    }
+    onError: () => {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible d'ajouter aux favoris",
+      });
+    },
   });
 
   const removeFromFavorites = useMutation({
     mutationFn: async (jobLink: string) => {
-      if (!user) throw new Error('Must be logged in to remove favorites');
+      if (!user) throw new Error("Must be logged in to remove favorites");
       const { error } = await supabase
-        .from('favorites')
+        .from("favorites")
         .delete()
-        .eq('job_link', jobLink)
-        .eq('user_id', user.id);
+        .eq("job_link", jobLink)
+        .eq("user_id", user.id);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['favorites'] });
+      queryClient.invalidateQueries({ queryKey: ["favorites"] });
       toast({
         title: "Retiré des favoris",
         description: "L'offre a été retirée de vos favoris",
       });
     },
-    meta: {
-      onError: () => {
-        toast({
-          variant: "destructive",
-          title: "Erreur",
-          description: "Impossible de retirer des favoris",
-        });
-      }
-    }
+    onError: () => {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de retirer des favoris",
+      });
+    },
   });
 
   const { data: favorites = [] } = useQuery({
-    queryKey: ['favorites', user?.id],
+    queryKey: ["favorites", user?.id],
     queryFn: async () => {
       if (!user) return [];
       const { data, error } = await supabase
-        .from('favorites')
-        .select('job_link')
-        .eq('user_id', user.id);
+        .from("favorites")
+        .select("job_link")
+        .eq("user_id", user.id);
       if (error) throw error;
-      return data.map(f => f.job_link);
+      return data.map((f) => f.job_link);
     },
     enabled: !!user,
-  });
-
-  const { data: jobs, isLoading } = useQuery({
-    queryKey: ["supabase-jobs", currentSearchId],
-    queryFn: async () => {
-      if (!currentSearchId) return { data: [], count: 0 };
-      const { data: jobResults, error, count } = await supabase
-        .from("job_results")
-        .select("*", { count: "exact" })
-        .eq("search_id", currentSearchId);
-      if (error) throw error;
-      return { data: jobResults || [], count: count || 0 };
-    },
-    enabled: !!currentSearchId,
   });
 
   const handleFavoriteClick = (job: any, isFavorited: boolean) => {
@@ -278,162 +263,253 @@ const JobSearch = () => {
     }
   };
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeletingLoading, setIsDeletingLoading] = useState(false);
+  const [sortOrder, setSortOrder] = useState<
+    "asc" | "desc" | "agency_asc" | "agency_desc"
+  >();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [excludedWords, setExcludedWords] = useState<string[]>([]);
+  const [newWord, setNewWord] = useState("");
+  const [showLoadingDialog, setShowLoadingDialog] = useState(false);
+  const currentSearchId = searchParams.get("searchId");
+
+  useEffect(() => {
+    const urlViewMode = searchParams.get("view") as "table" | "card";
+    if (urlViewMode) {
+      setViewMode(urlViewMode);
+    }
+  }, []);
+
+  const { data: jobs, isLoading } = useQuery({
+    queryKey: ["supabase-jobs", currentSearchId],
+    queryFn: async () => {
+      console.log("Running query with searchId:", currentSearchId);
+      if (!currentSearchId) {
+        console.log("No searchId provided, returning empty result");
+        return { data: [], count: 0 };
+      }
+
+      try {
+        console.log("Fetching data for searchId:", currentSearchId);
+        const { data: jobResults, error, count } = await supabase
+          .from("job_results")
+          .select("*", { count: "exact" })
+          .eq("search_id", currentSearchId.trim());
+
+        if (error) {
+          console.error("Error fetching data:", error);
+          throw error;
+        }
+
+        if (!jobResults || jobResults.length === 0) {
+          console.log("No results found for searchId:", currentSearchId);
+          return { data: [], count: 0 };
+        }
+
+        console.log("Query results:", { jobResults, count });
+
+        let filteredData = jobResults || [];
+
+        if (searchQuery) {
+          console.log("Applying search filter:", searchQuery);
+          filteredData = filteredData.filter((job) =>
+            job.job_title
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+          );
+        }
+
+        if (excludedWords.length > 0) {
+          console.log("Applying excluded words:", excludedWords);
+          filteredData = filteredData.filter(
+            (job) =>
+              !excludedWords.some((word) =>
+                job.job_title.toLowerCase().includes(word.toLowerCase())
+              )
+          );
+        }
+
+        if (sortOrder) {
+          console.log("Applying sort order:", sortOrder);
+          filteredData = [...filteredData].sort((a, b) => {
+            if (sortOrder === "asc") {
+              return a.job_title.localeCompare(b.job_title);
+            } else if (sortOrder === "desc") {
+              return b.job_title.localeCompare(a.job_title);
+            } else if (sortOrder === "agency_asc") {
+              return (a.job_location || "").localeCompare(b.job_location || "");
+            } else if (sortOrder === "agency_desc") {
+              return (b.job_location || "").localeCompare(a.job_location || "");
+            }
+            return 0;
+          });
+        }
+
+        return {
+          data: filteredData,
+          count: filteredData.length,
+        };
+      } catch (error) {
+        console.error("Query failed:", error);
+        toast({
+          variant: "destructive",
+          title: "Erreur de récupération",
+          description: "Erreur lors de la récupération des données",
+        });
+        return { data: [], count: 0 };
+      }
+    },
+    enabled: !!currentSearchId,
+    refetchInterval: 3000,
+    staleTime: 0,
+    gcTime: 0,
+    retry: 3,
+    retryDelay: 1000,
+  });
+
+  useEffect(() => {
+    if (currentSearchId && isSubmitting) {
+      const interval = periodicRefresh();
+      return () => clearInterval(interval);
+    }
+  }, [currentSearchId, isSubmitting]);
+
+  const periodicRefresh = () => {
+    let count = 0;
+    const interval = setInterval(() => {
+      if (currentSearchId) {
+        console.log("Polling for results, attempt:", count + 1);
+        queryClient.invalidateQueries({ queryKey: ["supabase-jobs", currentSearchId] });
+      }
+      count++;
+      if (count >= 30) {
+        clearInterval(interval);
+        setIsSubmitting(false);
+        setShowLoadingDialog(false);
+        toast({
+          title: "Mise à jour terminée",
+          description: "La recherche est terminée.",
+        });
+      }
+    }, 3000);
+    return interval;
+  };
+
+  const handleDelete = async () => {
+    setIsDeletingLoading(true);
+    try {
+      const response = await fetch(
+        "https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=delete"
+      );
+      if (!response.ok)
+        throw new Error("Failed to trigger deletion");
+
+      toast({
+        title: "Réinitialisation en cours",
+        description: "La base de données est en cours de réinitialisation...",
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
+      if (currentSearchId) {
+        await queryClient.invalidateQueries({ queryKey: ["supabase-jobs", currentSearchId] });
+      }
+
+      navigate("/job-search");
+
+      toast({
+        title: "Réinitialisation terminée",
+        description: "La base de données a été réinitialisée avec succès.",
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la réinitialisation.",
+      });
+    } finally {
+      setIsDeletingLoading(false);
+    }
+  };
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      nom_du_job: "",
+      code_postale: "",
+      rayon: "25",
+    },
+  });
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
     setShowLoadingDialog(true);
-    
+
     try {
-      const search_id = 'search_' + Date.now();
-      const webhookUrl = `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(values.nom_du_job)}&code_postale=${encodeURIComponent(values.code_postale)}&rayon=${encodeURIComponent(values.rayon)}&searchId=${encodeURIComponent(search_id)}`;
-      
+      const search_id = "search_" + Date.now();
+      console.log("Generated new search_id:", search_id);
+
+      const webhookUrl = `https://hook.eu2.make.com/gy4hlfyzdj35pijcgllbh11ke7bldn52?action=scrape&nom_du_job=${encodeURIComponent(
+        values.nom_du_job
+      )}&code_postale=${encodeURIComponent(
+        values.code_postale
+      )}&rayon=${encodeURIComponent(values.rayon)}&searchId=${encodeURIComponent(
+        search_id
+      )}`;
+
+      console.log("Making request to webhook:", webhookUrl);
       const response = await fetch(webhookUrl);
-      if (!response.ok) throw new Error('Webhook error');
+
+      if (!response.ok) {
+        throw new Error(`Webhook error: ${response.status}`);
+      }
 
       navigate(`/job-search?searchId=${search_id}`);
-      await new Promise(resolve => setTimeout(resolve, 3000));
+
+      await new Promise((resolve) => setTimeout(resolve, 3000));
       queryClient.invalidateQueries({ queryKey: ["supabase-jobs", search_id] });
-      
     } catch (error) {
+      console.error("Search submission error:", error);
       toast({
         variant: "destructive",
         title: "Erreur",
         description: "Une erreur est survenue lors de la recherche.",
       });
-    } finally {
       setIsSubmitting(false);
       setShowLoadingDialog(false);
     }
   };
 
-  const findAgency = (job: any) => {
-    return agencies.find(agency => 
-      job.job_link?.toLowerCase().includes(agency.domain.toLowerCase()) ||
-      agency.keywords.some(keyword => 
-        job.job_title?.toLowerCase().includes(keyword.toLowerCase()) ||
-        job.job_location?.toLowerCase().includes(keyword.toLowerCase())
-      )
-    );
-  };
-
   const handleViewChange = (value: string) => {
     setViewMode(value as "table" | "card");
     const newParams = new URLSearchParams(searchParams);
-    newParams.set('view', value);
+    newParams.set("view", value);
     setSearchParams(newParams);
   };
 
-  useEffect(() => {
-    const urlViewMode = searchParams.get('view') as "table" | "card";
-    if (urlViewMode) {
-      setViewMode(urlViewMode);
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    if (showLoadingDialog) {
-      const timer = setTimeout(() => {
-        setShowLoadingDialog(false);
-      }, 10000);
-      return () => clearTimeout(timer);
-    }
-  }, [showLoadingDialog]);
-
-  const renderCardView = () => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {jobs?.data.map((job) => {
-        const agency = findAgency(job);
-        const isFavorited = favorites.includes(job.job_link);
-        let formattedDate = 'N/A';
-        try {
-          if (job.publication_date) {
-            const date = new Date(job.publication_date);
-            if (!isNaN(date.getTime())) {
-              formattedDate = format(date, 'dd/MM/yyyy');
-            }
-          } else if (job.created_at) {
-            const date = new Date(job.created_at);
-            if (!isNaN(date.getTime())) {
-              formattedDate = format(date, 'dd/MM/yyyy');
-            }
-          }
-        } catch (error) {
-          console.error('Error formatting date:', error);
-        }
-
-        return (
-          <Card 
-            key={job.id} 
-            className="group hover:shadow-lg transition-all duration-300 overflow-hidden bg-card text-card-foreground dark:bg-gray-800/50 dark:border-gray-700 dark:hover:border-gray-600 shadow-md dark:shadow-lg dark:shadow-gray-900/20"
-          >
-            <CardHeader className="space-y-3 p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="h-10 w-10 rounded-full overflow-hidden bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-1.5 shadow-sm">
-                    {agency ? (
-                      <img
-                        src={agency.img}
-                        alt={`${agency.name} logo`}
-                        className="h-full w-full object-contain"
-                        onError={(e) => {
-                          const img = e.target as HTMLImageElement;
-                          img.src = "/placeholder.svg";
-                        }}
-                      />
-                    ) : (
-                      <div className="h-full w-full flex items-center justify-center bg-gray-50 dark:bg-gray-800">
-                        <Box className="h-5 w-5 text-gray-400" />
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-sm">
-                      {agency?.name || "Agence"}
-                    </h3>
-                    {agency?.domain && (
-                      <p className="text-xs text-muted-foreground">
-                        {agency.domain}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={`${isFavorited ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
-                  onClick={() => handleFavoriteClick(job, isFavorited)}
-                >
-                  <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
-                </Button>
-              </div>
-              <h2 className="text-lg leading-tight font-semibold line-clamp-2">
-                {job.job_title}
-              </h2>
-            </CardHeader>
-            <CardContent className="p-4 pt-0 space-y-2">
-              <div className="flex items-center text-muted-foreground">
-                <MapPin className="h-3.5 w-3.5 mr-1.5 flex-shrink-0" />
-                <span className="text-xs">{job.job_location || "Location non spécifiée"}</span>
-              </div>
-              <div className="flex items-center text-muted-foreground">
-                <Calendar className="h-3.5 w-3.5 mr-1.5 flex-shrink-0" />
-                <span className="text-xs">{formattedDate}</span>
-              </div>
-            </CardContent>
-            <CardFooter className="p-4 pt-0">
-              <a
-                href={job.job_link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center px-3 py-2 rounded-md bg-primary/10 text-primary hover:bg-primary/20 font-medium text-sm transition-colors duration-200 dark:bg-primary/20 dark:hover:bg-primary/30"
-              >
-                Voir l'offre
-              </a>
-            </CardFooter>
-          </Card>
-        );
-      })}
-    </div>
-  );
+  const findAgency = (job: any) => {
+    return agencies.find((a) => {
+      if (!job.job_link) return false;
+      // First try matching by domain
+      if (
+        a.domain.toLowerCase() ===
+        job.job_link.toLowerCase().replace("https://", "").replace("www.", "").split("/")[0]
+      ) {
+        return true;
+      }
+      // Then try matching by keywords in job title or location
+      const jobTitle = job.job_title?.toLowerCase() || "";
+      const jobLocation = job.job_location?.toLowerCase() || "";
+      const companyName = job.company_name?.toLowerCase() || "";
+      return a.keywords.some(
+        (keyword) =>
+          jobTitle.includes(keyword.toLowerCase()) ||
+          jobLocation.includes(keyword.toLowerCase()) ||
+          companyName.includes(keyword.toLowerCase())
+      );
+    });
+  };
 
   const renderTableView = () => (
     <div className="overflow-x-auto">
@@ -461,21 +537,21 @@ const JobSearch = () => {
           {jobs?.data.map((job) => {
             const agency = findAgency(job);
             const isFavorited = favorites.includes(job.job_link);
-            let formattedDate = 'N/A';
+            let formattedDate = "N/A";
             try {
               if (job.publication_date) {
                 const date = new Date(job.publication_date);
                 if (!isNaN(date.getTime())) {
-                  formattedDate = format(date, 'dd/MM/yyyy');
+                  formattedDate = format(date, "dd/MM/yyyy");
                 }
               } else if (job.created_at) {
                 const date = new Date(job.created_at);
                 if (!isNaN(date.getTime())) {
-                  formattedDate = format(date, 'dd/MM/yyyy');
+                  formattedDate = format(date, "dd/MM/yyyy");
                 }
               }
             } catch (error) {
-              console.error('Error formatting date:', error);
+              console.error("Error formatting date:", error);
             }
 
             return (
@@ -512,13 +588,19 @@ const JobSearch = () => {
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="text-sm text-gray-900">{job.job_title}</div>
+                  <div className="text-sm text-gray-900">
+                    {job.job_title}
+                  </div>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="text-sm text-gray-500">{job.job_location}</div>
+                  <div className="text-sm text-gray-500">
+                    {job.job_location}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">{formattedDate}</div>
+                  <div className="text-sm text-gray-500">
+                    {formattedDate}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center space-x-2">
@@ -533,10 +615,20 @@ const JobSearch = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className={`${isFavorited ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
-                      onClick={() => handleFavoriteClick(job, isFavorited)}
+                      className={`${
+                        isFavorited
+                          ? "text-red-500"
+                          : "text-gray-400 hover:text-red-500"
+                      }`}
+                      onClick={() =>
+                        handleFavoriteClick(job, isFavorited)
+                      }
                     >
-                      <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
+                      <Heart
+                        className={`w-5 h-5 ${
+                          isFavorited ? "fill-current" : ""
+                        }`}
+                      />
                     </Button>
                   </div>
                 </td>
@@ -548,12 +640,121 @@ const JobSearch = () => {
     </div>
   );
 
+  const renderCardView = () => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {jobs?.data.map((job) => {
+        const agency = findAgency(job);
+        const isFavorited = favorites.includes(job.job_link);
+        let formattedDate = "N/A";
+        try {
+          if (job.publication_date) {
+            const date = new Date(job.publication_date);
+            if (!isNaN(date.getTime())) {
+              formattedDate = format(date, "dd/MM/yyyy");
+            }
+          } else if (job.created_at) {
+            const date = new Date(job.created_at);
+            if (!isNaN(date.getTime())) {
+              formattedDate = format(date, "dd/MM/yyyy");
+            }
+          }
+        } catch (error) {
+          console.error("Error formatting date:", error);
+        }
+
+        return (
+          <Card
+            key={job.id}
+            className="group hover:shadow-lg transition-all duration-300 overflow-hidden bg-card text-card-foreground dark:bg-gray-800/50 dark:border-gray-700 dark:hover:border-gray-600 shadow-md dark:shadow-lg dark:shadow-gray-900/20"
+          >
+            <CardHeader className="space-y-3 p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="h-10 w-10 rounded-full overflow-hidden bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-1.5 shadow-sm">
+                    {agency ? (
+                      <img
+                        src={agency.img}
+                        alt={`${agency.name} logo`}
+                        className="h-full w-full object-contain"
+                        onError={(e) => {
+                          const img = e.target as HTMLImageElement;
+                          img.src = "/placeholder.svg";
+                        }}
+                      />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center bg-gray-50 dark:bg-gray-800">
+                        <Box className="h-5 w-5 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-sm">
+                      {agency?.name || "Agence"}
+                    </h3>
+                    {agency?.domain && (
+                      <p className="text-xs text-muted-foreground">
+                        {agency.domain}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={`${
+                    isFavorited
+                      ? "text-red-500"
+                      : "text-gray-400 hover:text-red-500"
+                  }`}
+                  onClick={() => handleFavoriteClick(job, isFavorited)}
+                >
+                  <Heart
+                    className={`w-5 h-5 ${
+                      isFavorited ? "fill-current" : ""
+                    }`}
+                  />
+                </Button>
+              </div>
+              <h2 className="text-lg leading-tight font-semibold line-clamp-2">
+                {job.job_title}
+              </h2>
+            </CardHeader>
+            <CardContent className="p-4 pt-0 space-y-2">
+              <div className="flex items-center text-muted-foreground">
+                <MapPin className="h-3.5 w-3.5 mr-1.5 flex-shrink-0" />
+                <span className="text-xs">
+                  {job.job_location || "Location non spécifiée"}
+                </span>
+              </div>
+              <div className="flex items-center text-muted-foreground">
+                <Calendar className="h-3.5 w-3.5 mr-1.5 flex-shrink-0" />
+                <span className="text-xs">{formattedDate}</span>
+              </div>
+            </CardContent>
+            <CardFooter className="p-4 pt-0">
+              <a
+                href={job.job_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full inline-flex items-center justify-center px-3 py-2 rounded-md bg-primary/10 text-primary hover:bg-primary/20 font-medium text-sm transition-colors duration-200 dark:bg-primary/20 dark:hover:bg-primary/30"
+              >
+                Voir l'offre
+              </a>
+            </CardFooter>
+          </Card>
+        );
+      })}
+    </div>
+  );
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
-          <p className="text-sm text-muted-foreground">Chargement des résultats...</p>
+          <p className="text-sm text-muted-foreground">
+            Chargement des résultats...
+          </p>
         </div>
       </div>
     );
@@ -674,88 +875,20 @@ const JobSearch = () => {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="rayon"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Rayon" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="10">10 km</SelectItem>
-                            <SelectItem value="25">25 km</SelectItem>
-                            <SelectItem value="50">50 km</SelectItem>
-                            <SelectItem value="100">100 km</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {/* Add additional form fields as needed */}
               </div>
 
-              <div className="flex justify-end pt-4">
+              <div className="flex justify-end">
                 <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Recherche...
-                    </>
-                  ) : (
-                    <>
-                      <Search className="mr-2 h-4 w-4" />
-                      Rechercher
-                    </>
-                  )}
+                  {isSubmitting ? "Recherche en cours..." : "Rechercher"}
                 </Button>
               </div>
             </form>
           </Form>
-
-          {jobs?.data && jobs.data.length > 0 && (
-            <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-sm">
-                    {jobs.data.length} résultats
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Tabs value={viewMode} onValueChange={handleViewChange} defaultValue="card">
-                    <TabsList>
-                      <TabsTrigger value="card">
-                        <LayoutGrid className="h-4 w-4" />
-                      </TabsTrigger>
-                      <TabsTrigger value="table">
-                        <Table2 className="h-4 w-4" />
-                      </TabsTrigger>
-                    </TabsList>
-                  </Tabs>
-                </div>
-              </div>
-
-              <SearchFilters
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                sortOrder={sortOrder}
-                setSortOrder={setSortOrder}
-                excludedWords={excludedWords}
-                setExcludedWords={setExcludedWords}
-                newWord={newWord}
-                setNewWord={setNewWord}
-              />
-
-              {viewMode === "card" ? renderCardView() : renderTableView()}
-            </div>
-          )}
         </div>
+
+        {/* Render either table or card view */}
+        {viewMode === "table" ? renderTableView() : renderCardView()}
       </main>
     </div>
   );
