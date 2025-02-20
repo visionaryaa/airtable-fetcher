@@ -152,6 +152,99 @@ const formSchema = z.object({
 const JobSearch = () => {
   const [viewMode, setViewMode] = useState<"table" | "card">("card");
   const { toast } = useToast();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  const addToFavorites = useMutation({
+    mutationFn: async (job: any) => {
+      if (!user) throw new Error('Must be logged in to add favorites');
+      const { error } = await supabase
+        .from('favorites')
+        .insert([{
+          user_id: user.id,
+          job_title: job.job_title,
+          job_link: job.job_link,
+          job_location: job.job_location
+        }]);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['favorites'] });
+      toast({
+        title: "Ajouté aux favoris",
+        description: "L'offre a été ajoutée à vos favoris",
+      });
+    },
+    meta: {
+      onError: () => {
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "Impossible d'ajouter aux favoris",
+        });
+      }
+    }
+  });
+
+  const removeFromFavorites = useMutation({
+    mutationFn: async (jobLink: string) => {
+      if (!user) throw new Error('Must be logged in to remove favorites');
+      const { error } = await supabase
+        .from('favorites')
+        .delete()
+        .eq('job_link', jobLink)
+        .eq('user_id', user.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['favorites'] });
+      toast({
+        title: "Retiré des favoris",
+        description: "L'offre a été retirée de vos favoris",
+      });
+    },
+    meta: {
+      onError: () => {
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "Impossible de retirer des favoris",
+        });
+      }
+    }
+  });
+
+  const { data: favorites = [] } = useQuery({
+    queryKey: ['favorites', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data, error } = await supabase
+        .from('favorites')
+        .select('job_link')
+        .eq('user_id', user.id);
+      if (error) throw error;
+      return data.map(f => f.job_link);
+    },
+    enabled: !!user,
+  });
+
+  const handleFavoriteClick = (job: any, isFavorited: boolean) => {
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Connexion requise",
+        description: "Vous devez être connecté pour ajouter des favoris",
+      });
+      return;
+    }
+
+    if (isFavorited) {
+      removeFromFavorites.mutate(job.job_link);
+    } else {
+      addToFavorites.mutate(job);
+    }
+  };
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeletingLoading, setIsDeletingLoading] = useState(false);
   const [sortOrder, setSortOrder] = useState<
@@ -161,9 +254,6 @@ const JobSearch = () => {
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
   const [newWord, setNewWord] = useState("");
   const [showLoadingDialog, setShowLoadingDialog] = useState(false);
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const currentSearchId = searchParams.get('searchId');
 
@@ -412,13 +502,14 @@ const JobSearch = () => {
               Date
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Action
+              Actions
             </th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {jobs?.data.map((job) => {
             const agency = findAgency(job);
+            const isFavorited = favorites.includes(job.job_link);
             let formattedDate = 'N/A';
             try {
               if (job.publication_date) {
@@ -479,14 +570,24 @@ const JobSearch = () => {
                   <div className="text-sm text-gray-500">{formattedDate}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <a
-                    href={job.job_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    Voir l'offre
-                  </a>
+                  <div className="flex items-center space-x-2">
+                    <a
+                      href={job.job_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                      Voir l'offre
+                    </a>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={`${isFavorited ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
+                      onClick={() => handleFavoriteClick(job, isFavorited)}
+                    >
+                      <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
+                    </Button>
+                  </div>
                 </td>
               </tr>
             );
@@ -500,6 +601,7 @@ const JobSearch = () => {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {jobs?.data.map((job) => {
         const agency = findAgency(job);
+        const isFavorited = favorites.includes(job.job_link);
         let formattedDate = 'N/A';
         try {
           if (job.publication_date) {
@@ -553,6 +655,14 @@ const JobSearch = () => {
                     )}
                   </div>
                 </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={`${isFavorited ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
+                  onClick={() => handleFavoriteClick(job, isFavorited)}
+                >
+                  <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
+                </Button>
               </div>
               <h2 className="text-lg leading-tight font-semibold line-clamp-2">
                 {job.job_title}
