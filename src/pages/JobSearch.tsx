@@ -164,7 +164,7 @@ const JobSearch = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const currentSearchId = searchParams.get('searchId');
 
   useEffect(() => {
@@ -366,8 +366,9 @@ const JobSearch = () => {
 
   const handleViewChange = (value: string) => {
     setViewMode(value as "table" | "card");
-    searchParams.set('view', value);
-    setSearchParams(searchParams);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('view', value);
+    setSearchParams(newParams);
   };
 
   const renderTableView = () => (
