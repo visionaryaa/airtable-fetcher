@@ -50,68 +50,86 @@ const agencies = [
   { 
     name: "Proselect", 
     id: 1, 
-    img: "/agencies/proselect.png",
+    img: "https://i.postimg.cc/tg2Xq57M/IMG-7594.png",
+    domain: "proselect.be",
     keywords: ["proselect"]
   },
   { 
     name: "Tempo-Team", 
     id: 2, 
-    img: "/agencies/tempo-team.png",
+    img: "https://i.postimg.cc/kX2ZPLhf/352321179-802641697768990-7499832421124251242-n-1.png",
+    domain: "tempo-team.be",
     keywords: ["tempo-team", "tempo team", "tempoteam"]
   },
   { 
     name: "Adecco", 
     id: 3, 
-    img: "/agencies/adecco.png",
+    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpHiI1ANEpe5BlJpLQDI_4M8jl1AnJciaqaw&s",
+    domain: "adecco.be",
     keywords: ["adecco"]
   },
   { 
     name: "ASAP", 
     id: 4, 
-    img: "/agencies/asap.png",
+    img: "https://a.storyblok.com/f/118264/240x240/c475b21edc/asap-logo-2.png",
+    domain: "asap.be",
     keywords: ["asap"]
   },
   { 
     name: "Synergie", 
     id: 5, 
-    img: "/agencies/synergie.png",
+    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMXkqv_r78fpVwVE9xDY6rd0GfS3bMlK1sWA&s",
+    domain: "synergiejobs.be",
     keywords: ["synergie"]
   },
   { 
     name: "Randstad", 
     id: 6, 
-    img: "/agencies/randstad.png",
+    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5L2880dU-fMT-PjiSxVWWbwI6Vb8l3Vw6Q&s",
+    domain: "randstad.be",
     keywords: ["randstad", "rand stad"]
   },
   { 
     name: "Accent Jobs", 
     id: 7, 
-    img: "/agencies/accent.png",
+    img: "https://i.postimg.cc/053yKcZg/IMG-7592.png",
+    domain: "accentjobs.be",
     keywords: ["accent", "accent jobs"]
   },
   { 
     name: "Start People", 
     id: 8, 
-    img: "/agencies/start-people.png",
+    img: "https://media.licdn.com/dms/image/v2/D4E03AQGzYaEHyR2N_w/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1666681919673?e=2147483647&v=beta&t=oyXA1mGdfaPAMHB0YsV3dUAQEN0Ic0DfVltZaVtSywc",
+    domain: "startpeople.be",
     keywords: ["start people", "startpeople"]
   },
   { 
     name: "AGO Jobs", 
     id: 9, 
-    img: "/agencies/ago.png",
-    keywords: ["ago jobs", "ago job", "agojobs"]
+    img: "https://i.postimg.cc/fL7Dcvyd/347248690-792113835829706-805731174237376164-n.png",
+    domain: "dajobs.be",
+    keywords: ["ago jobs", "ago job", "agojobs", "dajobs"]
   },
   { 
     name: "SD Worx", 
     id: 10, 
-    img: "/agencies/sd-worx.png",
+    img: "https://i.postimg.cc/XJ8FtyxC/339105639-183429217812911-8132452130259136190-n.png",
+    domain: "sdworx.jobs",
     keywords: ["sd worx", "sdworx"]
   },
   { 
     name: "Robert Half", 
     id: 11, 
-    img: "/agencies/robert-half.png",
+    img: "https://i.postimg.cc/13vSMqjT/383209240-608879378108206-6829050048883403071-n.jpg",
+    domain: "roberthalf.com",
     keywords: ["robert half"]
+  },
+  {
+    name: "Bright Plus",
+    id: 12,
+    img: "https://i.postimg.cc/8c6fdhKY/image.png",
+    domain: "brightplus.be",
+    keywords: ["bright plus", "brightplus"]
   }
 ];
 
@@ -660,6 +678,11 @@ const JobSearch = () => {
                                     <div className="text-sm font-medium text-gray-900">
                                       {agency?.name || "Agence"}
                                     </div>
+                                    {agency?.domain && (
+                                      <div className="text-xs text-gray-500">
+                                        {agency.domain}
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               </td>
