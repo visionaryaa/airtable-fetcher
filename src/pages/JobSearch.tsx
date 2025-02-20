@@ -497,7 +497,7 @@ const JobSearch = () => {
   );
 
   const renderCardView = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {jobs?.data.map((job) => {
         const agency = findAgency(job);
         let formattedDate = 'N/A';
@@ -518,11 +518,11 @@ const JobSearch = () => {
         }
 
         return (
-          <Card key={job.id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden bg-white">
-            <CardHeader className="space-y-4 p-6">
+          <Card key={job.id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden bg-white shadow-sm hover:shadow-md">
+            <CardHeader className="space-y-3 p-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="h-12 w-12 rounded-full overflow-hidden bg-white border border-gray-100 p-2 shadow-sm">
+                <div className="flex items-center space-x-3">
+                  <div className="h-10 w-10 rounded-full overflow-hidden bg-white border border-gray-100 p-1.5 shadow-sm">
                     {agency ? (
                       <img
                         src={agency.img}
@@ -536,44 +536,42 @@ const JobSearch = () => {
                       />
                     ) : (
                       <div className="h-full w-full flex items-center justify-center bg-gray-50">
-                        <Box className="h-6 w-6 text-gray-400" />
+                        <Box className="h-5 w-5 text-gray-400" />
                       </div>
                     )}
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900">
+                    <h3 className="font-medium text-sm text-gray-900">
                       {agency?.name || "Agence"}
                     </h3>
                     {agency?.domain && (
-                      <p className="text-sm text-gray-500">
+                      <p className="text-xs text-gray-500">
                         {agency.domain}
                       </p>
                     )}
                   </div>
                 </div>
               </div>
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 line-clamp-2 min-h-[3.5rem]">
-                  {job.job_title}
-                </h2>
-              </div>
+              <h2 className="text-base font-semibold text-gray-900 line-clamp-2">
+                {job.job_title}
+              </h2>
             </CardHeader>
-            <CardContent className="p-6 pt-0 space-y-4">
+            <CardContent className="p-4 pt-0 space-y-2">
               <div className="flex items-center text-gray-500">
-                <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
-                <span className="text-sm">{job.job_location || "Location non spécifiée"}</span>
+                <MapPin className="h-3.5 w-3.5 mr-1.5 flex-shrink-0" />
+                <span className="text-xs">{job.job_location || "Location non spécifiée"}</span>
               </div>
               <div className="flex items-center text-gray-500">
-                <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
-                <span className="text-sm">{formattedDate}</span>
+                <Calendar className="h-3.5 w-3.5 mr-1.5 flex-shrink-0" />
+                <span className="text-xs">{formattedDate}</span>
               </div>
             </CardContent>
-            <CardFooter className="p-6 pt-0">
+            <CardFooter className="p-4 pt-0">
               <a
                 href={job.job_link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 font-medium text-sm transition-colors duration-200"
+                className="w-full inline-flex items-center justify-center px-3 py-2 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 font-medium text-sm transition-colors duration-200"
               >
                 Voir l'offre
               </a>
