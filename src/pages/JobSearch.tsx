@@ -792,7 +792,7 @@ const JobSearch = () => {
             </div>
           ) : (
             <>
-              {user && jobs?.count > 0 && (
+              {jobs?.data && (
                 <div className="space-y-4 mb-6">
                   <div className="flex items-center justify-between">
                     <div className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm">
