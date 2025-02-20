@@ -246,7 +246,7 @@ const JobSearch = () => {
         toast({
           variant: "destructive",
           title: "Erreur de récupération",
-          description: "Erreur lors de la r���cupération des données",
+          description: "Erreur lors de la r����cupération des données",
         });
         return { data: [], count: 0 };
       }
@@ -554,7 +554,7 @@ const JobSearch = () => {
                   </div>
                 </div>
               </div>
-              <h2 className="text-base font-semibold line-clamp-2">
+              <h2 className="text-lg leading-tight font-semibold line-clamp-2">
                 {job.job_title}
               </h2>
             </CardHeader>
